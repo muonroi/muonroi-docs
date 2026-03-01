@@ -44,7 +44,7 @@ The middleware reads `tenantId` from the header or subdomain and attaches it to 
 - **MPermissionGroups**: groups permissions by module.
 - **MPermissionAuditLogs**: audit trail of permission changes.
 
-See [Database Structure](database-structure.md) for table relationships.
+See [Database Structure](../05-reference/database-structure.md) for table relationships.
 
 ## 4. Layered design
 

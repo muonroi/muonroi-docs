@@ -1,8 +1,12 @@
+---
+slug: /resources/buildingblock/readme
+---
+
 # Muonroi Building Block
 [![Ask DeepWiki](https://raw.githubusercontent.com/muonroi/MuonroiBuildingBlock/main/src/Muonroi.BuildingBlock/Images/deep-wiki.png)](https://deepwiki.com/muonroi/MuonroiBuildingBlock)
 
 ## Introduction
-This library provides entities such as `User`, `Role`, `Permission`, and `Language`, along with built-in dependency injection, bearer token management, JSON handling utilities, string conversion, and localization for multiple languages. It also sets up linking tables like `MUserRoles` and `MRolePermissions` together with token and audit tables. See [Database Structure](../../05-reference/database-structure.md) for the full schema. It now also includes a lightweight rule engine that supports strongly typed rules and dynamic JSON workflows. See the [Rule Engine Guide](../../03-guides/rule-engine/rule-engine-guide.md) for details. The package is designed to accelerate the development of .NET applications following a clean architecture.
+This library provides entities such as `User`, `Role`, `Permission`, and `Language`, along with built-in dependency injection, bearer token management, JSON handling utilities, string conversion, and localization for multiple languages. It also sets up linking tables like `MUserRoles` and `MRolePermissions` together with token and audit tables. See [Database Structure](/docs/reference/database-structure) for the full schema. It now also includes a lightweight rule engine that supports strongly typed rules and dynamic JSON workflows. See the [Rule Engine Guide](/docs/guides/rule-engine/rule-engine-guide) for details. The package is designed to accelerate the development of .NET applications following a clean architecture.
 
 ### Rule Engine Features
 
@@ -41,7 +45,7 @@ dotnet new install muonroibase.template
 dotnet new muonroibase -n YourNewProjectName -C MyCoreName
 ```
 
-See the [`Samples/Program.cs`](Samples/Program.cs) file for a minimal setup example.
+See the [`Samples/Program.cs`](https://github.com/muonroi/MuonroiBuildingBlock/blob/main/Samples/Program.cs) file for a minimal setup example.
 Additional samples are provided in the `Samples` folder:
 * `MemoryCache` demonstrates basic in-memory caching.
 * `MultiLevelCache` shows how to combine memory and distributed caches.
@@ -347,7 +351,7 @@ For projects with existing conditional logic, the `MR.RuleGen` CLI can generate 
 services.AddRuleEngine().AddRulesFromAssemblies(typeof(Program).Assembly);
 ```
 
-For practical examples see the `HelloRules`, `ImportExportRules`, and `PaymentApproval` samples or read the [Rule Engine Guide](../../03-guides/rule-engine/rule-engine-guide.md).
+For practical examples see the `HelloRules`, `ImportExportRules`, and `PaymentApproval` samples or read the [Rule Engine Guide](/docs/guides/rule-engine/rule-engine-guide).
 
 ## Integrations
 
@@ -485,7 +489,7 @@ capability model with backward compatibility:
 For paid tiers, core runtime actions (`api.*`, `db.*`, `http.*`) are mapped automatically to `core.runtime`.
 You no longer need to enumerate action keys like `api.list` or `db.savechanges` in license payloads.
 
-See the detailed schema and compatibility matrix in [../../03-guides/enterprise/license-capability-model.md](../../03-guides/enterprise/license-capability-model.md).
+See the detailed schema and compatibility matrix in [License Capability Model](/docs/guides/enterprise/license-capability-model).
 
 #### Configuration Examples
 
@@ -630,7 +634,7 @@ Key lifecycle APIs:
 - `MCreatePolicyDraftRequest` -> `MApprovePolicyBundleRequest` -> `MActivatePolicyBundleRequest`.
 - `MRollbackPolicyBundleRequest` -> rollback active policy to an earlier version.
 
-Detailed guide: [Enterprise Control Plane MVP](../../03-guides/enterprise/control-plane-mvp.md)
+Detailed guide: [Enterprise Control Plane MVP](/docs/guides/enterprise/control-plane-mvp)
 
 #### Enterprise Secure-By-Default Profile (E2)
 
@@ -643,7 +647,7 @@ E2 adds deterministic Enterprise Production defaults:
   - certificate pinning requirements,
   - signed server response requirements.
 
-Guide: [Enterprise Secure Profile E2](../../03-guides/enterprise/enterprise-secure-profile-e2.md)
+Guide: [Enterprise Secure Profile E2](/docs/guides/enterprise/enterprise-secure-profile-e2)
 
 #### Enterprise Centralized Authorization (E3)
 
@@ -675,7 +679,7 @@ Example config:
 }
 ```
 
-Guide: [Enterprise Centralized Authorization E3](../../03-guides/enterprise/enterprise-centralized-authorization-e3.md)
+Guide: [Enterprise Centralized Authorization E3](/docs/guides/enterprise/enterprise-centralized-authorization-e3)
 
 #### Enterprise Compliance and Evidence (E4)
 
@@ -716,7 +720,7 @@ using Muonroi.BuildingBlock.Shared.Compliance;
 app.MapMComplianceEndpoints();
 ```
 
-Guide: [Enterprise Compliance and Evidence E4](../../03-guides/enterprise/enterprise-compliance-e4.md)
+Guide: [Enterprise Compliance and Evidence E4](/docs/guides/enterprise/enterprise-compliance-e4)
 
 #### Enterprise Operations Package (E5)
 
@@ -746,7 +750,7 @@ Preset files:
 - `deploy/enterprise/slo-presets/strict.json`
 - `deploy/enterprise/slo-presets/regulated.json`
 
-Guide: [Enterprise Operations Package E5](../../03-guides/enterprise/enterprise-operations-e5.md)
+Guide: [Enterprise Operations Package E5](/docs/guides/enterprise/enterprise-operations-e5)
 
 ### Message Bus (Kafka/RabbitMQ)
 Configure your message broker via `MessageBusConfigs`. The helper in `External/Messaging` uses MassTransit to select the broker. Register consumers and sagas easily:
@@ -863,29 +867,29 @@ This project uses [DocFX](https://dotnet.github.io/docfx/) to generate documenta
 *   To preview the documentation locally, run: `docfx serve _site`
 
 For more details, see the guides in the `docs` directory:
-*   [Permission System Guide](../../03-guides/identity-access/permission-guide.md)
-*   [Permission Tree Guide](../../03-guides/identity-access/permission-tree-guide.md)
-*   [Rule Engine Guide](../../03-guides/rule-engine/rule-engine-guide.md)
-*   [Rule Rollout Guide](../../03-guides/rule-engine/rule-rollout-guide.md)
-*   [Rule Governance Guide](../../03-guides/rule-engine/rule-governance-guide.md)
-*   [Data Layer Guide](../../03-guides/integration/data-layer.md)
-*   [Database Structure](../../05-reference/database-structure.md)
-*   [Gateway Configuration](../../03-guides/integration/gateway-guide.md)
-*   [Multi-Tenant Guide](../../03-guides/multi-tenancy/multi-tenant-guide.md)
-*   [Cache Guide](../../03-guides/integration/cache-guide.md)
-*   [Token Guide](../../03-guides/identity-access/token-guide.md)
-*   [Appsettings Guide](../../05-reference/appsettings-guide.md)
-*   [Background Jobs Guide](../../04-operations/background-jobs-guide.md)
-*   [Quickstart: Multi-Tenant API with JWT & RBAC](../../01-getting-started/quickstart-multi-tenant-api.md)
-*   [CI/CD with Docker and Kubernetes](../../04-operations/ci-cd-docker-k8s.md)
-*   [NRules Integration](../../03-guides/rule-engine/nrules-integration.md)
+*   [Permission System Guide](/docs/guides/identity-access/permission-guide)
+*   [Permission Tree Guide](/docs/guides/identity-access/permission-tree-guide)
+*   [Rule Engine Guide](/docs/guides/rule-engine/rule-engine-guide)
+*   [Rule Rollout Guide](/docs/guides/rule-engine/rule-rollout-guide)
+*   [Rule Governance Guide](/docs/guides/rule-engine/rule-governance-guide)
+*   [Data Layer Guide](/docs/guides/integration/data-layer)
+*   [Database Structure](/docs/reference/database-structure)
+*   [Gateway Configuration](/docs/guides/integration/gateway-guide)
+*   [Multi-Tenant Guide](/docs/guides/multi-tenancy/multi-tenant-guide)
+*   [Cache Guide](/docs/guides/integration/cache-guide)
+*   [Token Guide](/docs/guides/identity-access/token-guide)
+*   [Appsettings Guide](/docs/reference/appsettings-guide)
+*   [Background Jobs Guide](/docs/operations/background-jobs-guide)
+*   [Quickstart: Multi-Tenant API with JWT & RBAC](/docs/getting-started/quickstart-multi-tenant-api)
+*   [CI/CD with Docker and Kubernetes](/docs/operations/ci-cd-docker-k8s)
+*   [NRules Integration](/docs/guides/rule-engine/nrules-integration)
 *   [ASVS Checklist](../../06-resources/asvs-checklist.md)
-*   [License Capability Model](../../03-guides/enterprise/license-capability-model.md)
-*   [Enterprise Control Plane MVP](../../03-guides/enterprise/control-plane-mvp.md)
-*   [Enterprise Secure Profile E2](../../03-guides/enterprise/enterprise-secure-profile-e2.md)
-*   [Enterprise Centralized Authorization E3](../../03-guides/enterprise/enterprise-centralized-authorization-e3.md)
-*   [Enterprise Compliance and Evidence E4](../../03-guides/enterprise/enterprise-compliance-e4.md)
-*   [Enterprise Operations Package E5](../../03-guides/enterprise/enterprise-operations-e5.md)
+*   [License Capability Model](/docs/guides/enterprise/license-capability-model)
+*   [Enterprise Control Plane MVP](/docs/guides/enterprise/control-plane-mvp)
+*   [Enterprise Secure Profile E2](/docs/guides/enterprise/enterprise-secure-profile-e2)
+*   [Enterprise Centralized Authorization E3](/docs/guides/enterprise/enterprise-centralized-authorization-e3)
+*   [Enterprise Compliance and Evidence E4](/docs/guides/enterprise/enterprise-compliance-e4)
+*   [Enterprise Operations Package E5](/docs/guides/enterprise/enterprise-operations-e5)
 
 ## ASVS Pre-Merge Checklist
 - [ ] **Security Configuration (V14)** – verify secure configuration and secret management.
@@ -897,10 +901,10 @@ For a detailed checklist see [../../06-resources/asvs-checklist.md](../../06-res
 ## Documentation Index
 For a complete list of guides, visit the [Documentation Hub](../../README.md).
 
-*   **Essentials**: [Getting Started](../../01-getting-started/getting-started.md) | [Appsettings](../../05-reference/appsettings-guide.md) | [Architecture](../../03-guides/integration/backend-guide.md)
-*   **Security**: [Auth Module](../../03-guides/identity-access/auth-module-guide.md) | [Permissions](../../03-guides/identity-access/permission-guide.md) | [Multi-Tenant](../../03-guides/multi-tenancy/multi-tenant-guide.md)
-*   **Features**: [Auto-CRUD](../../03-guides/integration/backend-guide.md#6-auto-crud-api-zero-code) | [Rule Engine](../../03-guides/rule-engine/rule-engine-guide.md) | [Auto-CRUD + Rules](../../03-guides/rule-engine/rule-engine-guide.md#auto-crud-with-business-rules) | [Caching](../../03-guides/integration/cache-guide.md)
-*   **Ops**: [Docker & K8s](../../04-operations/ci-cd-docker-k8s.md) | [Observability](../../04-operations/observability-guide.md) | [License Capability Model](../../03-guides/enterprise/license-capability-model.md) | [Enterprise Centralized Authorization E3](../../03-guides/enterprise/enterprise-centralized-authorization-e3.md) | [Enterprise Compliance and Evidence E4](../../03-guides/enterprise/enterprise-compliance-e4.md) | [Enterprise Operations Package E5](../../03-guides/enterprise/enterprise-operations-e5.md) | [Enterprise Upgrade Research](ENTERPRISE-UPGRADE-RESEARCH-PHASE.md)
+*   **Essentials**: [Getting Started](/docs/getting-started/getting-started) | [Appsettings](/docs/reference/appsettings-guide) | [Architecture](/docs/guides/integration/backend-guide)
+*   **Security**: [Auth Module](/docs/guides/identity-access/auth-module-guide) | [Permissions](/docs/guides/identity-access/permission-guide) | [Multi-Tenant](/docs/guides/multi-tenancy/multi-tenant-guide)
+*   **Features**: [Auto-CRUD](/docs/guides/integration/backend-guide#6-auto-crud-api-zero-code) | [Rule Engine](/docs/guides/rule-engine/rule-engine-guide) | [Rule Engine Guide](/docs/guides/rule-engine/rule-engine-guide) | [Caching](/docs/guides/integration/cache-guide)
+*   **Ops**: [Docker & K8s](/docs/operations/ci-cd-docker-k8s) | [Observability](/docs/operations/observability-guide) | [License Capability Model](/docs/guides/enterprise/license-capability-model) | [Enterprise Centralized Authorization E3](/docs/guides/enterprise/enterprise-centralized-authorization-e3) | [Enterprise Compliance and Evidence E4](/docs/guides/enterprise/enterprise-compliance-e4) | [Enterprise Operations Package E5](/docs/guides/enterprise/enterprise-operations-e5) | [Enterprise Upgrade Research](ENTERPRISE-UPGRADE-RESEARCH-PHASE.md)
 
 ## Formatting
 Run `dotnet format Muonroi.BuildingBlock.sln` to apply the coding style defined in `.editorconfig`.
@@ -914,3 +918,4 @@ contribute or report bugs for this project.
 This repository is licensed under the MIT License. See `LICENSE`.
 
 Commercial offerings (Licensed/Enterprise tiers) are service and governance layers on top of the OSS package, described in [COMMERCIAL-EDITIONS.md](COMMERCIAL-EDITIONS.md).
+

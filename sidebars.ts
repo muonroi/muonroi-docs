@@ -45,6 +45,7 @@ const sidebars: SidebarsConfig = {
           label: '🧠 Rule Engine',
           items: [
             'guides/rule-engine/rule-engine-guide',
+            'guides/rule-engine/rule-engine-upgrade-guide',
             'guides/rule-engine/decision-table-guide',
             'guides/rule-engine/decision-table-api-reference',
             'guides/rule-engine/decision-table-upgrade-guide-2026',
@@ -60,6 +61,7 @@ const sidebars: SidebarsConfig = {
             'guides/rule-engine/rule-engine-dependencies',
             'guides/rule-engine/rule-engine-advanced-patterns',
             'guides/rule-engine/nrules-integration',
+            'guides/rule-engine/workflow-json-format',
           ],
         },
         {

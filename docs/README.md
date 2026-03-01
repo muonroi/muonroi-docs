@@ -35,7 +35,7 @@ Welcome to the official documentation for Muonroi Building Block. This guide is 
 *   [**Decision Table Full Upgrade Guide (2026)**](03-guides/rule-engine/decision-table-upgrade-guide-2026.md) - SQL persistence, bulk ops, drag-drop reorder, audit/versioning, và sample UI integration.
 *   [**FEEL Reference**](03-guides/rule-engine/feel-reference.md) - Cú pháp FEEL, function, range, context, quantified expressions.
 *   [**FEEL Migration Guide**](03-guides/rule-engine/feel-migration-guide.md) - Nâng cấp từ FEEL v1 lên v2 mở rộng.
-*   [**Rule Engine Upgrade (Tiếng Việt)**](03-guides/rule-engine/rule-engine-upgrade-guide.vi.md) - Hướng dẫn nâng cấp, runtime modes, loại rule, và kịch bản verify.
+*   [**Rule Engine Upgrade (Tiếng Việt)**](03-guides/rule-engine/rule-engine-upgrade-guide.md) - Hướng dẫn nâng cấp, runtime modes, loại rule, và kịch bản verify.
 *   [**Rule Governance**](03-guides/rule-engine/rule-governance-guide.md) - Versioning, signing, and managing rule sets.
 *   [**Rule Rollout**](03-guides/rule-engine/rule-rollout-guide.md) - Feature flags and gradual rollout strategies.
 *   [**Rule Testing Guide**](03-guides/rule-engine/rule-engine-testing-guide.md) - Unit/integration/contract testing patterns.

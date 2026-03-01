@@ -87,7 +87,7 @@ Serilog "enrich" tu dong them `TenantId`, `UserId`, `CorrelationId` vao log; co 
 
 ## Vi du
 
-- Quickstart: Multi-Tenant API with JWT & RBAC: [docs/quickstart-multi-tenant-api.md](quickstart-multi-tenant-api.md)
+- Quickstart: Multi-Tenant API with JWT & RBAC: [Quickstart Multi-Tenant API](/docs/getting-started/quickstart-multi-tenant-api)
 - Ma nguon mau MultiTenant:
-  - Program: [Samples/MultiTenant/Program.cs](../Samples/MultiTenant/Program.cs)
-  - Service: [Samples/MultiTenant/TenantExampleService.cs](../Samples/MultiTenant/TenantExampleService.cs)
+  - Program: [Samples/MultiTenant/Program.cs](https://github.com/muonroi/MuonroiBuildingBlock/blob/main/Samples/MultiTenant/Program.cs)
+  - Service: [Samples/MultiTenant/TenantExampleService.cs](https://github.com/muonroi/MuonroiBuildingBlock/blob/main/Samples/MultiTenant/TenantExampleService.cs)

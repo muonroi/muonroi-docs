@@ -55,9 +55,9 @@ dotnet run --project MultiTenantSample
 
 ## 5. Next Steps
 
-Refer to the [Multi-Tenant Guide](../03-guides/multi-tenancy/multi-tenant-guide.md) and [Permission Guide](../03-guides/identity-access/permission-guide.md) for advanced scenarios.
+Refer to the [Multi-Tenant Guide](/docs/guides/multi-tenancy/multi-tenant-guide) and [Permission Guide](/docs/guides/identity-access/permission-guide) for advanced scenarios.
 
 Also see:
 
 - [Getting Started](./getting-started.md): minimal API setup and configuration.
-- [Permission Tree Guide](../03-guides/identity-access/permission-tree-guide.md): synchronize permission tree and metadata to client applications.
+- [Permission Tree Guide](/docs/guides/identity-access/permission-tree-guide): synchronize permission tree and metadata to client applications.

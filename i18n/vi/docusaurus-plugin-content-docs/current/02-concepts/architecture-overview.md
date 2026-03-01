@@ -64,9 +64,9 @@ Infrastructure (EF Core, Redis, Kafka, ...)
 
 ## 6. Tham khảo thêm
 
-- [Hướng dẫn Permission](permission-guide.md)
-- [Hướng dẫn Multi-Tenant](multi-tenant-guide.md)
-- [Hướng dẫn Token](token-guide.vi.md)
-- [Cache Guide](cache-guide.md)
-- [Background Jobs Guide](background-jobs-guide.md)
-- [Saga Pattern with Kafka](saga-kafka.md)
+- [Hướng dẫn Permission](/docs/guides/identity-access/permission-guide)
+- [Hướng dẫn Multi-Tenant](/docs/guides/multi-tenancy/multi-tenant-guide)
+- [Hướng dẫn Token](/docs/guides/identity-access/token-guide)
+- [Cache Guide](/docs/guides/integration/cache-guide)
+- [Background Jobs Guide](/docs/operations/background-jobs-guide)
+- [Saga Pattern with Kafka](/docs/guides/integration/saga-kafka)

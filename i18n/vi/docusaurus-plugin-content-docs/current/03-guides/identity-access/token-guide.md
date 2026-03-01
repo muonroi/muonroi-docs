@@ -1,6 +1,6 @@
 # Hướng dẫn Token
 
-Xem thêm [Hướng dẫn Auth/AuthZ/BFF](auth-module-guide.vi.md) để biết cách cấu hình tổng thể.
+Xem thêm [Hướng dẫn Auth/AuthZ/BFF](auth-module-guide.md) để biết cách cấu hình tổng thể.
 
 `JwtMiddleware` giải mã JWT và gán thông tin người dùng vào `HttpContext`. `MAuthenMiddleware` kiểm tra khóa `TokenValidityKey` từ Redis để đảm bảo token còn hiệu lực.
 

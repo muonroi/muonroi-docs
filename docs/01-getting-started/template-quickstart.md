@@ -258,11 +258,11 @@ Chỉ enable các features bạn cần để giảm dependencies và startup tim
 
 ## 8. Next Steps
 
-- [Architecture Overview](../02-concepts/architecture-overview.md) - Hiểu kiến trúc
-- [Auth Module Guide](../03-guides/identity-access/auth-module-guide.md) - Authentication & Authorization
-- [Permission Guide](../03-guides/identity-access/permission-guide.md) - Hệ thống phân quyền
-- [Cache Guide](../03-guides/integration/cache-guide.md) - Caching strategies
-- [Multi-Tenant Guide](../03-guides/multi-tenancy/multi-tenant-guide.md) - Multi-tenancy
+- [Architecture Overview](/docs/concepts/architecture-overview) - Hiểu kiến trúc
+- [Auth Module Guide](/docs/guides/identity-access/auth-module-guide) - Authentication & Authorization
+- [Permission Guide](/docs/guides/identity-access/permission-guide) - Hệ thống phân quyền
+- [Cache Guide](/docs/guides/integration/cache-guide) - Caching strategies
+- [Multi-Tenant Guide](/docs/guides/multi-tenancy/multi-tenant-guide) - Multi-tenancy
 
 ## Quick Reference
 

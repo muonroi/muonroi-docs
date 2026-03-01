@@ -283,8 +283,7 @@ Checklist pass:
 ## 12. Tài liệu liên quan
 
 - [Rule Engine Guide](rule-engine-guide.md)
-- [Rule Engine Guide (Tiếng Việt)](rule-engine-guide.vi.md)
-- [Rule Engine Configuration Reference](rule-engine-configuration-reference.md)
-- [Rule Engine Advanced Patterns](rule-engine-advanced-patterns.md)
-- [Rule Engine Testing Guide](rule-engine-testing-guide.md)
-- [Workflow JSON Format (Tiếng Việt)](workflow-json-format.vi.md)
+- [Rule Engine Configuration Reference](/docs/guides/rule-engine/rule-engine-configuration-reference)
+- [Rule Engine Advanced Patterns](/docs/guides/rule-engine/rule-engine-advanced-patterns)
+- [Rule Engine Testing Guide](/docs/guides/rule-engine/rule-engine-testing-guide)
+- [Workflow JSON Format (Tiếng Việt)](/docs/guides/rule-engine/workflow-json-format)

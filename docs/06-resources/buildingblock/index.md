@@ -4,11 +4,10 @@ Trang này tổng hợp các file `*.md` được đồng bộ từ:
 
 - `D:\Personal\Project\MuonroiBuildingBlock`
 
-Tổng số file hiện tại: **28**
+Tổng số file hiện tại: **22**
 
 ## Danh sách file
 
-- [3-TIER-QUICK-REFERENCE.md](./3-TIER-QUICK-REFERENCE.md)
 - [3-TIER-SECURITY-SUMMARY.md](./3-TIER-SECURITY-SUMMARY.md)
 - [ADVANCED_AUTH_RBAC_PLUS_UPGRADE_PLAN.md](./ADVANCED_AUTH_RBAC_PLUS_UPGRADE_PLAN.md)
 - [ADVANCED_AUTH_RBAC_PLUS_UPGRADE_REPORT.md](./ADVANCED_AUTH_RBAC_PLUS_UPGRADE_REPORT.md)
@@ -28,5 +27,4 @@ Tổng số file hiện tại: **28**
 - [src/Muonroi.BuildingBlock/External/Controller/Rules/README_CRUD_RULES.md](./src/Muonroi.BuildingBlock/External/Controller/Rules/README_CRUD_RULES.md)
 - [UI-CONTRACT-FIRST-UPGRADE-PLAN.md](./UI-CONTRACT-FIRST-UPGRADE-PLAN.md)
 - [upgrade_rule_engine.md](./upgrade_rule_engine.md)
-- [valiant-dreaming-russell.md](./valiant-dreaming-russell.md)
 - [VULNERABILITY_REPORT.md](./VULNERABILITY_REPORT.md)

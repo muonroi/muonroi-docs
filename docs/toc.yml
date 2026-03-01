@@ -67,6 +67,8 @@
       href: 03-guides/rule-engine/rule-workflow-adapter-guide.md
     - name: Rule Engine (Tiếng Việt)
       href: 03-guides/rule-engine/rule-engine-guide.vi.md
+    - name: Rule Engine Upgrade Guide
+      href: 03-guides/rule-engine/rule-engine-upgrade-guide.md
     - name: Rule Engine Upgrade (Tiếng Việt)
       href: 03-guides/rule-engine/rule-engine-upgrade-guide.vi.md
     - name: Rule Governance Guide
@@ -87,6 +89,8 @@
       href: 03-guides/rule-engine/rule-engine-advanced-patterns.md
     - name: NRules Integration
       href: 03-guides/rule-engine/nrules-integration.md
+    - name: Workflow JSON Format
+      href: 03-guides/rule-engine/workflow-json-format.md
     - name: Workflow JSON Format (Tiếng Việt)
       href: 03-guides/rule-engine/workflow-json-format.vi.md
 

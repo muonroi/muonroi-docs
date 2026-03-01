@@ -1,7 +1,7 @@
 # Hướng dẫn Rule Engine
 
 *Xem [bản tiếng Anh](rule-engine-guide.md).* 
-*Xem thêm tài liệu nâng cấp chi tiết: [Rule Engine Upgrade (Tiếng Việt)](rule-engine-upgrade-guide.vi.md).*
+*Xem thêm tài liệu nâng cấp chi tiết: [Rule Engine Upgrade (Tiếng Việt)](/docs/guides/rule-engine/rule-engine-upgrade-guide).*
 
 Muonroi rule engine giúp tách logic nghiệp vụ thành các rule nhỏ có thể tái sử dụng. Engine hỗ trợ cả rule viết bằng C# lẫn workflow JSON động. Tài liệu này mô tả các bước cơ bản để áp dụng rule engine trong ứng dụng của bạn.
 
@@ -211,7 +211,7 @@ Các rule có thể được triển khai với cơ chế giảm thiểu rủi r
 - **Canary/Progressive delivery** – chạy song song hai phiên bản rule và dùng công cụ như [Argo Rollouts](https://argo-rollouts.readthedocs.io/) để tăng lưu lượng dần, tự động rollback khi vượt quá ngưỡng lỗi.
 - **Shadow evaluation/Dry-run** – thực thi phiên bản mới ở chế độ "bóng" và so sánh output với phiên bản hiện tại trước khi bật chính thức.
 
-Xem [Rule Rollout Guide](rule-rollout-guide.md) để biết chi tiết.
+Xem [Rule Rollout Guide](/docs/guides/rule-engine/rule-rollout-guide) để biết chi tiết.
 
 ## Runtime & hiệu năng
 
