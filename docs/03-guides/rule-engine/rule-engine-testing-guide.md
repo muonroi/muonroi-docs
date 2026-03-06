@@ -1,61 +1,30 @@
 # Rule Engine Testing Guide
 
-This guide provides practical testing patterns for Muonroi Rule Engine.
+Cover three layers when testing the current stack.
 
-## 1. Unit test for a single rule
+## 1. Unit tests
 
-Use isolated context + `FactBag` and assert `RuleResult`.
+- validate each rule in isolation
+- assert `FactBag` outputs
+- assert dependency ordering and failure behavior
 
-```csharp
-[Fact]
-public async Task ValidatePriceRule_ShouldFail_WhenPriceIsNegative()
-{
-    var rule = new ValidatePriceRule();
-    var ctx = new ProductContext { Price = -1 };
-    var facts = new FactBag();
+## 2. Runtime API tests
 
-    var result = await rule.EvaluateAsync(ctx, facts, CancellationToken.None);
+- save a ruleset version
+- submit and approve it when approval is required
+- activate it
+- verify audit entries and SignalR notifications
 
-    Assert.False(result.IsSuccess);
-}
-```
+## 3. Decision table tests
 
-## 2. Orchestrator integration test
+- validate a table
+- import from JSON or DMN
+- export and compare expected shape
+- assert version-history snapshots
 
-Verify order/dependencies and shared facts:
+## Recommended checks
 
-```csharp
-var orchestrator = new RuleOrchestrator<OrderContext>(rules, hooks, logger);
-var facts = await orchestrator.ExecuteAsync(context);
-Assert.True(facts.Get<bool>("validated"));
-```
-
-## 3. External dependency mocking
-
-- Inject HTTP/gRPC clients through constructor.
-- Use mocks/fakes in tests.
-- Keep network calls out of rule unit tests.
-
-## 4. Contract tests
-
-Recommended contracts:
-
-- Every registered rule has unique `Code`.
-- Dependency graph has no cycles.
-- Required hook points for your workflow are covered.
-
-## 5. Property-based checks
-
-For complex dependency graphs, generate random DAGs and assert:
-
-- no cycle accepted;
-- cycle always rejected;
-- deterministic topological order for same input.
-
-## 6. Toolkit support
-
-Use `Muonroi.RuleEngine.Testing` package:
-
-- `MRuleTestBuilder<TContext>`
-- `MRuleOrchestratorSpy<TContext>`
-- `FactBagAssertions.Should(...)`
+- maker-checker rejection for self-approval
+- canary routing for targeted tenants
+- FEEL expression evaluation through `/api/v1/feel/evaluate`
+- Redis-backed change propagation when hot reload is enabled

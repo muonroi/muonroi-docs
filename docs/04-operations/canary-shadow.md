@@ -1,11 +1,17 @@
-# Canary & Shadow Rule Evaluation
+# Canary Shadow
 
-Feature flags allow gradual roll-out of new rule sets per tenant or segment using providers like **Unleash** or **OpenFeature**. `FeatureFlagEvaluator` reads the flag and decides which rule set should handle a request.
+Use canary rollout for progressive activation and shadow evaluation for comparison-only runs.
 
-## Shadow Evaluation
+## Canary
 
-When a flag is disabled, the evaluator executes the new rule set in shadow mode and logs any differences with the current production result. This enables safe comparison before turning the flag on.
+- route selected tenants to a new version
+- keep the previous version available as fallback
+- monitor audit and notification streams before promotion
 
-## Canary Rollouts
+## Shadow
 
-Use [Argo Rollouts](https://argoproj.github.io/argo-rollouts/) to progressively shift traffic to the new rule-service version. The manifest in `k8s/rollouts.yaml` increments traffic weight in steps and references a Prometheus analysis template that checks the error budget and triggers automatic rollback on breach.
+- run a candidate ruleset without making it authoritative
+- compare outputs against the active version
+- use the result to decide whether to promote or reject
+
+Canary is traffic-affecting. Shadow is comparison-only.

@@ -1,76 +1,60 @@
-# Sử dụng các interface cơ bản
+# Interface Guide
 
-## 1. IMapFrom
+## Time
 
-`IMapFrom<T>` là interface dùng cho bộ mapper tích hợp sẵn nhằm tự động đăng ký các mapping giữa DTO và entity.
+`IMDateTimeService`
 
-1. Khai báo class implement `IMapFrom<T>`:
-   ```csharp
-   public class UserDto : IMapFrom<MUser>
-   {
-       public string Username { get; set; } = string.Empty;
-   }
-   ```
-2. Gọi `services.ConfigureMapper()` trong `Program.cs` để quá triình scan và đăng ký mapping hoàn tất.
+- `Now()`
+- `UtcNow()`
+- `Today()`
+- `UtcToday()`
+- `NowTs()`
+- `UtcNowTs()`
 
-Sau khi cấu hình, mapper sẽ tự động chuyển đổi qua lại giữa `MUser` và `UserDto` khi gọi `IMapper`.
+## JSON
 
-## 2. IMDateTimeService
+`IMJsonSerializeService`
 
-`IMDateTimeService` cung cấp các phương thức lấy thời gian thống nhất trong ứng dụng:
+- `Serialize<T>(T obj)`
+- `Deserialize<T>(string text)`
 
-```csharp
-public interface IMDateTimeService
-{
-    DateTime Now();
-    DateTime UtcNow();
-    DateTime Today();
-    DateTime UtcToday();
-}
-```
+## Logging
 
-Dịch vụ được đăng ký tự động khi gọi `services.AddInfrastructure<Program>(configuration)`.
+`IMLog<T>`
 
-Bạn chỉ cần inject và sử dụng:
-```csharp
-public class SampleHandler(IMDateTimeService dateTimeService)
-{
-    public Task Handle()
-    {
-        DateTime now = dateTimeService.UtcNow();
-        // ...
-    }
-}
-```
+- `BeginProperty(...)`
+- `Info(...)`
+- `Warn(...)`
+- `Error(...)`
+- `Debug(...)`
 
-## 3. IMJsonSerializeService
+`IMLogContext`
 
-`IMJsonSerializeService` được sử dụng để chuyển đổi object sang chuổi JSON và ngược lại. Mặc định thư viện sử dụng Newtonsoft.Json.
+- `PushProperty(...)`
+- `PushProperties(...)`
 
-```csharp
-string json = serializeService.Serialize(obj);
-MyType? value = serializeService.Deserialize<MyType>(json);
-```
+## Execution context
 
-Dịch vụ đã được đăng ký trong `AddInfrastructure`, vì vậy chỉ cần inject `IMJsonSerializeService` và sử dụng.
+`ISystemExecutionContext`
 
-## 4. IPermissions
+- `TenantId`
+- `UserId`
+- `Username`
+- `CorrelationId`
+- `AccessToken`
+- `ApiKey`
+- `IsAuthenticated`
+- `Permissions`
+- `SourceType`
 
-`IPermissions` là interface nhỏ gồm phương thức `ToLong()` giúp chuyển quyền về dạng số để lưu trữ hoặc so sánh nhanh.
-Khi định nghĩa enum quyền, bạn có thể implement interface này:
+`ISystemExecutionContextAccessor`
 
-```csharp
-public enum MyPermission : long, IPermissions
-{
-    ViewUser   = 1 << 0,
-    CreateUser = 1 << 1,
-    UpdateUser = 1 << 2,
-    DeleteUser = 1 << 3
-}
+- `Get()`
+- `Set(...)`
+- `Clear()`
 
-long IPermissions.ToLong() => (long)this;
-```
+## Data layer base types
 
-Giá trị số này có thể được sử dụng kết hợp `AddPermissionFilter<MyPermission>()` để kiểm tra quyền truy cập các API.
-
-
+- `MDbContext`
+- `MRepository<T>`
+- `ILicenseGuard`

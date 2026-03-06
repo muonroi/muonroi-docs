@@ -1,221 +1,183 @@
 ### YamlMime:TableOfContent
 
-- name: 🚀 Getting Started
+- name: Getting Started
   items:
   - name: Introduction
     href: 01-getting-started/introduction.md
-  - name: Getting Started
-    href: 01-getting-started/getting-started.md
   - name: Quickstart
     href: 01-getting-started/quickstart.md
+  - name: Decision Table Quickstart
+    href: 01-getting-started/quickstart-decision-table.md
   - name: Template Quickstart
     href: 01-getting-started/template-quickstart.md
-  - name: "Quickstart: Multi-Tenant API"
-    href: 01-getting-started/quickstart-multi-tenant-api.md
 
-- name: 🧩 Concepts
+- name: Concepts
   items:
   - name: Architecture Overview
     href: 02-concepts/architecture-overview.md
-  - name: Architecture Overview (Tiếng Việt)
-    href: 02-concepts/architecture-overview.vi.md
+  - name: Open Core Model
+    href: 02-concepts/open-core-model.md
   - name: Tenancy Models
     href: 02-concepts/tenancy-models.md
   - name: EF Filters
     href: 02-concepts/ef-filters.md
 
-- name: 🛠️ How-to Guides
+- name: Guides
   items:
-  - name: 👤 Identity & Access
+  - name: Rule Engine
     items:
-    - name: Authorization & Permissions
-      href: 03-guides/identity-access/permission-guide.md
-    - name: Permission Tree Guide
-      href: 03-guides/identity-access/permission-tree-guide.md
-    - name: External Auth Guide
-      href: 03-guides/identity-access/external-auth-guide.md
-    - name: Auth/AuthZ/BFF Guide
-      href: 03-guides/identity-access/auth-module-guide.md
-    - name: Auth/AuthZ/BFF Guide (Tiếng Việt)
-      href: 03-guides/identity-access/auth-module-guide.vi.md
-    - name: BFF Guide
-      href: 03-guides/identity-access/bff.md
-    - name: MFA Guide
-      href: 03-guides/identity-access/mfa.md
-    - name: OAuth2 & OIDC Guide
-      href: 03-guides/identity-access/oauth2-oidc.md
-    - name: Token Guide
-      href: 03-guides/identity-access/token-guide.md
-    - name: Token Guide (Tiếng Việt)
-      href: 03-guides/identity-access/token-guide.vi.md
-
-  - name: 🧠 Rule Engine
-    items:
-    - name: Rule Engine
+    - name: Rule Engine Guide
       href: 03-guides/rule-engine/rule-engine-guide.md
+    - name: FEEL Reference
+      href: 03-guides/rule-engine/feel-reference.md
     - name: Decision Table Guide
       href: 03-guides/rule-engine/decision-table-guide.md
     - name: Decision Table API Reference
       href: 03-guides/rule-engine/decision-table-api-reference.md
-    - name: Decision Table Full Upgrade Guide (2026)
-      href: 03-guides/rule-engine/decision-table-upgrade-guide-2026.md
-    - name: FEEL Reference
-      href: 03-guides/rule-engine/feel-reference.md
-    - name: FEEL Migration Guide
-      href: 03-guides/rule-engine/feel-migration-guide.md
-    - name: Rule Workflow Adapter Guide
-      href: 03-guides/rule-engine/rule-workflow-adapter-guide.md
-    - name: Rule Engine (Tiếng Việt)
-      href: 03-guides/rule-engine/rule-engine-guide.vi.md
-    - name: Rule Engine Upgrade Guide
-      href: 03-guides/rule-engine/rule-engine-upgrade-guide.md
-    - name: Rule Engine Upgrade (Tiếng Việt)
-      href: 03-guides/rule-engine/rule-engine-upgrade-guide.vi.md
-    - name: Rule Governance Guide
-      href: 03-guides/rule-engine/rule-governance-guide.md
-    - name: Rule Rollout Guide
-      href: 03-guides/rule-engine/rule-rollout-guide.md
+    - name: NRules Guide
+      href: 03-guides/rule-engine/nrules-guide.md
+    - name: Auto CRUD Rules
+      href: 03-guides/rule-engine/auto-crud-rules.md
+    - name: RuleGen Guide
+      href: 03-guides/rule-engine/rulegen-guide.md
+    - name: RuleGen VS Code Extension
+      href: 03-guides/rule-engine/rulegen-vscode-extension.md
     - name: Rule Engine Testing Guide
       href: 03-guides/rule-engine/rule-engine-testing-guide.md
-    - name: Rule Engine External Services
-      href: 03-guides/rule-engine/rule-engine-external-services.md
     - name: Rule Engine Hooks Guide
       href: 03-guides/rule-engine/rule-engine-hooks-guide.md
-    - name: Rule Engine Configuration Reference
-      href: 03-guides/rule-engine/rule-engine-configuration-reference.md
-    - name: Rule Engine Dependencies
-      href: 03-guides/rule-engine/rule-engine-dependencies.md
     - name: Rule Engine Advanced Patterns
       href: 03-guides/rule-engine/rule-engine-advanced-patterns.md
-    - name: RuleGen Upgrade Guide
-      href: 03-guides/rule-engine/rulegen-guide.md
-    - name: RuleGen Phase 1 - Roslyn Foundation
-      href: 03-guides/rule-engine/rulegen-phase1-roslyn-foundation.md
-    - name: RuleGen Phase 2 - Multi-File, DI, Validation
-      href: 03-guides/rule-engine/rulegen-phase2-multifile-di-validation.md
-    - name: RuleGen Phase 3 - Config, Watch, Test Scaffold
-      href: 03-guides/rule-engine/rulegen-phase3-config-watch-tests.md
-    - name: RuleGen Phase 4 - Merge/Split Runtime Workflow
-      href: 03-guides/rule-engine/rulegen-phase4-merge-split-runtime.md
-    - name: RuleGen Phase 5 - Enterprise Hardening
-      href: 03-guides/rule-engine/rulegen-phase5-enterprise-hardening.md
-    - name: NRules Integration
-      href: 03-guides/rule-engine/nrules-integration.md
-    - name: Workflow JSON Format
-      href: 03-guides/rule-engine/workflow-json-format.md
-    - name: Workflow JSON Format (Tiếng Việt)
-      href: 03-guides/rule-engine/workflow-json-format.vi.md
-
-  - name: 🏢 Multi-Tenancy
+    - name: Rule Rollout Guide
+      href: 03-guides/rule-engine/rule-rollout-guide.md
+  - name: License Governance
     items:
-    - name: Multi-Tenant Guide
+    - name: License Capability Model
+      href: 03-guides/license-governance/license-capability-model.md
+    - name: License Activation
+      href: 03-guides/license-governance/license-activation.md
+    - name: Tier Enforcement
+      href: 03-guides/license-governance/tier-enforcement.md
+  - name: Multi Tenancy
+    items:
+    - name: Multi Tenant Guide
       href: 03-guides/multi-tenancy/multi-tenant-guide.md
-    - name: Multi-Tenant Guide (Tiếng Việt)
-      href: 03-guides/multi-tenancy/multi-tenant-guide.vi.md
     - name: Tenant Isolation
       href: 03-guides/multi-tenancy/tenant-isolation.md
-    - name: Multi-Tenant Quota Guide
+    - name: Multi Tenant Quota Guide
       href: 03-guides/multi-tenancy/multi-tenant-quota-guide.md
     - name: Quota API Reference
       href: 03-guides/multi-tenancy/quota-api-reference.md
-    - name: Quota Dashboard Mockups
-      href: 03-guides/multi-tenancy/quota-dashboard-mockups.md
-    - name: Tenant Quota Migration Guide
-      href: 03-guides/multi-tenancy/tenant-quota-migration-guide.md
-
-  - name: 🔗 Integration
+  - name: Control Plane
     items:
-    - name: Backend Development
+    - name: Control Plane Overview
+      href: 03-guides/control-plane/control-plane-overview.md
+    - name: Ruleset Approval Workflow
+      href: 03-guides/control-plane/ruleset-approval-workflow.md
+    - name: Canary Rollout Guide
+      href: 03-guides/control-plane/canary-rollout-guide.md
+    - name: SignalR Hot Reload
+      href: 03-guides/control-plane/signalr-hot-reload.md
+  - name: UI Engine
+    items:
+    - name: UI Engine Architecture
+      href: 03-guides/ui-engine/ui-engine-architecture.md
+    - name: Decision Table Widget
+      href: 03-guides/ui-engine/decision-table-widget.md
+    - name: FEEL Autocomplete Widget
+      href: 03-guides/ui-engine/feel-autocomplete-widget.md
+  - name: Identity and Access
+    items:
+    - name: Auth Module Guide
+      href: 03-guides/identity-access/auth-module-guide.md
+    - name: BFF Guide
+      href: 03-guides/identity-access/bff-guide.md
+    - name: OIDC Guide
+      href: 03-guides/identity-access/oidc-guide.md
+    - name: Permission Guide
+      href: 03-guides/identity-access/permission-guide.md
+    - name: Permission Tree Guide
+      href: 03-guides/identity-access/permission-tree-guide.md
+    - name: Policy Decision Guide
+      href: 03-guides/identity-access/policy-decision-guide.md
+    - name: Token Guide
+      href: 03-guides/identity-access/token-guide.md
+    - name: WebAuthn MFA Guide
+      href: 03-guides/identity-access/webauthn-mfa-guide.md
+  - name: Integration
+    items:
+    - name: Backend Guide
       href: 03-guides/integration/backend-guide.md
-    - name: Gateway Configuration
+    - name: Cache Guide
+      href: 03-guides/integration/cache-guide.md
+    - name: Dapper Guide
+      href: 03-guides/integration/dapper-guide.md
+    - name: Data Layer
+      href: 03-guides/integration/data-layer.md
+    - name: Gateway Guide
       href: 03-guides/integration/gateway-guide.md
     - name: gRPC Guide
       href: 03-guides/integration/grpc-guide.md
     - name: SignalR Guide
       href: 03-guides/integration/signalr-guide.md
-    - name: Dapper Guide
-      href: 03-guides/integration/dapper-guide.md
-    - name: Cache Guide
-      href: 03-guides/integration/cache-guide.md
-    - name: OPA Integration Guide
-      href: 03-guides/integration/opa-integration-guide.md
-    - name: Data Access
-      href: 03-guides/integration/data-layer.md
-    - name: Saga Pattern with Kafka
-      href: 03-guides/integration/saga-kafka.md
+  - name: Ecosystem Coding Rules
+    href: 03-guides/ecosystem-coding-rules.md
 
-  - name: 💎 Enterprise (Private)
-    items:
-    - name: License Capability Model
-      href: 03-guides/enterprise/license-capability-model.md
-    - name: Control Plane MVP
-      href: 03-guides/enterprise/control-plane-mvp.md
-    - name: Enterprise Secure Profile (E2)
-      href: 03-guides/enterprise/enterprise-secure-profile-e2.md
-    - name: Enterprise Centralized Authorization (E3)
-      href: 03-guides/enterprise/enterprise-centralized-authorization-e3.md
-    - name: Enterprise Compliance (E4)
-      href: 03-guides/enterprise/enterprise-compliance-e4.md
-    - name: Enterprise Operations (E5)
-      href: 03-guides/enterprise/enterprise-operations-e5.md
-
-- name: ⚙️ Operations
+- name: Operations
   items:
-  - name: Background Jobs
+  - name: Background Jobs Guide
     href: 04-operations/background-jobs-guide.md
-  - name: Observability
-    href: 04-operations/observability-guide.md
-  - name: Performance Guide
-    href: 04-operations/performance-guide.md
-  - name: Secret Management
-    href: 04-operations/secret-management.md
-  - name: CI/CD with Docker & K8s
-    href: 04-operations/ci-cd-docker-k8s.md
-  - name: Canary & Shadow
-    href: 04-operations/canary-shadow.md
-  - name: Tenant DR Playbook
-    href: 04-operations/dr-tenant-playbook.md
-  - name: Azure SQL Elastic Jobs
-    href: 04-operations/elastic-jobs.md
   - name: Kubernetes Deployment Guide
     href: 04-operations/kubernetes-deployment-guide.md
+  - name: CI CD Docker and K8s
+    href: 04-operations/ci-cd-docker-k8s.md
+  - name: Observability Guide
+    href: 04-operations/observability-guide.md
+  - name: Secret Management
+    href: 04-operations/secret-management.md
+  - name: Canary Shadow
+    href: 04-operations/canary-shadow.md
+  - name: Migration Scripts
+    href: 04-operations/migration-scripts.md
+  - name: Ruleset Governance Ops
+    href: 04-operations/ruleset-governance-ops.md
   - name: Troubleshooting Guide
     href: 04-operations/troubleshooting-guide.md
 
-- name: 📖 Reference
+- name: Reference
   items:
-  - name: Appsettings Configuration
+  - name: Appsettings Guide
     href: 05-reference/appsettings-guide.md
   - name: Database Structure
     href: 05-reference/database-structure.md
-  - name: Extensions Reference
-    href: 05-reference/extensions-log.md
-  - name: Interface Services
+  - name: Interface Guide
     href: 05-reference/interface-guide.md
-  - name: Timing Reference
-    href: 05-reference/timing-guide.md
+  - name: Package Reference
+    href: 05-reference/package-reference.md
+  - name: Roslyn Analyzers
+    href: 05-reference/roslyn-analyzers.md
 
-- name: 📚 Resources
+- name: Resources
   items:
-  - name: Usage Guide
-    href: 06-resources/usage-guide.md
-  - name: Feature Flags
-    href: 06-resources/feature-flags.md
-  - name: Base Template
-    href: 06-resources/muonroibase-template.md
-  - name: BaseTemplate Examples
-    href: 06-resources/base-template-examples.md
   - name: Rule Engine Samples
     href: 06-resources/rule-engine-samples.md
-  - name: ASVS Checklist
-    href: 06-resources/asvs-checklist.md
-  - name: Release Checklist
-    href: 06-resources/release-checklist.md
-  - name: Upgrade Guide
-    href: 06-resources/upgrade-guide.md
-  - name: UI Engine Full Upgrade (2026)
-    href: 06-resources/ui-engine-upgrade-2026.md
+  - name: Feature Flags
+    href: 06-resources/feature-flags.md
   - name: Test Matrix Guide
     href: 06-resources/test-matrix-guide.md
-  - name: BuildingBlock Mirror
-    href: 06-resources/buildingblock/index.md
+  - name: Release Checklist
+    href: 06-resources/release-checklist.md
+  - name: CHANGELOG
+    href: 06-resources/CHANGELOG.md
+  - name: CONTRIBUTING
+    href: 06-resources/CONTRIBUTING.md
+  - name: SECURITY
+    href: 06-resources/SECURITY.md
+  - name: COMMERCIAL EDITIONS
+    href: 06-resources/COMMERCIAL-EDITIONS.md
+  - name: OSS BOUNDARY
+    href: 06-resources/OSS-BOUNDARY.md
+  - name: Loan Approval Sample
+    href: 06-resources/samples/loan-approval.md
+  - name: Multi Tenant SaaS Sample
+    href: 06-resources/samples/multi-tenant-saas.md

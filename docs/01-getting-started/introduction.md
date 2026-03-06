@@ -1,35 +1,39 @@
-# Giới thiệu
+# Introduction
 
-Muonroi Building Block là bộ thư viện hỗ trợ xây dựng các ứng dụng .NET theo kiến trúc sạch và dễ mở rộng. Dự án cung cấp sẵn nhiều thành phần như:
+Muonroi is now documented as a 4-repo ecosystem:
 
-- **Dependency Injection** cấu hình sẵn.
-- **Logging** với Serilog và khả năng đẩy log.
-- **Middleware** xác thực và phân quyền dựa trên JWT.
-- **Các lớp cơ sở** cho controller, handler và repository.
-- **Hệ thống caching**, background job và message bus.
-- **Rule engine** hỗ trợ rule C# và workflow JSON. Xem thêm: [Hướng dẫn Rule Engine](/docs/guides/rule-engine/rule-engine-guide).
+- `muonroi-building-block`: .NET packages for rules, decision tables, governance, tenancy, observability, and supporting infrastructure.
+- `muonroi-ui-engine`: npm packages and web components for manifest-driven UI and decision table widgets.
+- `muonroi-control-plane`: private ASP.NET 8 service for ruleset approval, canary rollout, tenant quotas, FEEL, decision tables, and dashboard hosting.
+- `muonroi-license-server`: private service that issues `MRR-...` keys and activation proofs for offline verification.
 
-Những tính năng này giúp dự án khởi tạo nhanh, thống nhất và dễ bảo trì. Hãy xem các hướng dẫn bên dưới để bắt đầu sử dụng.
+The ecosystem uses an open-core model:
 
-## Lộ trình đọc tài liệu
+- OSS packages are published under Apache 2.0.
+- Commercial packages remain source-visible but require a Muonroi commercial license.
+- Private deployed services consume both OSS and commercial packages but are not mirrored into the public docs tree.
 
-Nếu bạn mới làm quen với Muonroi Building Block, nên tham khảo theo thứ tự:
+## What is current as of 2026-03-06
 
-1. **Tạo project mới** bằng [Template Quickstart Guide](./template-quickstart.md) - Hướng dẫn chi tiết từng bước.
-2. Cấu hình các thành phần cơ bản qua [Bắt đầu sử dụng](./getting-started.md).
-3. Tìm hiểu các khái niệm nền tảng:
-   - [Dependency Injection và cấu hình dịch vụ](../06-resources/usage-guide.md).
-   - [Xác thực và ủy quyền](/docs/guides/identity-access/auth-module-guide).
-   - [Phân quyền chi tiết](/docs/guides/identity-access/permission-guide).
-4. Khi cần mở rộng, khám phá các module nâng cao:
-   - [Caching](/docs/guides/integration/cache-guide).
-   - [Message Bus](/docs/reference/appsettings-guide#message-bus) và [Saga với Kafka](/docs/guides/integration/saga-kafka).
-5. Tối ưu hiệu năng với [Performance Guide](/docs/operations/performance-guide).
+- Track 0 through Track 3 are complete.
+- Track 4 is in progress.
+- FEEL web endpoints are live at `/api/v1/feel`.
+- Decision tables are backed by `AddDecisionTableWeb(...)` and can persist through Postgres.
+- Rule control plane supports approval workflow, canary rollout, audit signing, and SignalR hot reload.
+- License activation produces signed activation proofs for offline production verification.
 
-Để nắm được kiến trúc tổng quan của thư viện, xem thêm [Kiến trúc tổng quan](/docs/concepts/architecture-overview).
+## Read this set first
 
-## Kế tiếp
+1. [Quickstart](./quickstart.md) for a working rule engine setup.
+2. [Architecture Overview](../02-concepts/architecture-overview.md) for repo boundaries and runtime shape.
+3. [Rule Engine Guide](../03-guides/rule-engine/rule-engine-guide.md) for execution and rollout patterns.
+4. [Decision Table Guide](../03-guides/rule-engine/decision-table-guide.md) for editor and persistence flows.
+5. [Ecosystem Coding Rules](../03-guides/ecosystem-coding-rules.md) for wrapper-first implementation rules.
 
-- [Template Quickstart Guide](./template-quickstart.md): Tạo project mới từ template với hướng dẫn chi tiết.
-- [Bắt đầu sử dụng](./getting-started.md): cấu hình nhanh API và appsettings.
-- [Performance Guide](/docs/operations/performance-guide): Tối ưu hiệu năng cho production.
+## Documentation contract
+
+This repository is the single source of truth for developer-facing docs.
+
+- Historical upgrade notes are intentionally removed.
+- Each markdown file maps to a current capability or operational process.
+- Package READMEs stay in package roots, but all deeper guides belong here.

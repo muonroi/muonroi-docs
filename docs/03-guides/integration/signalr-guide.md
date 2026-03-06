@@ -1,39 +1,42 @@
-# Hướng dẫn cấu hình SignalR
+# SignalR Guide
 
-Tài liệu này giới thiệu cách đăng ký SignalR trong dự án sử dụng Muonroi Building Block.
+Muonroi can register SignalR with tenant-aware connection filtering for multi-tenant real-time features.
 
-## Đăng ký dịch vụ
-
-Trong `Program.cs`, gọi:
+## Register SignalR
 
 ```csharp
 services.AddSignalRWithTenant(configuration);
 ```
 
-Extension này tự động thêm `services.AddSignalR()` và đăng ký `TenantHubFilter` khi cấu hình `MultiTenantConfigs:Enabled` bằng `true`.
+This helper typically calls `services.AddSignalR()` and conditionally enables tenant filtering when multi-tenancy is active.
 
-## Multi-tenant
+## Tenant-aware connections
 
-Khi `MultiTenantConfigs:Enabled` là `true`, `TenantHubFilter` sẽ lấy `tenantId` từ claim, header hoặc tên miền (thông qua `ITenantIdResolver`). Giá trị này được gán vào `TenantContext.CurrentTenantId` cho mỗi lời gọi tới Hub. Nếu `tenantId` không tồn tại, kết nối sẽ bị từ chối.
+When `MultiTenantConfigs:Enabled` is `true`, the hub filter resolves the tenant from claims, headers, or host-based resolution and applies it to the current connection scope.
 
-Nếu `Enabled` là `false`, filter sẽ không được đăng ký và SignalR hoạt động như bình thường.
+If tenant resolution fails, the connection should be rejected instead of falling back to an undefined tenant context.
 
-## Xác thực
+In new code, prefer request-scoped abstractions such as `ISystemExecutionContextAccessor` instead of reading static ambient context directly.
 
-Các hub sử dụng cấu hình JWT mặc định của ứng dụng. Token có thể gửi qua tham số truy vấn `access_token` khi khởi tạo kết nối. Extension sẽ tự động đọc giá trị này và xác thực kết nối.
+## Authentication
 
-## Sử dụng trong Hub
+SignalR hubs commonly reuse the application's JWT setup. Browser clients can pass the token through the `access_token` query parameter during the initial negotiation if header-based transport is unavailable.
 
-Trong lớp Hub, bạn có thể truy cập `TenantContext.CurrentTenantId` để biết tenant hiện tại:
+## Hub usage
+
+Inside a hub, keep tenant and user checks explicit before broadcasting or mutating shared state.
 
 ```csharp
-public class ChatHub : Hub
+public class ChatHub(ISystemExecutionContextAccessor contextAccessor) : Hub
 {
+    private readonly ISystemExecutionContextAccessor _contextAccessor = contextAccessor;
+
     public Task SendMessage(string message)
     {
-        string? tenant = TenantContext.CurrentTenantId;
-        // Thực hiện xử lý theo tenant nếu cần
-        return Clients.All.SendAsync("Receive", message);
+        string? tenantId = _contextAccessor.Get().TenantId;
+        return Clients.All.SendAsync("Receive", tenantId, message);
     }
 }
 ```
+
+For control-plane-specific rule hot reload, see the dedicated control-plane SignalR documentation.

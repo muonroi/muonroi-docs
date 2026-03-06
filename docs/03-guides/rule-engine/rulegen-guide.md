@@ -1,42 +1,74 @@
-# RuleGen Upgrade Guide (Unified Plan)
+# RuleGen Guide
 
-This guide tracks the full `Muonroi.RuleGen` upgrade implementation from the merged plan in:
+`muonroi-rule` is the current RuleGen CLI.
 
-- `tools/Muonroi.RuleGen/UPGRADE_PLAN_V2.md`
-- `tools/Muonroi.RuleGen/toolkit_upgrade.md`
+## Commands
 
-Unified plan source:
-- `tools/Muonroi.RuleGen/UNIFIED_UPGRADE_PLAN.md`
+- `extract`
+- `verify`
+- `register`
+- `generate-tests`
+- `merge`
+- `split`
+- `watch`
 
-## Implemented Scope
+## Attribute model
 
-1. Phase 1: Roslyn foundation and method-body extraction.
-2. Phase 2: multi-file/project extraction, DI-aware generation, validation.
-3. Phase 3: config-first DX, watch mode, test scaffold generation.
-4. Phase 4: runtime JSON merge/split workflow.
-5. Phase 5: enterprise hardening (tenant metadata, audit metadata, performance-oriented parallel extraction).
+Rule extraction is centered on `[MExtractAsRule(...)]`.
 
-## New CLI Commands
+Typical metadata:
+
+- rule code
+- `Order`
+- `HookPoint`
+- `DependsOn`
+
+## Common workflow
 
 ```bash
-muonroi-rule extract ...
-muonroi-rule verify ...
-muonroi-rule register ...
-muonroi-rule generate-tests ...
-muonroi-rule merge ...
-muonroi-rule split ...
-muonroi-rule watch ...
+muonroi-rule extract --source src/Handlers --output Generated/Rules
+muonroi-rule verify --source-dir src/Handlers
+muonroi-rule register --rules Generated/Rules --output Generated/MGeneratedRuleRegistrationExtensions.g.cs
 ```
 
-## Recommended Rollout
+## Runtime round-trip commands
 
-1. Enable `extract + verify + register` in CI.
-2. Adopt `.rulegenrc.json` in each service.
-3. Add `merge/split` flow for BA/QC handoff with `--class` targeting.
-4. Track generated artifacts with git + review policy.
-5. Keep `merge --compile-check true` enabled (default) and provide `--compile-target` in CI for deterministic rollback safety.
+Merge runtime or generated rules into a target class:
 
-## Known Boundaries
+```bash
+muonroi-rule merge --rules-dir Generated/Rules --target src/Handlers/MyHandler.cs --class MyHandler
+```
 
-- FEEL <-> C# translation is best-effort for simple/medium expressions.
-- Complex imperative C# (loops/LINQ/external IO-heavy branches) is marked as custom logic and requires manual review.
+Split attributed handlers back into rule files:
+
+```bash
+muonroi-rule split --source src/Handlers --output Generated/Rules --workflow loan-approval
+```
+
+## Watch mode
+
+```bash
+muonroi-rule watch --source src/Handlers --output Generated/Rules
+```
+
+## Configuration file
+
+The CLI searches for `.rulegenrc.json` in the working directory.
+
+Use it to standardize:
+
+- source directory
+- output directory
+- namespace override
+- class targeting
+- generated test scaffolding
+
+## Diagnostics
+
+Rule authoring diagnostics currently include:
+
+- `MRG001` duplicate rule code
+- `MRG005` missing dependency reference
+- `MRG006` `Order > 1` without dependency graph
+- `MRG007` fact consumption without producer dependency
+- `MRG008` nullable assignment to non-nullable string

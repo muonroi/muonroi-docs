@@ -1,13 +1,22 @@
-# Quản lý secret
+# Secret Management Guide
 
-Các khóa ký JWT và chuỗi kết nối nên được lưu trữ trong secret store (ví dụ Azure Key Vault, HashiCorp Vault).
+Store JWT signing keys, database credentials, Redis passwords, and third-party API secrets in a dedicated secret store rather than plain configuration files.
 
-Thư viện cung cấp `ISecretProvider` để trừu tượng hóa nguồn secret. Mặc định `ConfigurationSecretProvider` lấy giá trị từ cấu hình, nhưng có thể thay thế bằng provider truy cập Key Vault.
+## Secret provider abstraction
 
-Ví dụ đăng ký:
+Muonroi exposes `ISecretProvider` so applications can resolve secrets from different backends.
+
+The default implementation is often `ConfigurationSecretProvider`, but production deployments should usually replace it with a provider for Azure Key Vault, HashiCorp Vault, AWS Secrets Manager, or an equivalent platform.
 
 ```csharp
 services.AddSingleton<ISecretProvider, ConfigurationSecretProvider>();
 ```
 
-Các extension như `ResolveBearerToken` và `MConnectionStringProvider` sẽ sử dụng `ISecretProvider` để lấy secret theo yêu cầu ASVS V2/V3.
+Consumers such as bearer-token resolution and connection-string providers can pull sensitive values through that abstraction instead of binding directly to plaintext configuration.
+
+## Operational guidance
+
+- Keep secret rotation separate from application releases.
+- Scope secrets by environment and tenant where required.
+- Never commit production secrets to Git.
+- Log secret source and version metadata when useful, but never log secret values.

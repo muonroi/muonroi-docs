@@ -1,30 +1,32 @@
-# Permission Tree và Metadata UI
+# Permission Tree and UI Metadata
 
-Tài liệu này giải thích cách cấu hình backend để lưu metadata cho quyền và đồng bộ chúng tới frontend dưới dạng cây. Phần cuối hướng dẫn các bước để FE tích hợp hiển thị menu và action dựa trên quyền.
+This guide explains how to attach UI metadata to permissions and expose the result as a tree for menus, tabs, and actions.
 
-## 1. Khai báo quyền
+## Model permissions with UI metadata
 
-Tất cả quyền cần được định nghĩa trong `enum` và ánh xạ vào bảng `MPermissions`.
+Permissions still start as enum values:
 
 ```csharp
 [Flags]
 public enum MyPermission
 {
-    User_View    = 1 << 0,
-    User_Create  = 1 << 1,
-    User_Edit    = 1 << 2,
-    User_Delete  = 1 << 3
+    User_View   = 1 << 0,
+    User_Create = 1 << 1,
+    User_Edit   = 1 << 2,
+    User_Delete = 1 << 3
 }
 ```
 
-Sau khi thêm giá trị mới, hãy tạo bản ghi tương ứng trong bảng `MPermissions`. Các cột quan trọng gồm:
+Each permission can then be mapped to a row in `MPermissions` with metadata that the frontend can consume.
 
-- **UiKey**: khoá duy nhất FE dùng để tra cứu.
-- **ParentUiKey**: tham chiếu khoá cha (nếu có) giúp xây dựng cấu trúc cây.
-- **Type**: `Menu`, `Tab` hoặc `Action`.
-- **Label**, **Icon**, **Url** và **Description**: metadata để FE hiển thị.
+Important columns:
 
-Ví dụ quyền `User.Create` là nút bấm thuộc menu `user`:
+- `UiKey`: stable key used by the frontend.
+- `ParentUiKey`: optional parent reference for tree construction.
+- `Type`: UI node kind such as `Menu`, `Tab`, or `Action`.
+- `Label`, `Icon`, `Url`, `Description`: display metadata.
+
+Example metadata row:
 
 ```json
 {
@@ -32,26 +34,26 @@ Ví dụ quyền `User.Create` là nút bấm thuộc menu `user`:
   "uiKey": "user.create",
   "parentUiKey": "user",
   "type": "Action",
-  "label": "Thêm mới",
+  "label": "Create User",
   "icon": "plus"
 }
 ```
 
-## 2. API trả về cấu trúc quyền
+## API shape
 
-`MAuthControllerBase` cung cấp các endpoint mặc định:
+`MAuthControllerBase` commonly exposes endpoints such as:
 
-- `GET permission-definitions` – Đồng bộ danh sách quyền và nhóm quyền.
-- `GET menu-metadata/{userId}` – Trả danh sách quyền kèm metadata theo nhóm.
-- `GET permission-tree/{userId}` – Trả cây quyền cho người dùng.
+- `GET permission-definitions`
+- `GET menu-metadata/{userId}`
+- `GET permission-tree/{userId}`
 
-Cấu trúc cây mẫu trả về như sau:
+The tree response typically looks like this:
 
 ```json
 [
   {
     "uiKey": "user",
-    "name": "Quản lý người dùng",
+    "name": "User Management",
     "icon": "user",
     "url": "/user",
     "publish": false,
@@ -59,13 +61,13 @@ Cấu trúc cây mẫu trả về như sau:
     "children": [
       {
         "uiKey": "user.view",
-        "name": "Xem danh sách",
+        "name": "View List",
         "type": "action",
         "publish": false
       },
       {
         "uiKey": "user.create",
-        "name": "Thêm mới",
+        "name": "Create User",
         "type": "button",
         "publish": false
       }
@@ -74,26 +76,25 @@ Cấu trúc cây mẫu trả về như sau:
 ]
 ```
 
-## 3. Tích hợp frontend
+## Frontend integration
 
-1. FE đăng nhập hoặc tải thông tin người dùng.
-2. Gọi `permission-tree/{userId}` để lấy toàn bộ quyền đã cấp.
-3. Dựa vào `uiKey`, `type` và metadata khác để render menu, nút bấm hoặc tab. Các thành phần chỉ hiển thị khi quyền có trong cây hoặc `publish = true`.
-4. Nên cache kết quả tại FE để giảm số lần gọi API.
+A typical frontend flow is:
 
-Ví dụ Angular sử dụng `PermissionService`:
+1. Authenticate the user.
+2. Load `permission-tree/{userId}`.
+3. Render menus, tabs, or buttons from `uiKey`, `type`, and display metadata.
+4. Cache the tree client-side until the session or permission stamp changes.
+
+Example:
 
 ```ts
-constructor(private permissionSvc: PermissionService) {
-  this.permissionSvc.load(userId);
+constructor(private permissionService: PermissionService) {
+  this.permissionService.load(userId);
 }
 ```
 
-Sau đó dùng directive:
-
 ```html
-<button *appHasPermission="'profile.create'">Add User</button>
+<button *appHasPermission="'user.create'">Create User</button>
 ```
 
-
-Với cách tổ chức trên, UI có thể hiển thị động mà không cần hardcode danh sách quyền.
+This approach keeps UI navigation and actions driven by backend policy data instead of duplicated frontend configuration.

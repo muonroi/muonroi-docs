@@ -1,32 +1,33 @@
 # Rule Engine Advanced Patterns
 
-## 1. Hybrid rollout
+## Execution topologies
 
-Use `RuleExecutionMode.Hybrid` to route part of traffic to traditional code and part to rules.
+- code-first rules for compile-time safety
+- runtime rulesets for operator-managed changes
+- decision tables for business-friendly tabular authoring
 
-## 2. Shadow evaluation
+## Approval and rollback
 
-Use `RuleExecutionMode.Shadow` to run rules in background and compare outputs before hard switch.
+Use `RuleControlPlaneOptions.RequireApproval` when runtime changes must follow maker-checker flow.
 
-## 3. Feature-flagged activation
+Relevant states:
 
-Combine `IRuleActivationStrategy<T>` with tenant/user flags for progressive enablement.
+- `Draft`
+- `PendingApproval`
+- `Approved`
+- `Rejected`
+- `Active`
+- `Superseded`
+- `RolledBack`
 
-## 4. Runtime cache + invalidation
+## Canary rollout
 
-When using external JSON rulesets:
+Enable `RuleControlPlaneOptions.EnableCanary` and roll out by tenant while preserving an active fallback version.
 
-- cache active ruleset for low latency;
-- invalidate locally and across nodes on save/activate events.
+## Cross-node hot reload
 
-## 5. Code-first extraction workflow
+Pair `AddMRuleEngineWithPostgres(...)` with `AddMRuleEngineWithRedisHotReload(...)` to publish ruleset change events across nodes.
 
-1. Mark methods with `[ExtractAsRule(...)]`.
-2. Generate rule classes using `muonroi-rule extract`.
-3. Generate DI registration using `muonroi-rule register`.
-4. Verify generated artifacts using `muonroi-rule verify`.
+## Decision table authoring loop
 
-See full upgrade details:
-- `rulegen-guide.md`
-- `rulegen-phase1-roslyn-foundation.md`
-- `rulegen-phase4-merge-split-runtime.md`
+Use the widget-backed editor for business authoring, then export JSON or DMN when a downstream system needs a portable artifact.

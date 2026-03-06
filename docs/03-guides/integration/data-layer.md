@@ -1,65 +1,75 @@
-# Quản lý dữ liệu với MDbContext và Repository
+# Data Layer Guide
 
-Thư viện cung cấp sẵn các lớp **`MRepository<T>`**, **`MQuery<T>`** và `MDbContext` để thao tác với Entity Framework. Dưới đây giải thích một số khái niệm quan trọng.
+Muonroi provides `MDbContext`, `MRepository<T>`, and `MQuery<T>` as the standard EF Core building blocks.
 
-## DbSet và Queryable
+## `DbSet` and queryable access
 
-`DbSet<T>` là tập các thực thể được EF theo dõi. Thuộc tính `Queryable` trong `MRepository<T>` và `MQuery<T>` trả về truy vấn mặc định đã lọc những bản ghi `IsDeleted = false` nhằm tránh lấy dữ liệu đã xoá mềm. Bạn có thể nối thêm điều kiện hoặc dùng LINQ để truy vấn tiếp.
+`DbSet<T>` is the raw EF Core entry point. Higher-level application code should usually query through `MRepository<T>` or `MQuery<T>`.
 
-## SaveChangesAsync và SaveEntitiesAsync
+Those abstractions typically expose a filtered queryable that excludes soft-deleted rows such as `IsDeleted = false`. You can continue composing LINQ on top of that default query.
 
-`MDbContext` ghi đè `SaveChangesAsync` để tự động cập nhật các trường thời gian (`CreatedDateTS`, `LastModificationTime`, ...) trước khi gọi tới phương thức gốc của EF.
+## `SaveChangesAsync` and `SaveEntitiesAsync`
 
-`SaveEntitiesAsync` dùng khi cần lưu dữ liệu và phát tán Domain Event. Phương thức này:
-1. Cập nhật timestamp.
-2. Nếu đang có transaction sẽ gọi `SaveChangesAsync` rồi phát tán sự kiện.
-3. Nếu chưa có transaction thì tự tạo transaction mới, lưu dữ liệu, phát tán sự kiện rồi commit.
+`MDbContext` extends save behavior to update timestamps and other framework metadata before persisting.
 
-Khi dùng repository, các thao tác thêm/sửa/xoá sẽ gọi `SaveChangesAsync`. Nếu muốn bao quát nhiều thao tác trong một Unit of Work, hãy gọi `SaveEntitiesAsync` trên `MDbContext`.
+`SaveEntitiesAsync` is the broader unit-of-work path used when you need both persistence and domain-event dispatching:
 
-## Domain Event
+1. Update framework-managed metadata.
+2. Save entity changes.
+3. Dispatch domain events.
+4. Commit the surrounding transaction when applicable.
 
-`MEntity` chứa danh sách `DomainEvents`. Repository sẽ gọi `entity.AddDomainEvent(...)` sau khi thay đổi. Khi `SaveEntitiesAsync` hoàn tất, `DispatchDomainEventsAsync` của `MDbContext` sẽ publish toàn bộ sự kiện thông qua MediatR.
+Use `SaveChangesAsync` for straightforward persistence. Use `SaveEntitiesAsync` when a workflow must publish domain events as part of the same business operation.
 
-Có hai nhóm sự kiện:
-- **MEntityCreatedEvent**, **MEntityChangedEvent**, **MEntityDeletedEvent** cho một thực thể.
-- **MEntitiesCreatedEvent**, **MEntitiesChangedEvent**, **MEntitiesDeletedEvent** cho nhiều thực thể (sử dụng trong `AddBatchAsync`, `DeleteBatchAsync`).
+## Domain events
 
-Trong các phương thức batch như `AddBatchAsync`, sự kiện `MEntities*Event` được
-gắn vào phần tử đầu tiên của danh sách entity. `MDbContext` chỉ cần theo dõi
-một thực thể để phát tán sự kiện cho toàn bộ batch. Bạn có thể thay đổi cơ chế
-này bằng cách tự publish sự kiện riêng nếu muốn rõ ràng hơn.
+`MEntity` stores pending domain events. After persistence, `MDbContext` dispatches those events through MediatR.
 
-## UnitOfWork
+Typical event shapes include:
 
-`MDbContext` triển khai `IMUnitOfWork` với các phương thức `BeginTransactionAsync`, `CommitTransactionAsync` và `RollbackTransaction`. `MRepository<T>` cung cấp thuộc tính `UnitOfWork` để truy cập DbContext hiện tại. Nhờ đó bạn có thể kết hợp nhiều repository trong cùng một transaction.
+- `MEntityCreatedEvent`
+- `MEntityChangedEvent`
+- `MEntityDeletedEvent`
+- Batch variants such as `MEntitiesCreatedEvent`
 
-## Cấu hình DbContext
+Batch operations may attach the batch event to one tracked entity so the unit of work can dispatch a single logical event for the full operation.
 
-Sử dụng extension `AddDbContextConfigure<TDbContext, TPermission>(configuration)` trong `Program.cs` để đăng ký DbContext. Phương thức này hỗ trợ nhiều loại cơ sở dữ liệu và tự giải mã chuỗi kết nối nếu cần.
+## Unit of work
+
+`MDbContext` implements `IMUnitOfWork` and exposes transaction helpers such as:
+
+- `BeginTransactionAsync`
+- `CommitTransactionAsync`
+- `RollbackTransaction`
+
+`MRepository<T>` surfaces the current unit of work through `UnitOfWork`, which lets multiple repositories participate in the same transaction boundary.
+
+## Register the data layer
+
+Use the provided registration helper from `Program.cs`:
 
 ```csharp
 services.AddDbContextConfigure<MyDbContext, MyPermission>(configuration);
 ```
 
-Nếu sử dụng MongoDB, đặt `DbType` trong `appsettings.json` là `MongoDb` và extension sẽ cấu hình kết nối thích hợp.
+That setup can resolve different storage providers based on configuration. Keep production connection strings in secret storage rather than inline appsettings.
 
----
+## Paging with `MQuery`
 
-## Phân trang với `MQuery`
-
-`MQuery<T>` có phương thức `GetPagedAsync` giúp lấy dữ liệu theo trang kèm tổng
-số bản ghi. Bạn truyền vào truy vấn gốc cùng số trang, kích thước và biểu thức
-mapping sang DTO.
+`MQuery<T>` commonly exposes `GetPagedAsync` so a query can return items plus paging metadata in one call.
 
 ```csharp
 IQueryable<MUser> query = _context.Set<MUser>().Where(x => !x.IsDeleted);
+
 MPagedResult<UserDto> result = await GetPagedAsync(
     query,
     pageIndex: 1,
     pageSize: 10,
-    selector: x => new UserDto { Id = x.EntityId, Name = x.Username });
+    selector: x => new UserDto
+    {
+        Id = x.EntityId,
+        Name = x.Username
+    });
 ```
 
-`result` chứa `RowCount`, `CurrentPage`, `PageSize` và danh sách `Items` đã ánh
-xạ.
+The result usually contains row count, current page, page size, and projected items.

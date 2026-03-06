@@ -1,26 +1,33 @@
 # Observability Guide
 
-This library now provides end-to-end observability using [OpenTelemetry](https://opentelemetry.io/).
+## Rule engine telemetry
 
-## Enabling OpenTelemetry
+The rule engine emits:
 
-1. Add the configuration section to your `appsettings.json`:
+- `ActivitySource = "Muonroi.RuleEngine"`
+- counters `rules.matched`
+- counters `rules.fired`
 
-```json
-"OpenTelemetry": {
-  "ServiceName": "MyService",
-  "OtlpEndpoint": "http://localhost:4317"
-}
-```
+## Additional telemetry domains
 
-2. Register observability services in `Program.cs`:
+- `Muonroi.BuildingBlock.Grpc`
+- `Muonroi.BuildingBlock.MessageBus`
+- `Muonroi.BuildingBlock.DistributedCache`
+- `Muonroi.BuildingBlock.AuditTrail`
+- `Muonroi.BuildingBlock.AntiTampering`
 
-```csharp
-services.AddObservability(configuration);
-```
+## OpenTelemetry setup
 
-The extension enables tracing for HTTP, gRPC, MassTransit publish/consume pipelines and background jobs. Metrics are also collected and both are exported via OTLP so that backends such as Tempo or Jaeger can receive the data.
+`AddObservability(...)` wires tracing and metrics exporters and enriches spans with tenant tags.
 
-## ECS Logging for MassTransit
+## Logging pattern
 
-The MassTransit pipeline automatically enriches the Serilog log context with [Elastic Common Schema](https://www.elastic.co/guide/en/ecs/current/ecs-reference.html) fields like `message.id`, `correlation.id` and `conversation.id` for both published and consumed messages. This makes querying logs in Elasticsearch or OpenSearch straightforward.
+Prefer:
+
+- `IMLog<T>.Info(...)`
+- `IMLog<T>.Warn(...)`
+- `IMLog<T>.Error(...)`
+- `IMLog<T>.Debug(...)`
+- `IMLog<T>.BeginProperty(...)`
+
+When legacy static mirrors are still needed, pair context scopes with `ContextMirrorScope.Apply(...)`.

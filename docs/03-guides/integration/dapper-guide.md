@@ -1,9 +1,8 @@
-# Hướng dẫn cấu hình Dapper
+# Dapper Guide
 
-Thư viện hỗ trợ truy vấn cơ sở dữ liệu bằng Dapper thông qua gói `Dapper.Extensions.NetCore`.
-Dưới đây là cách đăng ký và sử dụng.
+Muonroi can be used with Dapper for read-heavy paths, hand-tuned SQL, or reporting workloads where EF Core is not the best fit.
 
-## Đăng ký dịch vụ
+## Register Dapper services
 
 ```csharp
 services.AddDapper();
@@ -11,30 +10,46 @@ services.AddSingleton<IConnectionStringProvider, MConnectionStringProvider>();
 MSqlMapperTypeExtensions.RegisterDapperHandlers();
 ```
 
-`MConnectionStringProvider` tự đọc chuỗi kết nối từ `appsettings.json` (có thể mã hóa) và
-`RegisterDapperHandlers` thêm một số `TypeHandler` cần thiết như cắt chuỗi thừa hoặc xử lý `Timestamp`.
+`MConnectionStringProvider` resolves connection strings from configuration or a secret-backed provider. `RegisterDapperHandlers` adds custom type handlers used by the stack.
 
-Nếu dùng Redis cho bộ nhớ đệm, hãy bật caching cho Dapper:
+If you want Redis-backed caching for Dapper queries, add it explicitly:
 
 ```csharp
 services.AddDapperCaching(configuration, redisConfigs);
 ```
 
-## Truy vấn phân trang
+## Run paged queries
 
-Sử dụng `MDapperCommand` để khai báo câu lệnh SQL và gọi các hàm mở rộng trong `MDapperExtensions`.
-Ví dụ:
+Use `MDapperCommand` plus the Dapper helper extensions for paging and materialization.
 
 ```csharp
 public class UserQueries(IDapper dapper)
 {
     public Task<PageResult<UserDto>> GetUsersAsync(int page, int size)
     {
-        MDapperCommand cmd = new() { CommandText = "SELECT * FROM Users ORDER BY Id" };
+        MDapperCommand command = new()
+        {
+            CommandText = "SELECT * FROM Users ORDER BY Id"
+        };
+
         string countSql = "SELECT COUNT(1) FROM Users";
-        return dapper.QueryPageAsync<UserDto>(cmd, countSql, page, size);
+        return dapper.QueryPageAsync<UserDto>(command, countSql, page, size);
     }
 }
 ```
 
-`QueryPageAsync` trả về `PageResult<T>` gồm tổng số bản ghi, trang hiện tại và danh sách kết quả.
+`QueryPageAsync` returns the result items plus total-record metadata.
+
+## When to use Dapper
+
+Use Dapper when:
+
+- SQL shape matters and you want exact control.
+- The query is read-only and performance-sensitive.
+- The result does not need change tracking.
+
+Prefer EF Core when:
+
+- You need rich domain modeling.
+- You rely on migrations and change tracking.
+- The query is simple enough that LINQ remains clearer than handwritten SQL.

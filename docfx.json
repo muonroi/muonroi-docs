@@ -65,6 +65,6 @@
       "_enableSearch": true,
       "pdf": true
     },
-    "locales": [ "en", "vi" ]
+    "locales": [ "en" ]
   }
 }

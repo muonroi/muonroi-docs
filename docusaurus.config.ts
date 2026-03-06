@@ -1,10 +1,10 @@
-import {themes as prismThemes} from 'prism-react-renderer';
-import type {Config} from '@docusaurus/types';
+import { themes as prismThemes } from 'prism-react-renderer';
+import type { Config } from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 
 const config: Config = {
-  title: 'Muonroi Building Block',
-  tagline: 'Production-ready building blocks for .NET applications',
+  title: 'Muonroi Docs',
+  tagline: 'Documentation for the Muonroi open-core ecosystem',
   favicon: 'img/favicon.ico',
 
   url: 'https://docs.muonroi.com',
@@ -14,14 +14,17 @@ const config: Config = {
   projectName: 'Muonroi.Docs',
 
   onBrokenLinks: 'warn',
-  onBrokenMarkdownLinks: 'warn', // Moved here
+  markdown: {
+    hooks: {
+      onBrokenMarkdownLinks: 'warn',
+    },
+  },
 
   i18n: {
     defaultLocale: 'en',
-    locales: ['en', 'vi'],
+    locales: ['en'],
     localeConfigs: {
       en: { label: 'English' },
-      vi: { label: 'Tiếng Việt' },
     },
   },
 
@@ -44,7 +47,7 @@ const config: Config = {
 
   themeConfig: {
     navbar: {
-      title: 'Muonroi Building Block',
+      title: 'Muonroi Docs',
       logo: {
         alt: 'Muonroi Logo',
         src: 'img/logo.svg',
@@ -57,11 +60,7 @@ const config: Config = {
           label: 'Documentation',
         },
         {
-          type: 'localeDropdown',
-          position: 'right',
-        },
-        {
-          href: 'https://github.com/muonroi/Muonroi.BuildingBlock',
+          href: 'https://github.com/muonroi/Muonroi.Docs',
           label: 'GitHub',
           position: 'right',
         },
@@ -74,17 +73,18 @@ const config: Config = {
           title: 'Docs',
           items: [
             { label: 'Introduction', to: '/docs/getting-started/introduction' },
-            { label: 'Getting Started', to: '/docs/getting-started/getting-started' },
+            { label: 'Quickstart', to: '/docs/getting-started/quickstart' },
           ],
         },
         {
-          title: 'More',
+          title: 'Repos',
           items: [
-            { label: 'GitHub', href: 'https://github.com/muonroi/Muonroi.BuildingBlock' },
+            { label: 'Muonroi.Docs', href: 'https://github.com/muonroi/Muonroi.Docs' },
+            { label: 'Muonroi.BuildingBlock', href: 'https://github.com/muonroi/Muonroi.BuildingBlock' },
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} Muonroi Building Block. Built with Docusaurus.`,
+      copyright: `Copyright (c) ${new Date().getFullYear()} Muonroi. Built with Docusaurus.`,
     },
     prism: {
       theme: prismThemes.github,

@@ -1,80 +1,65 @@
 # Decision Table Guide
 
-This guide explains how to design, validate, and execute decision tables with `Muonroi.RuleEngine.DecisionTable`.
+`DecisionTableModel` is a DMN-style structure with:
 
-## 1. Core workflow
+- `Id`
+- `Name`
+- `Description`
+- `HitPolicy`
+- `InputColumns`
+- `OutputColumns`
+- `Rows`
+- `Version`
+- `TenantId`
+- `CreatedAt`
+- `ModifiedAt`
 
-1. Define table metadata and columns.
-2. Add rows with FEEL-style expressions.
-3. Validate structure and overlap/gap issues.
-4. Export to JSON workflow or DMN XML.
-5. Convert to typed `IRule<T>` and execute with `RuleOrchestrator<T>`.
+## Supported hit policies
 
-## 2. Minimal example
+- `First`
+- `Unique`
+- `Collect`
+- `Priority`
+- `OutputOrder`
+- `CollectSum`
+- `CollectMin`
+- `CollectMax`
+- `CollectCount`
 
-```csharp
-var table = new DecisionTable
-{
-    Name = "AgeApproval",
-    HitPolicy = HitPolicy.First,
-    InputColumns = [new DecisionTableColumn { Name = "Age", Label = "Age", DataType = "number" }],
-    OutputColumns = [new DecisionTableColumn { Name = "CanApprove", Label = "CanApprove", DataType = "boolean" }],
-    Rows =
-    [
-        new DecisionTableRow
-        {
-            Order = 1,
-            InputCells = [new DecisionTableCell { Expression = ">= 18" }],
-            OutputCells = [new DecisionTableCell { Expression = "true" }]
-        },
-        new DecisionTableRow
-        {
-            Order = 2,
-            InputCells = [new DecisionTableCell { Expression = "< 18" }],
-            OutputCells = [new DecisionTableCell { Expression = "false" }]
-        }
-    ]
-};
-```
+## Persistence
 
-## 3. Validation
+`DecisionTableEngineOptions` currently supports:
+
+- `PostgresConnectionString`
+- `SqlServerConnectionString`
+- `Schema`
+- `AutoMigrateDatabase`
+
+The control-plane service wires Postgres explicitly:
 
 ```csharp
-var validator = new DecisionTableValidator();
-var result = validator.Validate(table);
-if (!result.IsValid)
-{
-    // result.Errors: structure/overlap issues
-}
-// result.Warnings: gap hints
+builder.Services.AddDecisionTableWeb(o => o.PostgresConnectionString = connectionString);
 ```
 
-## 4. Export
+## Current capabilities
 
-```csharp
-var workflowJson = new DecisionTableToJsonConverter().Convert(table);
-var dmnXml = new DecisionTableXmlSerializer().SerializeToDmnXml(table);
-```
+- create, update, delete, and list tables
+- bulk upsert and bulk delete
+- Excel, JSON, and DMN import
+- JSON, DMN/XML, and CSV export
+- row reordering
+- version history
+- audit trail
+- FEEL autocomplete integration inside the editor widget
 
-## 5. CLI usage
+## UI wiring
 
-```bash
-muonroi-dt import-excel --source ./input.xlsx --output ./table.json
-muonroi-dt validate --source ./table.json
-muonroi-dt export-json --source ./table.json --output ./workflow.json
-muonroi-dt export-dmn --source ./table.json --output ./workflow.dmn.xml
-```
+The decision-table UI contributor configures:
 
-## 6. Related sample
-
-See `MuonroiBuildingBlock/Samples/DecisionTableDemo` for runnable code.
-
-## 7. Full upgrade guide (2026)
-
-For production-grade setup (SQL persistence, bulk API, drag-drop row reorder, audit, versioning, and UI package integration), see:
-
-- [Decision Table Full Upgrade Guide (2026)](decision-table-upgrade-guide-2026.md)
-
-Sample index:
-
-- [Rule Engine Samples](../../06-resources/rule-engine-samples.md)
+- `mu-decision-table`
+- `apiBase=/api/v1/decision-tables`
+- `validateEndpoint=/api/v1/decision-tables/{id}/validate`
+- `historyEndpoint=/api/v1/decision-tables/{id}/versions`
+- `auditEndpoint=/api/v1/decision-tables/{id}/audit`
+- `feelEndpoint=/api/v1/feel/autocomplete`
+- `enableVersionDiff=true`

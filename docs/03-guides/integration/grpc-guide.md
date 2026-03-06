@@ -1,10 +1,10 @@
-# Hướng dẫn cấu hình gRPC Handler
+# gRPC Guide
 
-Tài liệu này mô tả cách cấu hình server và client gRPC khi sử dụng thư viện Muonroi Building Block, đồng thời hướng dẫn gọi RPC từ service khác.
+Muonroi supports gRPC server and client registration for service-to-service communication.
 
-## Đăng ký server và client
+## Register server and clients
 
-Trong `Program.cs`, thêm cấu hình sau:
+In `Program.cs`, register the server and named clients:
 
 ```csharp
 services.AddGrpcServer();
@@ -14,25 +14,28 @@ services.AddGrpcClients(configuration, new Dictionary<string, Type>
 });
 ```
 
-Phần `GrpcServicesConfig` trong `appsettings.json` khai báo địa chỉ các dịch vụ:
+The target service endpoints are typically stored in `GrpcServicesConfig`:
 
 ```json
-"GrpcServicesConfig": {
-  "Services": {
-    "SampleService": {
-      "Uri": "https://localhost:5001"
+{
+  "GrpcServicesConfig": {
+    "Services": {
+      "SampleService": {
+        "Uri": "https://localhost:5001"
+      }
     }
   }
 }
 ```
 
-## Tạo lớp gọi gRPC
+## Wrap client calls
 
-Kế thừa `BaseGrpcService` để tự động thêm `CorrelationId`, `ApiKey` và `TenantId` vào metadata. Ví dụ:
+You can inherit from `BaseGrpcService` so outbound calls automatically carry common metadata such as correlation and tenant context.
 
 ```csharp
-public class SampleGrpcService(MAuthenticateInfoContext auth, SampleGrpc.SampleGrpcClient client)
-    : BaseGrpcService(auth)
+public class SampleGrpcService(
+    MAuthenticateInfoContext auth,
+    SampleGrpc.SampleGrpcClient client) : BaseGrpcService(auth)
 {
     private readonly SampleGrpc.SampleGrpcClient _client = client;
 
@@ -44,49 +47,9 @@ public class SampleGrpcService(MAuthenticateInfoContext auth, SampleGrpc.SampleG
 }
 ```
 
-Khi cần lấy dữ liệu từ service khác, chỉ cần inject `SampleGrpcService` và gọi `GetDataAsync`.
+## Aggregator pattern
 
-## Triển khai mô hình Agg - Service
-
-Phần này minh họa cách xây dựng service gRPC riêng và một dự án Aggregator (Agg) gọi tới service đó.
-
-### Cấu hình ở service gRPC
-
-Trong dự án dịch vụ, đăng ký server và map service:
-
-```csharp
-builder.Services.AddGrpcServer();
-
-var app = builder.Build();
-app.MapGrpcService<MyGrpcService>();
-```
-
-### Cấu hình ở dự án Aggregator
-
-Agg chỉ cần cấu hình client để gọi tới gRPC service:
-
-```csharp
-services.AddGrpcClients(configuration, new Dictionary<string, Type>
-{
-    { "SampleService", typeof(SampleGrpc.SampleGrpcClient) }
-});
-```
-
-Trong `appsettings.json` của Agg, khai báo địa chỉ dịch vụ:
-
-```json
-"GrpcServicesConfig": {
-  "Services": {
-    "SampleService": {
-      "Uri": "https://localhost:5001"
-    }
-  }
-}
-```
-
-### Gọi dữ liệu từ gRPC trong Agg
-
-Tạo lớp proxy kế thừa `BaseGrpcService` như ví dụ trên và inject vào controller hoặc handler:
+An aggregator service can depend on the wrapper and translate the gRPC result to an internal DTO.
 
 ```csharp
 public class AggregatorService(SampleGrpcService sample)
@@ -99,12 +62,9 @@ public class AggregatorService(SampleGrpcService sample)
 }
 ```
 
-Khi cần lấy dữ liệu, chỉ cần gọi `AggregatorService.GetAsync` và xử lý kết quả.
+## Direct client factory usage
 
-### Lấy client trực tiếp bằng `GrpcClientFactory`
-
-Sau khi đăng ký bằng `AddGrpcClients`, bạn có thể lấy client ở bất kỳ nơi nào thông qua `GrpcClientFactory`.
-Ví dụ lớp Agg có thể kế thừa `BaseGrpcService` để tự động đính kèm context khi gọi:
+If needed, you can resolve a named client directly through `GrpcClientFactory`.
 
 ```csharp
 public class AggregatorService(GrpcClientFactory factory, MAuthenticateInfoContext auth)
@@ -112,11 +72,7 @@ public class AggregatorService(GrpcClientFactory factory, MAuthenticateInfoConte
 {
     private readonly SampleGrpc.SampleGrpcClient _client =
         factory.CreateClient<SampleGrpc.SampleGrpcClient>("SampleService");
-
-    public Task<MyDto> GetAsync(int id)
-    {
-        return CallGrpcServiceAsync(meta =>
-            _client.GetDataAsync(new SampleRequest { Id = id }, meta));
-    }
 }
 ```
+
+Use wrappers for repeated call patterns, retries, metadata propagation, and shared error handling. Use direct factory access only when a dedicated wrapper adds no value.

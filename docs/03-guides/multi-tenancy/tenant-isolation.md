@@ -1,17 +1,22 @@
-# Cách ly dữ liệu lưu trữ theo tenant
+# Tenant Isolation
 
-Để bảo vệ dữ liệu của từng tenant khi dùng Object Storage, có hai chiến lược phổ biến:
+Tenant isolation currently combines:
 
-## Bucket riêng cho mỗi tenant
+- execution-context propagation
+- static tenant mirror compatibility
+- `MDbContext` query filters
+- tenant-aware SignalR and background-job adapters
 
-- Tạo một bucket riêng `tenant-{id}`.
-- Gán IAM/ACL chỉ cho tenant truy cập bucket của mình.
-- Phù hợp khi số lượng tenant nhỏ hoặc cần phân tách hoàn toàn.
+## Data layer
 
-## Prefix theo tenant trong cùng bucket
+`MDbContext` adds tenant filters for `ITenantScoped` entities and indexes `TenantId` where relevant.
 
-- Dùng chung một bucket, đặt dữ liệu vào prefix `tenant/{id}/`.
-- Áp dụng policy IAM/ACL giới hạn quyền trên từng prefix.
-- Dễ quản lý khi có nhiều tenant nhưng vẫn đảm bảo cách ly.
+## Realtime layer
 
-Cả hai lựa chọn cần kiểm soát quyền truy cập chặt chẽ và audit đầy đủ.
+`RuleSetChangeHub` groups clients by `tenant:{tenantId}` and blocks cross-tenant subscription unless the caller is an admin or approver.
+
+## Operational guidance
+
+- Resolve tenant context before any DbContext access.
+- Do not write directly to static tenant fields in new business logic.
+- Keep tenant IDs normalized and consistent across HTTP, gRPC, message bus, and job boundaries.

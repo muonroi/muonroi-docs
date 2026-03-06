@@ -1,85 +1,42 @@
 # Troubleshooting Guide
 
-Common operational issues for Rule Engine deployments.
+## Decision tables do not persist
 
-## 1. Helm install fails with dependency error
+Cause:
 
-Symptom:
-
-- `missing in charts/ directory: postgresql, redis`
+- `AddDecisionTableWeb(...)` was registered without a database connection string
 
 Fix:
 
-```bash
-helm dependency build ./k8s/helm/muonroi-rule-engine
-```
+- provide `PostgresConnectionString` or `SqlServerConnectionString`
 
-## 2. Pods restart with DB connection error
+## Ruleset change events do not reach other nodes
 
-Checks:
+Cause:
 
-- verify `database-connection-string` secret value
-- verify Postgres service DNS and namespace
-- inspect container logs:
-
-```bash
-kubectl logs deploy/<release>-muonroi-rule-engine -n <ns>
-```
-
-## 3. 429 responses for all tenant requests
-
-Possible causes:
-
-- tenant mapped to low tier quota
-- stale counters from previous burst
+- Redis hot reload was not registered
 
 Fix:
 
-- inspect `/api/v1/tenants/{tenantId}/quotas/usage`
-- inspect `/api/v1/tenants/{tenantId}/quotas/limits`
-- upgrade tier or adjust limits
+- add `AddMRuleEngineWithRedisHotReload(...)`
+- confirm the Redis connection string is valid
 
-## 4. Rule execution blocked by quota
+## Approval workflow blocks activation
 
-Symptom:
+Cause:
 
-- `QuotaExceededException` from orchestrator
+- target version is still `Draft` or `Rejected`
 
 Fix:
 
-- check `ConcurrentExecutions`, `RuleEvaluationsPerSecond`, `RuleExecutionsPerDay`
-- reduce parallel load or increase tenant limits
+- submit and approve the version first
 
-## 5. ServiceMonitor not scraping
+## SignalR subscriptions are rejected
 
-Checks:
+Cause:
 
-- CRD `monitoring.coreos.com/v1` exists
-- `monitoring.enabled=true`
-- `monitoring.serviceMonitor.enabled=true`
-- label selectors match service labels
+- caller lacks tenant membership, admin role, or approver role
 
-## 6. Ingress unreachable
+Fix:
 
-Checks:
-
-- ingress class matches controller
-- DNS points to ingress load balancer
-- TLS secret exists
-- path rules map to service port
-
-## 7. FEEL expression returns null unexpectedly
-
-Checks:
-
-- validate expression syntax in tests
-- inspect variable names and casing
-- ensure function names use FEEL aliases (`string length`, `date and time`, etc.)
-
-## 8. Decision table export mismatch
-
-Checks:
-
-- run decision table validation before export
-- ensure input/output column counts match row cells
-- verify hit policy and row order
+- verify JWT claims and requested tenant group

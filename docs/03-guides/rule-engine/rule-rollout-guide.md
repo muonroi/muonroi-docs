@@ -1,44 +1,32 @@
 # Rule Rollout Guide
 
-This guide outlines a rollout strategy for JSON and code‑based rules.
-Feature flags are evaluated through the `IRuleActivationStrategy<T>` hook so
-each rule can be enabled for selected tenants or user groups.
+Current rollout strategy combines approval, activation, canary, and live notification.
 
-## Feature flags and kill switch
+## Baseline flow
 
-- Connect `IRuleActivationStrategy<T>` to a feature‑flag provider such as
-  [Unleash](https://www.getunleash.io/) to toggle rules at runtime.
-- Use flags as a kill switch to disable a rule globally or target specific
-  users, tenants or segments for gradual rollout.
-- Example: implement `IRuleActivationStrategy<T>` that queries Unleash for a
-  given rule code and context.
+1. Save a new version.
+2. Submit it for approval.
+3. Approve it with a different actor.
+4. Activate it or route traffic through canary.
+5. Broadcast the change to listeners.
 
-## Canary or progressive rollout
+## Required options
 
-Use `PercentageRuleActivationStrategy<T>` to gradually enable new rules.
-Supply a delegate that returns 10–20 for targeted tenants to send only a
-fraction of transactions through the rule. Monitor the failure rate of each
-rule and increase the percentage as confidence grows.
+```json
+"RuleControlPlane": {
+  "RequireApproval": true,
+  "NotifyOnStateChange": true,
+  "EnableCanary": true
+}
+```
 
-### Argo Rollouts
+## Notification path
 
-When rules are packaged with your service, [Argo Rollouts](https://argo-rollouts.readthedocs.io/)
-can run the old and new versions side by side. Traffic is shifted to the
-new version in steps and automatically rolled back if an error budget is
-exceeded.
+- `IRuleSetChangeNotifier`
+- Redis pub/sub when enabled
+- `RuleSetHubNotifier`
+- `RuleSetChangeHub`
 
-## Shadow evaluation / Dry‑run
+## Operational rule
 
-Execute the new rule set in "shadow" mode to compare outputs with the active
-version before exposing it to users. Only the existing rule affects state
-while the shadow run logs differences for analysis.
-
-## Runbook
-
-### Enable or disable a rule
-1. Update the activation strategy or feature flag configuration.
-2. Redeploy the service to apply the change.
-
-### Roll back a JSON ruleset
-1. Restore the previous JSON workflow definition.
-2. Redeploy or reload the ruleset to return to the last known good state.
+Do not skip the approval state when `RequireApproval=true`; `PostgresRuleSetStore` blocks activation of draft or rejected versions in that mode.

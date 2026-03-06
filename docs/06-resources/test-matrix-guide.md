@@ -1,32 +1,39 @@
-# Ma trận kiểm thử
+# Test Matrix Guide
 
-Tài liệu gợi ý một số kịch bản kiểm thử tối thiểu cho từng thành phần chính của thư viện.
+This matrix summarizes a minimum verification baseline for the major areas of the platform.
 
-## AuthN/AuthZ
+## Auth and authorization
 
-- Ma trận vai trò × endpoint (allow/deny)
-- Refresh token
-- Key rollover theo tenant
-- Tham khảo [OWASP ASVS V2/V4](https://owasp.org/ASVS/)
+- Role-to-endpoint allow and deny coverage
+- Login, refresh token, and logout flows
+- Token revocation and key rollover behavior
+- Permission cache invalidation after role changes
 
-## Multi-tenant
+## Multi-tenancy
 
-- Isolation test (row-level)
-- Connection resolver test (DB-per-tenant)
-- Migration / add tenant
-- Tham khảo *Building SPAs* - Carl Rippon
+- Tenant isolation for shared-database scenarios
+- Connection resolution for database-per-tenant scenarios
+- Tenant creation and migration workflows
+- Cross-tenant access denial tests
 
 ## Rule engine
 
-- Conflict / ordering
-- Backward compatibility khi thay rule
-- Kiểm tra "facts contract" để tránh breaking change
-- Tham khảo tài liệu và ví dụ trên GitHub
+- Rule ordering and conflict resolution
+- Backward compatibility when rule contracts change
+- FEEL and decision table validation failures
+- Rollout, approval, and rollback scenarios
 
-## Messaging / Jobs
+## Messaging and jobs
 
-- Retry / backoff
-- Idempotency
-- Outbox / inbox
-- Dead letter queue (DLQ)
-- Schedule misfire (Quartz) hoặc delayed jobs (Hangfire)
+- Retry and backoff behavior
+- Idempotency guarantees
+- Outbox and inbox processing
+- Dead-letter handling
+- Scheduler misfire recovery
+
+## Infrastructure
+
+- Database failover or reconnection behavior
+- Redis outage handling
+- SignalR reconnect behavior
+- Deployment smoke tests after configuration changes
