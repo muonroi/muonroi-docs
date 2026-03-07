@@ -25,7 +25,9 @@ See also: `OSS-BOUNDARY.md` in `muonroi-building-block`.
 | `@muonroi/ui-engine-react` | OSS | npmjs.org |
 | `@muonroi/ui-engine-angular` | OSS | npmjs.org |
 | `@muonroi/ui-engine-primeng` | OSS | npmjs.org |
-| `@muonroi/ui-engine-rule-components` | Commercial | GitHub Packages |
-| `@muonroi/ui-engine-rule-components-primeng` | Commercial | GitHub Packages |
-| `@muonroi/ui-engine-signalr` | Commercial | GitHub Packages |
-| `@muonroi/ui-engine-sync` | Commercial | GitHub Packages |
+| `@muonroi/ui-engine-rule-components` | Commercial | npmjs.org |
+| `@muonroi/ui-engine-rule-components-primeng` | Commercial | npmjs.org |
+| `@muonroi/ui-engine-signalr` | Commercial | npmjs.org |
+| `@muonroi/ui-engine-sync` | Commercial | npmjs.org |
+
+Commercial UI packages enforce runtime activation proof checks in-browser via `MLicenseVerifier`.

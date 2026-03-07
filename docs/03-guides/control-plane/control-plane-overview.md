@@ -14,3 +14,7 @@
 ## Base route
 
 Control-plane endpoints live under `/api/v1/control-plane`.
+
+Public runtime bootstrap endpoint:
+
+- `GET /api/v1/info` returns control-plane runtime metadata including `version` and `activationProof` for UI license bootstrap.

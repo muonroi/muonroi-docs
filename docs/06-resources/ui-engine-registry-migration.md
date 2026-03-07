@@ -12,15 +12,9 @@ This migration replaces local mirrored UI workspace packages in `muonroi-control
 
 ## Registry/auth setup
 
-`muonroi-control-plane/.npmrc`:
-
-```ini
-@muonroi:registry=https://npm.pkg.github.com
-//npm.pkg.github.com/:_authToken=${GITHUB_TOKEN}
-```
-
-Export `GITHUB_TOKEN` before running install, or provide it in CI secrets.
+All `@muonroi/*` packages are published to npmjs.org.
+No scope-level GitHub Packages override is required in `muonroi-control-plane/.npmrc`.
 
 ## CI note
 
-Control-plane CI must provide `GITHUB_TOKEN` so `pnpm install` can resolve private commercial packages under `@muonroi`.
+Control-plane dashboard CI no longer needs cross-repo `NPM_TOKEN`/PAT for package install.
