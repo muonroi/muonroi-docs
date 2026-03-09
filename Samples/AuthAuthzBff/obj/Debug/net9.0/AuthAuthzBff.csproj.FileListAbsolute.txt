@@ -1,0 +1,7 @@
+D:\Personal\Project\Docs\muonroi-docs\Samples\AuthAuthzBff\obj\Debug\net9.0\rpswa.dswa.cache.json
+D:\Personal\Project\Docs\muonroi-docs\Samples\AuthAuthzBff\obj\Debug\net9.0\AuthAuthzBff.GeneratedMSBuildEditorConfig.editorconfig
+D:\Personal\Project\Docs\muonroi-docs\Samples\AuthAuthzBff\obj\Debug\net9.0\AuthAuthzBff.AssemblyInfoInputs.cache
+D:\Personal\Project\Docs\muonroi-docs\Samples\AuthAuthzBff\obj\Debug\net9.0\AuthAuthzBff.AssemblyInfo.cs
+D:\Personal\Project\Docs\muonroi-docs\Samples\AuthAuthzBff\obj\Debug\net9.0\AuthAuthzBff.csproj.CoreCompileInputs.cache
+D:\Personal\Project\Docs\muonroi-docs\Samples\AuthAuthzBff\obj\Debug\net9.0\AuthAuthzBff.MvcApplicationPartsAssemblyInfo.cache
+D:\Personal\Project\Docs\muonroi-docs\Samples\AuthAuthzBff\obj\Debug\net9.0\AuthAuthzBff.sourcelink.json

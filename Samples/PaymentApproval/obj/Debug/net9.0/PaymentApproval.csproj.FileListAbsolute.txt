@@ -1,0 +1,5 @@
+D:\Personal\Project\Docs\muonroi-docs\Samples\PaymentApproval\obj\Debug\net9.0\PaymentApproval.GeneratedMSBuildEditorConfig.editorconfig
+D:\Personal\Project\Docs\muonroi-docs\Samples\PaymentApproval\obj\Debug\net9.0\PaymentApproval.AssemblyInfoInputs.cache
+D:\Personal\Project\Docs\muonroi-docs\Samples\PaymentApproval\obj\Debug\net9.0\PaymentApproval.AssemblyInfo.cs
+D:\Personal\Project\Docs\muonroi-docs\Samples\PaymentApproval\obj\Debug\net9.0\PaymentApproval.csproj.CoreCompileInputs.cache
+D:\Personal\Project\Docs\muonroi-docs\Samples\PaymentApproval\obj\Debug\net9.0\PaymentApproval.sourcelink.json

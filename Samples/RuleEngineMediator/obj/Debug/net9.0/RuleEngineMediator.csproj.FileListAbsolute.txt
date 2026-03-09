@@ -1,0 +1,5 @@
+D:\Personal\Project\Docs\muonroi-docs\Samples\RuleEngineMediator\obj\Debug\net9.0\RuleEngineMediator.GeneratedMSBuildEditorConfig.editorconfig
+D:\Personal\Project\Docs\muonroi-docs\Samples\RuleEngineMediator\obj\Debug\net9.0\RuleEngineMediator.AssemblyInfoInputs.cache
+D:\Personal\Project\Docs\muonroi-docs\Samples\RuleEngineMediator\obj\Debug\net9.0\RuleEngineMediator.AssemblyInfo.cs
+D:\Personal\Project\Docs\muonroi-docs\Samples\RuleEngineMediator\obj\Debug\net9.0\RuleEngineMediator.csproj.CoreCompileInputs.cache
+D:\Personal\Project\Docs\muonroi-docs\Samples\RuleEngineMediator\obj\Debug\net9.0\RuleEngineMediator.sourcelink.json
