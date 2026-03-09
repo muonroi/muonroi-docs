@@ -47,10 +47,12 @@ builder.Services.AddDecisionTableWeb(o => o.PostgresConnectionString = connectio
 - bulk upsert and bulk delete
 - Excel, JSON, and DMN import
 - JSON, DMN/XML, and CSV export
+- server-side execute endpoint (`POST /api/v1/decision-tables/{id}/execute`)
 - row reordering
 - version history
+- version diff (`GET /api/v1/decision-tables/{id}/versions/{v1}/diff/{v2}`)
 - audit trail
-- FEEL autocomplete integration inside the editor widget
+- FEEL autocomplete + FEEL expression validation (`POST /api/v1/decision-tables/{id}/feel/validate-expression`)
 
 ## UI wiring
 
@@ -60,6 +62,7 @@ The decision-table UI contributor configures:
 - `apiBase=/api/v1/decision-tables`
 - `validateEndpoint=/api/v1/decision-tables/{id}/validate`
 - `historyEndpoint=/api/v1/decision-tables/{id}/versions`
+- `diffEndpoint=/api/v1/decision-tables/{id}/versions/{v1}/diff/{v2}`
 - `auditEndpoint=/api/v1/decision-tables/{id}/audit`
 - `feelEndpoint=/api/v1/feel/autocomplete`
 - `enableVersionDiff=true`

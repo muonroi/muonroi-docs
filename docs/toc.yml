@@ -34,6 +34,8 @@
       href: 03-guides/rule-engine/decision-table-guide.md
     - name: Decision Table API Reference
       href: 03-guides/rule-engine/decision-table-api-reference.md
+    - name: Decision Table Versioning
+      href: 03-guides/rule-engine/decision-table-versioning.md
     - name: NRules Guide
       href: 03-guides/rule-engine/nrules-guide.md
     - name: Auto CRUD Rules
@@ -88,6 +90,8 @@
       href: 03-guides/ui-engine/feel-autocomplete-widget.md
   - name: Identity and Access
     items:
+    - name: External Auth Integration
+      href: 03-guides/external-auth-integration.md
     - name: Auth Module Guide
       href: 03-guides/identity-access/auth-module-guide.md
     - name: BFF Guide
@@ -141,6 +145,8 @@
     href: 04-operations/migration-scripts.md
   - name: Ruleset Governance Ops
     href: 04-operations/ruleset-governance-ops.md
+  - name: Dry Run Operations
+    href: 04-operations/dry-run.md
   - name: Troubleshooting Guide
     href: 04-operations/troubleshooting-guide.md
 
@@ -156,6 +162,8 @@
     href: 05-reference/package-reference.md
   - name: Roslyn Analyzers
     href: 05-reference/roslyn-analyzers.md
+  - name: Decision Table API
+    href: 05-reference/decision-table-api.md
 
 - name: Resources
   items:

@@ -18,7 +18,43 @@ Base route: `/api/v1/decision-tables`
 ## Validation and row ordering
 
 - `POST /api/v1/decision-tables/{id}/validate`
+- `POST /api/v1/decision-tables/{id}/feel/validate-expression`
 - `POST /api/v1/decision-tables/{id}/rows/reorder`
+
+## Execution
+
+- `POST /api/v1/decision-tables/{id}/execute`
+
+Request:
+
+```json
+{
+  "inputs": {
+    "amount": 15000,
+    "customerType": "premium",
+    "region": "VN"
+  }
+}
+```
+
+Response:
+
+```json
+{
+  "matched": true,
+  "hitPolicy": "First",
+  "evaluationTimeMs": 2.3,
+  "matchedRowIds": ["row-1"],
+  "outputs": [
+    {
+      "rowId": "row-1",
+      "outputs": {
+        "discountRate": 0.15
+      }
+    }
+  ]
+}
+```
 
 ## Import
 
@@ -34,6 +70,7 @@ Supported formats:
 
 - `GET /api/v1/decision-tables/{id}/versions`
 - `GET /api/v1/decision-tables/{id}/versions/{version}`
+- `GET /api/v1/decision-tables/{id}/versions/{v1}/diff/{v2}` (control-plane endpoint)
 - `GET /api/v1/decision-tables/{id}/audit`
 - `GET /api/v1/decision-tables/audit`
 

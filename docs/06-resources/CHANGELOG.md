@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.9.4] - 2026-03-07
+
+### Added
+- Track 4/5 execution continuity plan (`Docs/track4-track5-execution-plan.md`) with explicit recovery order after context compaction.
+- Pre-publish verification matrix for `mr-base-sln`, `mr-mod-sln`, and `mr-micro-sln` using LocalNuGet feeds (`LocalNuget` / `LocalNuGetFeed`).
+
+### Changed
+- `muonroi-control-plane` runtime license exposure and bootstrap flow finalized:
+  - `GET /api/v1/info` returns `activationProof`.
+  - dashboard bootstrap initializes UI license verifier before rendering.
+- `muonroi-ui-engine` OSS boundary hardening:
+  - `@muonroi/ui-engine-rule-components` moved to optional peer dependency in OSS React package.
+  - lockfile + publish workflow adjusted for stable CI.
+
+### Fixed
+- Template repositories updated for current `MRepository` constructor signature by adding `IMDateTimeService` in generated repository constructors.
+- Base template auth wiring updated to current API:
+  - `AddValidateBearerToken<BaseTemplateDbContext, Permission>(configuration)`.
+
 ## [1.9.3] - 2026-03-07
 
 ### Added
