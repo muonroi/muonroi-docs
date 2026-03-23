@@ -148,6 +148,7 @@ const sidebars: SidebarsConfig = {
         'reference/interface-guide',
         'reference/package-reference',
         'reference/roslyn-analyzers',
+        'reference/rule-flow-contract-api',
       ],
     },
     {
