@@ -141,6 +141,13 @@ public class BravoOrderController : OrderControllerBase { ... }
 | Unified client for multiple protos | `[GenerateSiteGrpcFacade]` |
 | Per-site REST API | `AddSiteControllers` |
 
+## Source Files
+- `src/Muonroi.Tenancy.SiteProfile.Grpc/SiteCodeGrpcInterceptor.cs`
+- `src/Muonroi.Tenancy.SiteProfile.Grpc/SiteGrpcDispatchHelper.cs`
+- `src/Muonroi.Tenancy.SiteProfile.Grpc/SiteGrpcServiceAttribute.cs`
+- `samples/TestProject.Aggregate/src/TestProject.Aggregate.Host/v1/Services/OrderGrpcDispatcher.cs`
+- `samples/TestProject.Service/src/TestProject.Service.Host/Program.cs`
+
 ## Next Steps
 
 - [Site Profile Overview](site-profile-overview.md) — Understanding the multi-site architecture.

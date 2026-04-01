@@ -58,7 +58,7 @@ if (containerCol != null) {
 Marker interpolation is the preferred way to write complex SQL while maintaining site awareness. Any text wrapped in `[[ ]]` is replaced with the site's mapped column name.
 
 ### InterpolateMarkers() (Strict Mode)
-Replaces `[[PropertyName]]` with the mapped column name. **Throws an exception** if the property references a removed column. Use this for `WHERE`, `JOIN`, and `GROUP BY` where a missing column is a logic error.
+Replaces `[[PropertyName]]` with the mapped column name. **Throws an `InvalidOperationException`** if the property references a removed column. Use this for `WHERE`, `JOIN`, and `GROUP BY` where a missing column is a logic error.
 
 ```csharp
 string sql = _sqlBuilder.InterpolateMarkers("SELECT * FROM orders WHERE [[BookingNo]] = @b");
@@ -67,16 +67,41 @@ string sql = _sqlBuilder.InterpolateMarkers("SELECT * FROM orders WHERE [[Bookin
 ```
 
 ### InterpolateMarkersSafe() (Fallback Mode)
-Replaces missing columns with a fallback value (default is `NULL`) instead of throwing. This is safer for `SELECT` lists where you want the property in your DTO to be null if the column is missing.
+Replaces missing columns with a fallback value (default is `NULL`) instead of throwing. This is useful for `SELECT` lists where you want the property in your DTO to be null if the column is missing.
 
 ```csharp
 string sql = _sqlBuilder.InterpolateMarkersSafe("SELECT [[BookingNo]], [[ContainerNo]] FROM orders");
 // Site with ContainerNo removed: "SELECT BOOKING_NO, NULL FROM orders"
 ```
 
-:::danger WHERE Clause Risk
-Do **not** use `InterpolateMarkersSafe` in a `WHERE` clause. If a column is missing, it will result in `WHERE NULL = @val`, which is always false and may lead to silent data loss or empty results.
-:::
+### ⚠ InterpolateMarkersSafe Caveats
+While "Safe" mode prevents exceptions, it can cause silent logic errors if used in the wrong SQL context:
+
+| Context | Fallback Result | Impact | Risk |
+| :--- | :--- | :--- | :--- |
+| **SELECT** list | `NULL AS Property` | DTO property becomes null. | ✅ Safe |
+| **WHERE** clause | `NULL = @val` | Condition becomes `UNKNOWN` (always false). | ⚠ Silent data loss |
+| **JOIN ON** | `NULL = NULL` | Join condition fails (FALSE). | ❌ Mismatching/Missing data |
+| **ORDER BY** | `ORDER BY NULL` | Sorting is ignored for that column. | ⚠ Incorrect ordering |
+| **GROUP BY** | `GROUP BY NULL` | All rows collapse into a single group. | ❌ Wrong aggregation |
+
+## Interpolate() [Obsolete] Migration
+
+The legacy `Interpolate()` method which rewrites `alias.COLUMN AS Property` patterns is now obsolete. It was fragile for complex queries and required table aliases.
+
+**Migration Steps:**
+1.  Replace `Interpolate(sql)` calls with `InterpolateMarkers(sql)`.
+2.  Update your SQL strings to use the `[[PropertyName]]` syntax.
+
+```csharp
+// ❌ Old (Fragile)
+const string sql = "SELECT od.BOOKING_NO AS BookingNo FROM orders od";
+builder.Interpolate(sql);
+
+// ✅ New (Robust)
+const string sql = "SELECT [[BookingNo]] AS BookingNo FROM orders";
+builder.InterpolateMarkers(sql);
+```
 
 ## Method Decision Table
 
@@ -109,6 +134,10 @@ public async Task<List<OrderDto>> GetOrdersAsync(string bookingNo)
     return (await _dapper.QueryAsync<OrderDto>(finalSql, new { bookingNo })).ToList();
 }
 ```
+
+## Source Files
+- `src/Muonroi.Tenancy.SiteProfile.Web/Dapper/SiteSqlBuilder.cs`
+- `tests/Muonroi.Tenancy.SiteProfile.Web.Tests/Dapper/SiteSqlBuilderTests.cs`
 
 ## Next Steps
 

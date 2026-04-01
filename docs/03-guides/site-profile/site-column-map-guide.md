@@ -39,7 +39,8 @@ public sealed class BravoColumnMap : DefaultSiteColumnMap
     // Define extra columns specific to this site
     private static readonly SiteExtraColumn[] s_extras =
     [
-        new("TrackingReference", "BRAVO_TRACKING_REF", typeof(string)),
+        // Params: PropertyName, ColumnName, ClrType, IsNullable
+        new("TrackingReference", "BRAVO_TRACKING_REF", typeof(string), true),
     ];
 
     public override string Column(string propertyName) => propertyName switch
@@ -94,6 +95,12 @@ It is critical to keep your EF Core configurations and your `ISiteColumnMap` in 
 - **`SiteSqlBuilder.Select()`**: Automatically filters out columns where `HasColumn()` returns false.
 - **`SiteSqlBuilder.Col()`**: Returns the mapped column name (e.g., `BOOKING_NUMBER`).
 - **`InterpolateMarkers()`**: Replaces `[[PropertyName]]` with the mapped column name and throws if the column is removed.
+
+## Source Files
+- `src/Muonroi.Tenancy.SiteProfile.Web/Dapper/ISiteColumnMap.cs`
+- `src/Muonroi.Tenancy.SiteProfile.Web/Dapper/DefaultSiteColumnMap.cs`
+- `src/Muonroi.Tenancy.SiteProfile.Web/Dapper/SiteExtraColumn.cs`
+- `samples/TestProject.Service/src/TestProject.Service.Sites.Bravo/BravoColumnMap.cs`
 
 ## Next Steps
 

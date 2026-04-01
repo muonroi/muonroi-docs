@@ -63,7 +63,7 @@ public partial class AlphaSiteProfile : ISiteProfile { ... }
 ```
 
 ### Implementing a Behavior
-A behavior must implement the `ISiteProfileBehavior` interface.
+ A behavior must implement the `ISiteProfileBehavior` interface.
 
 ```csharp
 public class SiteAuditBehavior : ISiteProfileBehavior
@@ -121,6 +121,13 @@ The `MapSiteGrpcServices()` extension in `Program.cs` will automatically discove
 | `[SiteProfileBehavior]` | Class | Applies reusable DI logic (Auditing, Quotas, etc.). |
 | `[GenerateSiteGrpcFacade]` | Interface | Combines shared and site-specific gRPC clients. |
 | `[SiteGrpcService]` | Class | Registers a site-specific gRPC service endpoint. |
+
+## Source Files
+- `src/Muonroi.Tenancy.SiteProfile/GenerateSiteProfileAttribute.cs`
+- `src/Muonroi.Tenancy.SiteProfile/SiteProfileAliasAttribute.cs`
+- `src/Muonroi.Tenancy.SiteProfile/ISiteProfileBehavior.cs`
+- `src/Muonroi.Tenancy.SiteProfile.Grpc/SiteGrpcServiceAttribute.cs`
+- `src/Muonroi.Tenancy.SiteProfile.Grpc/GenerateSiteGrpcFacadeAttribute.cs`
 
 ## Next Steps
 

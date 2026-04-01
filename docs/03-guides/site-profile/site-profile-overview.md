@@ -86,6 +86,11 @@ The system is distributed across several NuGet packages:
 | `Muonroi.Tenancy.SiteProfile.Grpc` | gRPC specific support (Interceptors, dispatchers, facades). |
 | `Muonroi.Tenancy.SiteProfile.SourceGenerators` | Roslyn generators for automatic DI registration and scaffolding. |
 
+## Source Files
+- `src/Muonroi.Tenancy.SiteProfile/ISiteProfile.cs`
+- `src/Muonroi.Tenancy.SiteProfile/ISiteProfileResolver.cs`
+- `samples/TestProject.Service/` (Reference project structure)
+
 ## Next Steps
 
 - [Adding a New Site](adding-a-new-site.md) — Learn how to create your first site variant.

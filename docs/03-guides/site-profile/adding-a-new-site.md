@@ -176,6 +176,12 @@ public partial class CharlieSiteProfile : ISiteProfile {
 | `Hooks/` | No | Intercept pipeline steps (Before/After/Replace). |
 | `ColumnMap.cs` | No | Overrides for Dapper-based queries. |
 
+## Source Files
+- `samples/TestProject.Service/src/TestProject.Service.Sites.Default/` (Minimal example)
+- `samples/TestProject.Service/src/TestProject.Service.Sites.Bravo/` (Full override example)
+- `samples/TestProject.Service/src/TestProject.Service.Sites.Charlie/` (Alias example)
+- `samples/TestProject.Service/src/TestProject.Service.Host/Program.cs`
+
 ## Next Steps
 
 - [DbContext & Entities](dbcontext-and-entity-configuration.md) — Deep dive into schema configuration.

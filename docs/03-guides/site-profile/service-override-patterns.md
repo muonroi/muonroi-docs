@@ -150,6 +150,16 @@ public class MyService(IOperMethodStrategy strategy) { ... }
 
 ---
 
+## Combining Patterns
+
+Complex sites (like the `TCI` site in our ecosystem) often use all three patterns together to manage their unique requirements:
+
+1.  **Virtual Override**: `TciCreateOrderService` overrides the core `CreateAsync` method to use a custom `SqlBuilder`.
+2.  **Pipeline Hook**: `TciMapOrderDetailAfterHook` is registered to enrich the Order entity with site-specific metadata after it's mapped from the database.
+3.  **Keyed Strategy**: `TciOperMethodStrategy` is injected into the core service to normalize legacy operation codes (`HSLA` → `HXLA`) specifically for TCI database records.
+
+---
+
 ## Comparison Table
 
 | Criteria | Virtual Override | Pipeline Hook | Keyed Strategy |
@@ -158,6 +168,13 @@ public class MyService(IOperMethodStrategy strategy) { ... }
 | **Type Safety** | High (Compile-time) | Medium (String keys) | High (Interfaces) |
 | **Composable** | No (Single win) | **Yes** (Stackable) | No (Single win) |
 | **Testing** | Easy (Mock service) | Easy (Check FactBag) | Easy (Mock strategy) |
+
+## Source Files
+- `samples/TestProject.Service/src/TestProject.Service.Core/Services/OrderServiceBase.cs`
+- `samples/TestProject.Service/src/TestProject.Service.Sites.Bravo/BravoOrderService.cs`
+- `samples/TestProject.Service/src/TestProject.Service.Sites.Bravo/BravoPipelineHooks.cs`
+- `src/Muonroi.Tenancy.SiteProfile.Web/Pipeline/ISiteStepHook.cs`
+- `src/Muonroi.Tenancy.SiteProfile.Web/Pipeline/MSitePipeline.cs`
 
 ## Next Steps
 

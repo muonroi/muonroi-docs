@@ -113,6 +113,26 @@ modelBuilder.Entity<OrderDetailEntity>()
     .IsUnique();
 ```
 
+### Virtual Configuration Groups
+To make base configurations more maintainable, use virtual methods to group columns that sites commonly override together.
+
+```csharp
+// In MyProject.Core/EntityConfigurations/OrderDetailConfigBase.cs
+public class OrderDetailConfigBase : IEntityTypeConfiguration<OrderDetailEntity>
+{
+    public void Configure(EntityTypeBuilder<OrderDetailEntity> builder)
+    {
+        ConfigureCommonFields(builder);
+        ConfigureSiteSpecificFields(builder);
+    }
+
+    protected virtual void ConfigureCommonFields(EntityTypeBuilder<OrderDetailEntity> builder) { ... }
+    
+    // Sites override this method to handle their specific column naming groups
+    protected virtual void ConfigureSiteSpecificFields(EntityTypeBuilder<OrderDetailEntity> builder) { ... }
+}
+```
+
 ## AddSiteDbContext — Coexisting Safely
 
 Standard EF Core registration (`AddDbContext<T>`) registers a non-generic `DbContextOptions` which can cause conflicts in multi-site environments. Muonroi provides `AddSiteDbContext<T>` to register only the generic `DbContextOptions<T>`, allowing multiple sites to coexist safely in the same container.
@@ -138,6 +158,13 @@ services.AddSiteMigrationRunner(o =>
     o.Strategy = MigrationStrategy.ValidateOnly; // Check only, don't migrate
 });
 ```
+
+## Source Files
+- `samples/TestProject.Service/src/TestProject.Service.Core/Infrastructure/ContextBase.cs`
+- `samples/TestProject.Service/src/TestProject.Service.Core/Infrastructure/EntityConfigurations/OrderDetailConfigBase.cs`
+- `samples/TestProject.Service/src/TestProject.Service.Sites.Alpha/AlphaOrderContext.cs`
+- `samples/TestProject.Service/src/TestProject.Service.Sites.Bravo/BravoOrderContext.cs`
+- `src/Muonroi.Tenancy.SiteProfile.Web/SiteProfileDbContextExtensions.cs`
 
 ## Next Steps
 
