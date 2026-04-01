@@ -97,6 +97,78 @@ services.AddSiteStepHook<IOrderService>(
 );
 ```
 
+### Implementing a Hook
+
+A hook receives a `FactBag` — a dictionary that carries data between pipeline steps:
+
+```csharp
+// Before hook: validates business rules before order mapping
+public sealed class BravoValidateOrderHook : ISiteStepHook
+{
+    public Task ExecuteAsync(FactBag facts, CancellationToken cancellationToken = default)
+    {
+        var bookingNo = facts.Get<string>("order.booking_no");
+        if (string.IsNullOrEmpty(bookingNo))
+            throw new InvalidOperationException("BRAVO requires order.booking_no");
+
+        facts.Set("bravo.validated", true);
+        return Task.CompletedTask;
+    }
+}
+
+// After hook: enriches entity with site-specific metadata
+public sealed class BravoEnrichOrderHook : ISiteStepHook
+{
+    public Task ExecuteAsync(FactBag facts, CancellationToken cancellationToken = default)
+    {
+        facts.Set("bravo.enriched", true);
+        facts.Set("bravo.enriched_at", DateTime.UtcNow.ToString("O"));
+        return Task.CompletedTask;
+    }
+}
+```
+
+### Injecting MSitePipeline in a Service
+
+The base service optionally injects `MSitePipeline<T>` — it's `null` for sites that don't register hooks:
+
+```csharp
+public class CreateOrderServiceBase<TContext, TOrderDetail>
+{
+    protected readonly MSitePipeline<CreateOrderServiceBase<TContext, TOrderDetail>>? Pipeline;
+
+    public CreateOrderServiceBase(
+        TContext writeContext,
+        // ... other dependencies
+        MSitePipeline<CreateOrderServiceBase<TContext, TOrderDetail>>? pipeline = null)
+    {
+        Pipeline = pipeline;
+    }
+
+    protected virtual async Task<TOrderDetail> MapOrderDetailCreateAsync(/* params */)
+    {
+        var orderDetail = new TOrderDetail();
+        // ... base mapping logic
+
+        // Run pipeline hooks if registered
+        if (Pipeline is not null)
+        {
+            var facts = new FactBag();
+            facts.Set("orderDetail", orderDetail);
+            await Pipeline.RunStepAsync("MapOrderDetailCreate", facts);
+            orderDetail = facts.Get<TOrderDetail>("orderDetail");
+        }
+
+        return orderDetail;
+    }
+}
+```
+
+:::info MSitePipeline is optional
+Sites that don't register hooks don't need to inject `MSitePipeline`. The `= null` default
+parameter makes it opt-in. Base service checks `Pipeline is not null` before running steps.
+:::
+
 ### 3. Use the Pipeline in the Service
 Inject `MSitePipeline<T>` into your service and call `RunStep`.
 
@@ -150,6 +222,71 @@ public class MyService(IOperMethodStrategy strategy) { ... }
 
 ---
 
+## Pattern 4: Keyed Command Handler (CQRS)
+
+For aggregate projects using MediatR, override behavior by registering site-specific
+command handlers with keyed DI:
+
+### Base Handler
+
+```csharp
+// Core: shared handler logic
+public class CreateOrderHandlerBase
+    : IRequestHandler<CreateOrderCommand, CreateOrderResponse>
+{
+    public virtual async Task<CreateOrderResponse> Handle(
+        CreateOrderCommand request, CancellationToken ct)
+    {
+        // Shared validation, TOS lookups, gRPC delegation
+        var client = _grpcClientFactory.CreateFacadeForCurrentSite<IDefaultFcdClient>();
+        return await client.CreateV4Async(request.ToGrpcRequest(), ct);
+    }
+}
+```
+
+### Site-Specific Handler
+
+```csharp
+// Bravo: adds pre-flight booking validation
+public sealed class BravoCreateOrderHandler : CreateOrderHandlerBase
+{
+    public override async Task<CreateOrderResponse> Handle(
+        CreateOrderCommand request, CancellationToken ct)
+    {
+        // Bravo-specific: validate booking via site-specific RPC
+        var client = _grpcClientFactory.CreateFacadeForCurrentSite<IBravoFcdClient>();
+        var validation = await client.ValidateBookingAsync(request.BookingNo, ct);
+
+        if (!validation.IsValid)
+            return CreateOrderResponse.Fail(validation.Message);
+
+        // Delegate to shared flow
+        return await base.Handle(request, ct);
+    }
+}
+```
+
+### Registration
+
+```csharp
+// In BravoAggSiteProfile.Additional.cs
+partial void RegisterAdditionalServices(IServiceCollection services, IConfiguration configuration)
+{
+    services.AddKeyedScoped<IRequestHandler<CreateOrderCommand, CreateOrderResponse>,
+        BravoCreateOrderHandler>(SiteIds.BRAVO);
+}
+```
+
+:::info When to use
+Use keyed command handlers when:
+- Your project uses MediatR (CQRS pattern)
+- You're in an aggregate/gateway project (no direct DB access)
+- Different sites need different orchestration flows
+- You want to intercept or extend the command pipeline per site
+:::
+
+---
+
 ## Combining Patterns
 
 Complex sites (like the `TCI` site in our ecosystem) often use all three patterns together to manage their unique requirements:
@@ -162,12 +299,13 @@ Complex sites (like the `TCI` site in our ecosystem) often use all three pattern
 
 ## Comparison Table
 
-| Criteria | Virtual Override | Pipeline Hook | Keyed Strategy |
-| :--- | :--- | :--- | :--- |
-| **Best for** | Entire logic replacement | Pre/post enrichment | Swapping algorithms |
-| **Type Safety** | High (Compile-time) | Medium (String keys) | High (Interfaces) |
-| **Composable** | No (Single win) | **Yes** (Stackable) | No (Single win) |
-| **Testing** | Easy (Mock service) | Easy (Check FactBag) | Easy (Mock strategy) |
+| Criteria | Virtual Override | Pipeline Hook | Keyed Strategy | Command Handler |
+|----------|-----------------|---------------|----------------|-----------------|
+| **Best for** | Replace method logic | Pre/post-process | Swap algorithm | Orchestration flow |
+| **Project type** | Service | Service | Service | Aggregate |
+| **Composable** | ❌ Single override | ✅ Multiple stack | ❌ Single impl | ❌ Single override |
+| **Requires base change** | No | No | No | No |
+| **Testing** | Easy (Mock service) | Easy (Check FactBag) | Easy (Mock strategy) | Easy (Mock handler) |
 
 ## Source Files
 - `samples/TestProject.Service/src/TestProject.Service.Core/Services/OrderServiceBase.cs`

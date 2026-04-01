@@ -22,9 +22,17 @@ public partial class BravoSiteProfile : ISiteProfile
 ```
 
 ### Parameters
-- **`SiteId`**: The unique string identifier for the site (used as the DI key).
-- **`DbContextType`**: The site-specific `DbContext` class to be registered.
-- **`SkipDbContextRegistration`**: (Optional) Set to `true` if you want to handle `DbContext` registration manually.
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `siteId` | `string` | Required | Unique site identifier (e.g., `"BRAVO"`) |
+| `dbContextType` | `Type` | Required | The site's DbContext type. Use `typeof(object)` for aggregate projects |
+| `SkipDbContextRegistration` | `bool` | `false` | Set to `true` for projects without a DbContext (aggregates, gateways) |
+
+When `SkipDbContextRegistration = true`:
+- No `AddSiteDbContext<T>()` call is generated
+- `typeof(object)` is used as the DbContext type parameter (placeholder)
+- Only `RegisterAdditionalServices()` is called for custom DI
 
 ### What it Generates
 The source generator creates a partial implementation of your profile class containing:
@@ -112,6 +120,57 @@ The `MapSiteGrpcServices()` extension in `Program.cs` will automatically discove
 
 ---
 
+## [SiteColumn] — Property-Level Column Mapping
+
+An alternative to fluent API overrides in `OnModelCreating()`. Decorate entity properties
+directly with column metadata:
+
+```csharp
+public class BravoOrder
+{
+    public long Id { get; set; }
+
+    [SiteColumn(Name = "BOOKING_NUMBER", MaxLength = 25)]
+    public string? BookingNo { get; set; }
+
+    [SiteColumn(IsRequired = true, DefaultValue = "N")]
+    public string? Status { get; set; }
+
+    // No attribute → uses UPPER_SNAKE_CASE convention: CONTAINER_NO
+    public string? ContainerNo { get; set; }
+}
+```
+
+### Parameters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `Name` | `string?` | Override column name |
+| `MaxLength` | `int?` | Column max length constraint |
+| `IsRequired` | `bool` | NOT NULL constraint |
+| `DefaultValue` | `string?` | SQL default value |
+| `HasColumnType` | `string?` | Database type override (e.g., `"decimal(18,4)"`) |
+| `Ignore` | `bool` | Completely exclude property from EF mapping |
+
+### Applying
+
+```csharp
+protected override void ConfigureSiteSpecific(ModelBuilder modelBuilder)
+{
+    modelBuilder.ApplySiteColumnOverrides<BravoOrder>(SiteIds.BRAVO);
+}
+```
+
+:::tip When to use [SiteColumn] vs fluent API
+- **[SiteColumn]**: Best when column differences are simple (name, length, required) and you want them visible on the entity
+- **Fluent API**: Best for complex configurations (indexes, relationships, computed columns)
+- Both can be used together — fluent API overrides [SiteColumn] if both are set
+:::
+
+**Package:** `Muonroi.EntityFrameworkCore.Configuration`
+
+---
+
 ## Attribute Summary Table
 
 | Attribute | Target | Purpose |
@@ -121,6 +180,7 @@ The `MapSiteGrpcServices()` extension in `Program.cs` will automatically discove
 | `[SiteProfileBehavior]` | Class | Applies reusable DI logic (Auditing, Quotas, etc.). |
 | `[GenerateSiteGrpcFacade]` | Interface | Combines shared and site-specific gRPC clients. |
 | `[SiteGrpcService]` | Class | Registers a site-specific gRPC service endpoint. |
+| `[SiteColumn]` | Property | Direct EF Core column mapping on entity properties. |
 
 ## Source Files
 - `src/Muonroi.Tenancy.SiteProfile/GenerateSiteProfileAttribute.cs`
@@ -128,6 +188,7 @@ The `MapSiteGrpcServices()` extension in `Program.cs` will automatically discove
 - `src/Muonroi.Tenancy.SiteProfile/ISiteProfileBehavior.cs`
 - `src/Muonroi.Tenancy.SiteProfile.Grpc/SiteGrpcServiceAttribute.cs`
 - `src/Muonroi.Tenancy.SiteProfile.Grpc/GenerateSiteGrpcFacadeAttribute.cs`
+- `src/Muonroi.EntityFrameworkCore.Configuration/SiteColumnAttribute.cs`
 
 ## Next Steps
 

@@ -47,6 +47,10 @@ MyProject.Sites.Bravo/
 │   └── BravoOrderService.cs         # Business logic overrides (optional)
 ├── Hooks/
 │   └── BravoValidationHook.cs       # Pipeline hooks (optional)
+├── Grpc/                            # Site-specific gRPC implementations
+│   └── BravoGrpcService.cs          # [SiteGrpcService] implementation
+├── Protos/                          # Per-site .proto definitions
+│   └── service.bravo.proto          # Site-specific proto file
 └── BravoColumnMap.cs                # Column name overrides for Dapper (optional)
 ```
 
@@ -164,6 +168,39 @@ public partial class CharlieSiteProfile : ISiteProfile {
 ```
 *Charlie will now reuse all keyed service registrations from DEFAULT automatically.*
 
+## Aggregate Site (No DbContext)
+
+For aggregate/gateway projects that orchestrate via gRPC instead of owning a database,
+use `SkipDbContextRegistration = true` and pass `typeof(object)` as the DbContext type:
+
+```csharp
+[GenerateSiteProfile(SiteIds.BRAVO, typeof(object), SkipDbContextRegistration = true)]
+public partial class BravoAggSiteProfile : ISiteProfile
+{
+    public string SiteId => SiteIds.BRAVO;
+}
+```
+
+The `RegisterAdditionalServices` partial method registers handlers instead of services:
+
+```csharp
+public partial class BravoAggSiteProfile
+{
+    partial void RegisterAdditionalServices(IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddKeyedScoped<IRequestHandler<CreateOrderCommand, CreateOrderResponse>,
+            BravoCreateOrderHandler>(SiteIds.BRAVO);
+    }
+}
+```
+
+:::tip When to use
+Use `SkipDbContextRegistration = true` when your project:
+- Calls downstream services via gRPC (no direct DB access)
+- Acts as an API gateway or orchestrator
+- Uses MediatR command handlers instead of repository services
+:::
+
 ## File Reference Summary
 
 | File | Required? | Purpose |
@@ -174,6 +211,8 @@ public partial class CharlieSiteProfile : ISiteProfile {
 | `Entity + Config` | **Yes** | Defines schema divergence (column names, constraints). |
 | `Services/` | No | Override business logic for this site. |
 | `Hooks/` | No | Intercept pipeline steps (Before/After/Replace). |
+| `Grpc/` | No | Site-specific gRPC service implementation ([SiteGrpcService]). |
+| `Protos/` | No | Per-site .proto files (only when shared proto is insufficient). |
 | `ColumnMap.cs` | No | Overrides for Dapper-based queries. |
 
 ## Source Files

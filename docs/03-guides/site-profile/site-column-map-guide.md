@@ -60,9 +60,29 @@ public sealed class BravoColumnMap : DefaultSiteColumnMap
 }
 ```
 
-## How to Register a Column Map
+## Registration
 
-Register your custom map as a **keyed singleton** in your `SiteProfile.Additional.cs`.
+Column maps require **two registrations**: the keyed singleton and the site resolver.
+
+```csharp
+// Step 1: Register site-specific column maps (keyed by site ID)
+services.AddKeyedSingleton<ISiteColumnMap, BravoColumnMap>(SiteIds.BRAVO);
+services.AddKeyedSingleton<ISiteColumnMap, TciColumnMap>(SiteIds.TCI);
+// DEFAULT uses DefaultSiteColumnMap automatically (no registration needed)
+
+// Step 2: Register the site resolver (resolves correct map per request)
+services.AddSiteResolvedService<ISiteColumnMap>();
+```
+
+:::warning Both lines are required
+`AddKeyedSingleton` registers the map for a specific site.
+`AddSiteResolvedService` registers the factory that resolves the correct map based on the current site code at request time.
+Without `AddSiteResolvedService`, injecting `ISiteColumnMap` will fail.
+:::
+
+### Registration in SiteProfile
+
+Alternatively, register in `RegisterAdditionalServices` inside each site profile:
 
 ```csharp
 public partial class BravoSiteProfile
@@ -70,12 +90,18 @@ public partial class BravoSiteProfile
     partial void RegisterAdditionalServices(IServiceCollection services, IConfiguration configuration)
     {
         services.AddKeyedSingleton<ISiteColumnMap, BravoColumnMap>(SiteIds.BRAVO);
-        
-        // Register the resolver factory so the app can resolve ISiteColumnMap per-request
-        services.AddSiteResolvedService<ISiteColumnMap>();
     }
 }
 ```
+
+The `AddSiteResolvedService<ISiteColumnMap>()` call is typically made once in `Program.cs` or
+in a shared infrastructure setup method.
+
+### Default Fallback
+
+Sites without a custom `ISiteColumnMap` registration automatically fall back to
+`DefaultSiteColumnMap` (PascalCase → UPPER_SNAKE_CASE convention). You do not need to
+explicitly register `DefaultSiteColumnMap` for the default site.
 
 ## Two-Layer Mapping Architecture
 

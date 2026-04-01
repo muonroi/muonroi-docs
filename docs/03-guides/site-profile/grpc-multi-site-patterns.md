@@ -35,29 +35,46 @@ This is the most common pattern (used by ~90% of sites). All sites share the sam
 ### 1. Create the Dispatcher
 Create a thin "dispatcher" class that inherits from the proto-generated base class. It uses the `SiteGrpcDispatchHelper` to route calls to the correct site-specific handler.
 
-```csharp
-public class OrderGrpcDispatcher : OrderService.OrderServiceBase
-{
-    private readonly SiteGrpcDispatchHelper<OrderService.OrderServiceBase> _helper;
+### Dispatcher Implementation
 
-    public OrderGrpcDispatcher(SiteGrpcDispatchHelper<OrderService.OrderServiceBase> helper)
+The dispatcher class extends the proto-generated base and delegates each RPC to the
+site-resolved handler via `SiteGrpcDispatchHelper`:
+
+```csharp
+public class OrderGrpcDispatcher : AggregateRpc.AggregateRpcBase
+{
+    private readonly SiteGrpcDispatchHelper<AggregateRpc.AggregateRpcBase> _helper;
+
+    public OrderGrpcDispatcher(SiteGrpcDispatchHelper<AggregateRpc.AggregateRpcBase> helper)
         => _helper = helper;
 
-    public override Task<CreateOrderReply> CreateOrder(CreateOrderRequest request, ServerCallContext context)
-        => _helper.DispatchAsync(context, (handler, ctx) => handler.CreateOrder(request, ctx));
+    public override Task<HandleContainerReply> HandleContainer(
+        HandleContainerRequest request, ServerCallContext context)
+        => _helper.DispatchAsync(context, (handler, ctx) =>
+            handler.HandleContainer(request, ctx));
+
+    public override Task<GetContainersReply> GetContainers(
+        GetContainersRequest request, ServerCallContext context)
+        => _helper.DispatchAsync(context, (handler, ctx) =>
+            handler.GetContainers(request, ctx));
 }
 ```
 
-### 2. Register Handlers
-Register each site's implementation as a **keyed gRPC handler**.
+Each RPC is a one-liner that delegates to the site-resolved handler.
+
+### Registration
 
 ```csharp
-// Program.cs
-services.AddSiteGrpcHandler<OrderService.OrderServiceBase, SharedOrderService>("default");
-services.AddSiteGrpcHandler<OrderService.OrderServiceBase, BravoOrderService>("BRAVO");
+// Register site-specific handlers (keyed by site ID)
+services.AddSiteGrpcHandler<AggregateRpc.AggregateRpcBase,
+    SharedOrderGrpcService>("default");
+services.AddSiteGrpcHandler<AggregateRpc.AggregateRpcBase,
+    BravoOrderGrpcService>(SiteIds.BRAVO);
 
-// Register the dispatcher itself
-services.AddSiteGrpcDispatcher<OrderService.OrderServiceBase>();
+// Register the dispatcher infrastructure
+services.AddSiteGrpcDispatcher<AggregateRpc.AggregateRpcBase>();
+
+// Map the dispatcher as the gRPC endpoint
 app.MapGrpcService<OrderGrpcDispatcher>();
 ```
 
@@ -71,22 +88,71 @@ Use this pattern when a specific site (like a legacy integration) has a complete
 Apply the `[SiteGrpcService]` attribute to your implementation class.
 
 ```csharp
-[SiteGrpcService(SiteIds.TCI)]
-public class TciOrderGrpcService : TciOrder.TciOrderBase 
+[SiteGrpcService(SiteIds.BRAVO, Reason = "Bravo has unique container validation RPCs")]
+public class BravoGrpcService : BravoAggregateRpc.BravoAggregateRpcBase
 {
-    public override async Task<TciReply> ProcessTciOrder(TciRequest request, ServerCallContext context)
+    public override async Task<BravoValidateReply> ValidateBooking(
+        BravoValidateRequest request, ServerCallContext context)
     {
         // TCI-specific implementation
     }
 }
 ```
 
+The `Reason` parameter is optional — it documents *why* this service needs a separate proto,
+useful for team onboarding and code reviews.
+
 ### 2. Map Services
 Call `MapSiteGrpcServices()` in your `Program.cs`. This will automatically discover and register all classes marked with the attribute.
 
+### Mapping Per-Site Services
+
+Per-site gRPC services are auto-discovered from assemblies:
+
 ```csharp
-app.MapSiteGrpcServices();
+// Scan specific assemblies for [SiteGrpcService] types
+app.MapSiteGrpcServices(typeof(BravoGrpcService).Assembly);
+
+// Or use the source-generated registry (discovers all [SiteGrpcService] in the project)
+app.MapSiteGrpcServices(SiteGrpcServiceRegistry.GetAllSiteGrpcServices);
 ```
+
+### Proto File Location
+
+Site-specific `.proto` files live inside the site project:
+
+```
+Sites/Bravo/
+└── Protos/
+    └── service.bravo.proto    # Bravo-specific messages and RPCs
+```
+
+Reference in the `.csproj`:
+
+```xml
+<ItemGroup>
+  <Protobuf Include="Protos\service.bravo.proto" GrpcServices="Server" />
+</ItemGroup>
+```
+
+:::tip Shared vs Per-Site Proto
+Most sites (20/22 in production) use the shared proto. Create a per-site proto only when the
+site has fundamentally different message structures or RPCs that cannot be represented as
+optional fields in the shared proto.
+:::
+
+---
+
+## Fallback Behavior
+
+When the site code is not found or not provided:
+
+| Configuration | Behavior |
+|---------------|----------|
+| `Required = false` (default) | Falls back to `"default"` site handler |
+| `Required = true` | Returns gRPC `INVALID_ARGUMENT` error |
+
+The fallback chain: exact site key → `"default"` key → error if no default registered.
 
 ---
 

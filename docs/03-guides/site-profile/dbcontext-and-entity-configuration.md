@@ -113,6 +113,27 @@ modelBuilder.Entity<OrderDetailEntity>()
     .IsUnique();
 ```
 
+### Attribute-Based Column Mapping ([SiteColumn])
+
+Instead of overriding `ConfigureSiteSpecific()`, you can decorate entity properties
+with `[SiteColumn]` attributes:
+
+```csharp
+public class BravoOrder
+{
+    [SiteColumn(Name = "BOOKING_NUMBER", MaxLength = 25)]
+    public string? BookingNo { get; set; }
+}
+```
+
+Then apply in the DbContext:
+
+```csharp
+modelBuilder.ApplySiteColumnOverrides<BravoOrder>(SiteIds.BRAVO);
+```
+
+See [Site Profile Attributes](./site-profile-attributes.md#sitecolumn--property-level-column-mapping) for full parameter reference.
+
 ### Virtual Configuration Groups
 To make base configurations more maintainable, use virtual methods to group columns that sites commonly override together.
 

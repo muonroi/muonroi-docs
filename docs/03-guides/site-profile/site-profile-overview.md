@@ -75,6 +75,27 @@ MyProject/
 4.  **Execution**: Business logic executes. If the site has specific overrides, they are used; otherwise, it falls back to the `Default` implementation.
 5.  **Response**: The result is returned. The caller remains unaware of the site-specific implementation details.
 
+## Service vs Aggregate Architecture
+
+SiteProfile supports two project types:
+
+| Type | Has DbContext? | Typical Use | `SkipDbContextRegistration` |
+|------|---------------|-------------|----------------------------|
+| **Service** | Yes | Direct DB access, EF Core queries | `false` (default) |
+| **Aggregate** | No | Orchestration, gRPC client calls | `true` |
+
+Service projects own the database — they have per-site DbContexts and entity configurations.
+Aggregate projects orchestrate calls to service projects via gRPC — they have no DbContext,
+only command handlers and gRPC facades.
+
+```csharp
+// Service project: has its own DbContext
+[GenerateSiteProfile(SiteIds.BRAVO, typeof(BravoOrderContext))]
+
+// Aggregate project: no DbContext, delegates via gRPC
+[GenerateSiteProfile(SiteIds.BRAVO, typeof(object), SkipDbContextRegistration = true)]
+```
+
 ## Packages
 
 The system is distributed across several NuGet packages:
