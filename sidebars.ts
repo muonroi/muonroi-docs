@@ -69,6 +69,20 @@ const sidebars: SidebarsConfig = {
         },
         {
           type: 'category',
+          label: 'Site Profile',
+          items: [
+            'guides/site-profile/site-profile-overview',
+            'guides/site-profile/adding-a-new-site',
+            'guides/site-profile/dbcontext-and-entity-configuration',
+            'guides/site-profile/service-override-patterns',
+            'guides/site-profile/site-profile-attributes',
+            'guides/site-profile/site-column-map-guide',
+            'guides/site-profile/sql-builder-guide',
+            'guides/site-profile/grpc-multi-site-patterns',
+          ],
+        },
+        {
+          type: 'category',
           label: 'Control Plane',
           items: [
             'guides/control-plane/control-plane-overview',
