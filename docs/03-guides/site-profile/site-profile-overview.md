@@ -77,35 +77,35 @@ MyProject/
 
 ## Site Code Resolution at Runtime
 
-At the core of Site Profile's routing mechanism is the `IWorkContextAccessor` interface. Consumers implement this interface to provide the current site code from their request context (e.g., HTTP headers, gRPC metadata, or ambient state).
-
-```csharp
-public class MyWorkContextAccessor : IWorkContextAccessor
-{
-    public WorkContext? WorkContext { get; set; }
-}
-```
-
-The `WorkContext.SiteCode` property feeds into `ISiteProfileResolver`, which resolves the correct `ISiteProfile` for the current request. This triggers keyed DI resolution — all site-specific services (DbContext, column maps, business logic) are automatically selected based on the site code.
-
-**Resolution flow:**
-
-```
-Request → IWorkContextAccessor.WorkContext.SiteCode
-       → ISiteProfileResolver.Resolve(siteCode)
-       → Keyed DI: services registered for that site ID
-```
-
-You configure the `SiteCodeAccessor` during infrastructure setup in `Program.cs`:
+Site Profile routes every request to the correct site implementation using the `SiteCodeAccessor` delegate configured in `SiteInfrastructureOptions`. This delegate is a `Func<IServiceProvider, string?>` that you provide — the ecosystem does not prescribe how you obtain the site code.
 
 ```csharp
 builder.Services.AddSiteInfrastructure(builder.Configuration, options =>
 {
+    // You decide where the site code comes from:
+    // HTTP header, gRPC metadata, ambient state, etc.
     options.SiteCodeAccessor = sp =>
-        sp.GetRequiredService<IWorkContextAccessor>().WorkContext?.SiteCode;
+    {
+        var httpContext = sp.GetRequiredService<IHttpContextAccessor>().HttpContext;
+        return httpContext?.Request.Headers["X-Site-Code"].FirstOrDefault();
+    };
     options.SiteAssemblies = [ typeof(BravoSiteProfile).Assembly ];
 });
 ```
+
+**Resolution flow:**
+
+```
+Request → SiteCodeAccessor delegate returns site code
+       → ISiteProfileResolver.Resolve(siteCode)
+       → Keyed DI: services registered for that site ID
+```
+
+The `ISiteProfileResolver` takes the site code string and resolves the matching `ISiteProfile`. This triggers keyed DI resolution — all site-specific services (DbContext, column maps, business logic) are automatically selected based on the site code.
+
+:::tip Consumer pattern
+Many consumers create a `WorkContext` or similar ambient accessor to centralize site code resolution. This is a consumer-level pattern, not an ecosystem requirement — `SiteCodeAccessor` only needs a `Func<IServiceProvider, string?>`.
+:::
 
 See [Adding a New Site](adding-a-new-site.md) for the full setup walkthrough.
 
