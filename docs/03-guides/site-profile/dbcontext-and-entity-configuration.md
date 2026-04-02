@@ -204,6 +204,31 @@ public abstract class OrderContextBase<TContext> : DbContext
 If your project uses Site Profile **and** needs tenant isolation within each site, consider applying tenant filters manually in `ConfigureSiteSpecific()` rather than inheriting from `MDbContext`. This gives you full control over which entities get which filters.
 :::
 
+:::danger EF and Dapper Column Sync Risk
+Site Profile uses **two independent mapping layers**: EF Core (`HasColumnName()` in `OnModelCreating`) and Dapper (`ISiteColumnMap.Column()`). If these diverge, queries will silently return wrong data or fail at runtime.
+
+**The problem:** You rename a column in EF Core's fluent configuration but forget to update the `ISiteColumnMap` override (or vice versa). EF queries work correctly, but Dapper queries use the old column name — producing silent `NULL` values or SQL errors.
+
+**Startup validation pattern** — Add this check to a hosted service or startup routine to detect mismatches early:
+
+```csharp
+// Run in dev/staging only (not production) for performance
+var efProperties = context.Model.FindEntityType(typeof(MyEntity))!
+    .GetProperties()
+    .ToDictionary(p => p.Name, p => p.GetColumnName());
+
+foreach (var (propName, efColumn) in efProperties)
+{
+    string mapColumn = columnMap.Column(propName);
+    if (!string.Equals(efColumn, mapColumn, StringComparison.OrdinalIgnoreCase))
+        throw new InvalidOperationException(
+            $"Column mismatch for {propName}: EF='{efColumn}', ISiteColumnMap='{mapColumn}'");
+}
+```
+
+Run this for each site's DbContext + column map pair during application startup in non-production environments. This catches mismatches before they reach production.
+:::
+
 ## Schema Validation at Startup
 
 :::note Planned feature — not yet implemented

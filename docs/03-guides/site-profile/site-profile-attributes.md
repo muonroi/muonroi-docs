@@ -56,6 +56,29 @@ public partial class CharlieSiteProfile : ISiteProfile { ... }
 ### Effect
 The generator emits code that aliases all keyed services registered for the `TargetSiteId` (e.g., `DEFAULT`) to also be available under the current `SiteId` (e.g., `CHARLIE`). This eliminates the need to manually re-register shared services.
 
+:::danger Schema Divergence Risk
+Alias sites share **all** service implementations with their source site — including `ISiteColumnMap`, `SiteSqlBuilder` queries, and DbContext configurations. This means:
+
+- If the alias site's database has **different column names** than the source site, all Dapper queries will generate wrong SQL
+- If the alias site is **missing tables or columns** that the source site expects, queries will fail at runtime
+- If the alias site has **extra columns** not in the source site, those columns will be silently ignored
+
+**Rule:** Only use `[SiteProfileAlias]` when the alias site's database schema is **identical** to the source site's schema. Different connection strings and data are fine — different schemas are not.
+
+If schemas differ, create a full site profile with its own column map and DbContext:
+
+```csharp
+// Wrong — Delta has different column names but aliases Default
+[SiteProfileAlias(SiteIds.DEFAULT)]
+[GenerateSiteProfile(SiteIds.DELTA, typeof(DeltaOrderContext))]
+public partial class DeltaSiteProfile : ISiteProfile { }
+
+// Correct — Delta gets its own column map and service overrides
+[GenerateSiteProfile(SiteIds.DELTA, typeof(DeltaOrderContext))]
+public partial class DeltaSiteProfile : ISiteProfile { }
+```
+:::
+
 ---
 
 ## [SiteProfileBehavior] — Cross-Cutting Concerns

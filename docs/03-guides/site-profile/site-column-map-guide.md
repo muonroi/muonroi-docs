@@ -60,6 +60,45 @@ public sealed class BravoColumnMap : DefaultSiteColumnMap
 }
 ```
 
+## Per-Entity Column Mapping
+
+Sometimes the same property name maps to **different columns depending on which table** the query targets. For example, `BookingNo` might be `BOOKING_NUMBER` in the `CHART_DATA` table but `ORDER_BOOKING_EXT` in the `ORDER_DETAIL` table.
+
+The `Column(string propertyName, string tableName)` overload solves this:
+
+```csharp
+// ISiteColumnMap interface — default implementation delegates to Column(propertyName)
+string Column(string propertyName, string tableName) => Column(propertyName);
+```
+
+### Override Pattern
+
+Override the two-parameter `Column` method using a switch expression on both property and table:
+
+```csharp
+public sealed class BravoColumnMap : DefaultSiteColumnMap
+{
+    public override string Column(string propertyName, string tableName)
+        => (propertyName, tableName) switch
+        {
+            ("BookingNo", "ORDER_DETAIL") => "ORDER_BOOKING_EXT",
+            ("BookingNo", _) => "BOOKING_NUMBER",
+            _ => base.Column(propertyName)
+        };
+}
+```
+
+**How it works:**
+- `("BookingNo", "ORDER_DETAIL")` — matches the specific table, returns the table-specific column
+- `("BookingNo", _)` — wildcard fallback for all other tables using this property
+- `_ => base.Column(propertyName)` — delegates to the single-parameter `Column()` for all other properties
+
+### Zero Breaking Change
+
+The default implementation of `Column(string, string)` delegates to `Column(string)`. Sites that do not need per-entity mapping require **no changes** — existing column maps continue to work exactly as before.
+
+See [SQL Builder Guide](sql-builder-guide.md) for how `SelectFrom()` and `Col()` use this overload automatically.
+
 ## Registration
 
 Column maps require **two registrations**: the keyed singleton and the site resolver.

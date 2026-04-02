@@ -31,6 +31,36 @@ string sql = _sqlBuilder.SelectFrom("orders", "BookingNo", "ContainerNo");
 // "SELECT BOOKING_NO AS BookingNo, CONTAINER_NO AS ContainerNo FROM orders"
 ```
 
+### Per-Entity Table Context
+
+`SelectFrom()` and `SelectFromWithExtras()` pass the table name to `ISiteColumnMap.Column(propertyName, tableName)`, enabling per-entity column resolution. The same property can map to different column names depending on the target table:
+
+```csharp
+// Per-entity: BookingNo maps to different columns per table
+string sql1 = _sqlBuilder.SelectFrom("ORDER_DETAIL", "BookingNo", "ContainerNo");
+// -> "SELECT ORDER_BOOKING_EXT AS BookingNo, CONTAINER_NO AS ContainerNo FROM ORDER_DETAIL"
+
+string sql2 = _sqlBuilder.SelectFrom("CHART_DATA", "BookingNo", "ContainerNo");
+// -> "SELECT BOOKING_NUMBER AS BookingNo, CONTAINER_NO AS ContainerNo FROM CHART_DATA"
+```
+
+The `Col()` and `ColOrNull()` methods also support per-entity resolution with a `tableName` parameter:
+
+```csharp
+// Resolve column name for a specific table
+string col = _sqlBuilder.Col("BookingNo", "ORDER_DETAIL");
+// -> "ORDER_BOOKING_EXT"
+
+string? col = _sqlBuilder.ColOrNull("BookingNo", "ORDER_DETAIL");
+// -> "ORDER_BOOKING_EXT" (or null if HasColumn returns false)
+
+// Without tableName — uses global mapping as before
+string globalCol = _sqlBuilder.Col("BookingNo");
+// -> "BOOKING_NUMBER"
+```
+
+See [Site Column Map Guide](site-column-map-guide.md) for how to implement the `Column(propertyName, tableName)` override.
+
 ### SelectWithExtras()
 Use this when a site might have additional columns defined in its `ISiteColumnMap.ExtraColumns`.
 
