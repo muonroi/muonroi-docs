@@ -122,12 +122,22 @@ In your `Program.cs`, register the site assembly so the system can discover and 
 
 ```csharp
 // In MyProject.Host/Program.cs
-builder.Services.AddMultiSiteProfiles(config =>
+builder.Services.AddSiteInfrastructure(builder.Configuration, options =>
 {
-    // Register the assembly containing the site profiles
-    config.AddSiteServices(typeof(BravoSiteProfile).Assembly);
-    config.AddSiteServices(typeof(DefaultSiteProfile).Assembly);
+    options.SiteCodeAccessor = sp =>
+        sp.GetRequiredService<IWorkContextAccessor>().WorkContext?.SiteCode;
+    options.SiteAssemblies =
+    [
+        typeof(BravoSiteProfile).Assembly,
+        typeof(DefaultSiteProfile).Assembly,
+    ];
+    // Aggregate projects (no DbContext): options.SkipStartupValidation = true;
+    // NativeAOT (future): options.ManifestProfiles = SiteProfileManifest.CreateAll();
 });
+
+// Per-request resolved services (consumer-specific interfaces)
+builder.Services.AddSiteResolvedService<IOrderService>();
+builder.Services.AddSiteResolvedService<IOperMethodStrategy>();
 ```
 
 ## Step 7: Configure Connection Strings

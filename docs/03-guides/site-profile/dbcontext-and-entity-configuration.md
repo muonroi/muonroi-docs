@@ -170,15 +170,11 @@ services.AddSiteDbContext<AlphaOrderContext>();
 
 ## Schema Validation at Startup
 
-To prevent runtime errors due to schema drift, you can enable schema validation. This checks that the database schema matches the EF Core model for all registered sites.
-
-```csharp
-// In Program.cs
-services.AddSiteMigrationRunner(o => 
-{
-    o.Strategy = MigrationStrategy.ValidateOnly; // Check only, don't migrate
-});
-```
+:::note Planned feature — not yet implemented
+Schema validation at startup is planned but not yet available in the current release.
+When implemented, it will check that the database schema matches the EF Core model
+for all registered site DbContexts, preventing runtime errors due to schema drift.
+:::
 
 ## Source Files
 - `samples/TestProject.Service/src/TestProject.Service.Core/Infrastructure/ContextBase.cs`
