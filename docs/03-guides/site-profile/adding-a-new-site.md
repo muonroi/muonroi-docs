@@ -54,6 +54,21 @@ MyProject.Sites.Bravo/
 └── BravoColumnMap.cs                # Column name overrides for Dapper (optional)
 ```
 
+:::info Prerequisites — Source Generator Setup
+Before using `[GenerateSiteProfile]`, ensure the following:
+
+1. **NuGet package**: Install `Muonroi.Tenancy.SiteProfile.SourceGenerators` in your site project. This package contains the Roslyn source generator that emits the `RegisterServices` method and `RegisterAdditionalServices` partial method.
+
+2. **Partial class**: The site profile class **must** be declared as `partial` — the source generator emits code into the same class:
+
+   ```csharp
+   [GenerateSiteProfile("BRAVO", typeof(BravoOrderContext))]
+   public partial class BravoSiteProfile : ISiteProfile { }
+   ```
+
+3. **RegisterAdditionalServices**: This partial method is generated automatically. You implement it in a separate file (e.g., `BravoSiteProfile.Additional.cs`) to register keyed services for the site.
+:::
+
 ## Step 3: Create the Site Profile
 
 The `SiteProfile` class is the entry point for site-specific configuration. Use the `[GenerateSiteProfile]` attribute to trigger the source generator, which handles the boilerplate DI registration.

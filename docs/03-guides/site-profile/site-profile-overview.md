@@ -75,6 +75,40 @@ MyProject/
 4.  **Execution**: Business logic executes. If the site has specific overrides, they are used; otherwise, it falls back to the `Default` implementation.
 5.  **Response**: The result is returned. The caller remains unaware of the site-specific implementation details.
 
+## Site Code Resolution at Runtime
+
+At the core of Site Profile's routing mechanism is the `IWorkContextAccessor` interface. Consumers implement this interface to provide the current site code from their request context (e.g., HTTP headers, gRPC metadata, or ambient state).
+
+```csharp
+public class MyWorkContextAccessor : IWorkContextAccessor
+{
+    public WorkContext? WorkContext { get; set; }
+}
+```
+
+The `WorkContext.SiteCode` property feeds into `ISiteProfileResolver`, which resolves the correct `ISiteProfile` for the current request. This triggers keyed DI resolution — all site-specific services (DbContext, column maps, business logic) are automatically selected based on the site code.
+
+**Resolution flow:**
+
+```
+Request → IWorkContextAccessor.WorkContext.SiteCode
+       → ISiteProfileResolver.Resolve(siteCode)
+       → Keyed DI: services registered for that site ID
+```
+
+You configure the `SiteCodeAccessor` during infrastructure setup in `Program.cs`:
+
+```csharp
+builder.Services.AddSiteInfrastructure(builder.Configuration, options =>
+{
+    options.SiteCodeAccessor = sp =>
+        sp.GetRequiredService<IWorkContextAccessor>().WorkContext?.SiteCode;
+    options.SiteAssemblies = [ typeof(BravoSiteProfile).Assembly ];
+});
+```
+
+See [Adding a New Site](adding-a-new-site.md) for the full setup walkthrough.
+
 ## Service vs Aggregate Architecture
 
 SiteProfile supports two project types:

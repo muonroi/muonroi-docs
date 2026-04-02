@@ -168,6 +168,42 @@ services.AddSiteDbContext<AlphaOrderContext>();
 - **Connection Resolution**: Connection strings are resolved per-request via `ITenantConnectionStringFactory`.
 - **Autofac Compatibility**: Avoids "last-registration-wins" issues with non-generic options.
 
+## Ecosystem Base Class: MDbContext
+
+The Muonroi ecosystem provides `MDbContext` as a base class for standard tenant-scoped projects. It includes:
+
+- **Tenant-scoped query filters** — automatically applies `WHERE TenantId = @current` to all `ITenantScoped` entities
+- **`IMLog` integration** — structured logging via Muonroi's logging abstractions
+- **Soft-delete support** — `IsDeleted` filter applied globally
+
+### When to Use MDbContext vs Raw DbContext
+
+| Scenario | Recommended Base | Reason |
+|----------|-----------------|--------|
+| Standard tenant-scoped project (shared schema) | `MDbContext` | Get tenant filters, logging, soft-delete for free |
+| Site Profile project (schemas diverge per site) | Raw `DbContext` | Each site's DbContext has different entity configurations; `MDbContext` tenant filters may conflict with site-level isolation |
+| Aggregate/gateway project (no DB) | Neither | Use `SkipDbContextRegistration = true` |
+
+```csharp
+// Standard multi-tenant project — use MDbContext
+public class AppDbContext : MDbContext<AppDbContext>
+{
+    // Tenant filters, IMLog, soft-delete all auto-configured
+}
+
+// Site Profile project — use raw DbContext base
+public abstract class OrderContextBase<TContext> : DbContext
+    where TContext : DbContext
+{
+    // Each site overrides ConfigureSiteSpecific() with its own column mappings
+    protected abstract void ConfigureSiteSpecific(ModelBuilder modelBuilder);
+}
+```
+
+:::tip
+If your project uses Site Profile **and** needs tenant isolation within each site, consider applying tenant filters manually in `ConfigureSiteSpecific()` rather than inheriting from `MDbContext`. This gives you full control over which entities get which filters.
+:::
+
 ## Schema Validation at Startup
 
 :::note Planned feature — not yet implemented

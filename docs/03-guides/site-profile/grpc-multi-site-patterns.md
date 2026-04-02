@@ -207,6 +207,71 @@ public class BravoOrderController : OrderControllerBase { ... }
 | Unified client for multiple protos | `[GenerateSiteGrpcFacade]` |
 | Per-site REST API | `AddSiteControllers` |
 
+## Complete Program.cs Example
+
+Below is a full, copyable `Program.cs` showing all registrations in the correct order for a gRPC multi-site application:
+
+```csharp
+using MyProject.Core;
+using MyProject.Sites.Default;
+using MyProject.Sites.Bravo;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// 1. Site infrastructure (must come first — discovers all site profiles)
+builder.Services.AddSiteInfrastructure(builder.Configuration, options =>
+{
+    options.SiteCodeAccessor = sp =>
+        sp.GetRequiredService<IWorkContextAccessor>().WorkContext?.SiteCode;
+    options.SiteAssemblies =
+    [
+        typeof(DefaultSiteProfile).Assembly,
+        typeof(BravoSiteProfile).Assembly,
+    ];
+});
+
+// 2. gRPC site services (interceptor + dispatch infrastructure)
+builder.Services.AddSiteGrpcServices(options =>
+{
+    options.MetadataKey = "x-site-code";
+    options.HttpHeaderFallbackKey = "x-site-code";
+    options.Required = true;
+});
+
+// 3. Register site-specific gRPC handlers (keyed by site ID)
+builder.Services.AddSiteGrpcHandler<AggregateRpc.AggregateRpcBase,
+    SharedOrderGrpcService>("default");
+builder.Services.AddSiteGrpcHandler<AggregateRpc.AggregateRpcBase,
+    BravoOrderGrpcService>(SiteIds.BRAVO);
+
+// 4. Register dispatcher infrastructure
+builder.Services.AddSiteGrpcDispatcher<AggregateRpc.AggregateRpcBase>();
+
+// 5. Per-request resolved services
+builder.Services.AddSiteResolvedService<IOrderService>();
+builder.Services.AddSiteResolvedService<ISiteColumnMap>();
+
+builder.Services.AddGrpc();
+
+var app = builder.Build();
+
+// 6. Map the shared-proto dispatcher
+app.MapGrpcService<OrderGrpcDispatcher>();
+
+// 7. Map per-site proto services (auto-discovers [SiteGrpcService] types)
+app.MapSiteGrpcServices(typeof(BravoSiteProfile).Assembly);
+
+app.Run();
+```
+
+**Registration order matters:**
+1. `AddSiteInfrastructure` — discovers profiles and registers keyed DbContexts
+2. `AddSiteGrpcServices` — sets up the interceptor and dispatch helper
+3. Handler registrations — keyed by site ID
+4. `AddSiteGrpcDispatcher` — wires up the dispatch helper for the proto base type
+5. `MapGrpcService` — exposes the shared dispatcher endpoint
+6. `MapSiteGrpcServices` — exposes per-site proto endpoints
+
 ## Source Files
 - `src/Muonroi.Tenancy.SiteProfile.Grpc/SiteCodeGrpcInterceptor.cs`
 - `src/Muonroi.Tenancy.SiteProfile.Grpc/SiteGrpcDispatchHelper.cs`
