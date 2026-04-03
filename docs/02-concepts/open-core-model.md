@@ -297,7 +297,7 @@ Public key is bundled with the application.
 ## See Also
 
 - [Architecture Overview](./architecture-overview.md) — Detailed system diagrams and component descriptions
-- [License Capability Model](../license-governance/license-capability-model.md) — Three-tier feature matrix by tier
-- [Tier Enforcement](../license-governance/tier-enforcement.md) — Startup pipeline, grace periods, and degradation strategies
-- [Ecosystem Coding Rules](../ecosystem-coding-rules.md) — MBB analyzer rules and wrapper-first design patterns
-- [OSS Boundary](../../06-resources/OSS-BOUNDARY.md) — Complete package dependency list and verification script
+- [License Capability Model](../03-guides/license-governance/license-capability-model.md) — Three-tier feature matrix by tier
+- [Tier Enforcement](../03-guides/license-governance/tier-enforcement.md) — Startup pipeline, grace periods, and degradation strategies
+- [Ecosystem Coding Rules](../03-guides/ecosystem-coding-rules.md) — MBB analyzer rules and wrapper-first design patterns
+- [OSS Boundary](../06-resources/OSS-BOUNDARY.md) — Complete package dependency list and verification script

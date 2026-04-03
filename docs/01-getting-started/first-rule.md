@@ -561,7 +561,7 @@ public sealed class CreditScoreRuleTests
 
 - **[Rule Engine Guide](../03-guides/rule-engine/rule-engine-guide.md)** — Advanced topics: flow graphs, sub-flows, connectors
 - **[Decision Table Guide](../03-guides/rule-engine/decision-table-guide.md)** — Tabular rules with multiple inputs/outputs
-- **[Multi-Tenancy Guide](../03-guides/multi-tenancy/multi-tenancy-guide.md)** — Tenant isolation in rule execution
+- **[Multi-Tenant Guide](../03-guides/multi-tenancy/multi-tenant-guide.md)** — Tenant isolation in rule execution
 - **[RuleGen CLI Guide](../03-guides/rule-engine/rulegen-guide.md)** — Auto-extract rules from helper methods
 - **[Loan Approval Sample](../06-resources/samples/loan-approval.md)** — Complete working example
 

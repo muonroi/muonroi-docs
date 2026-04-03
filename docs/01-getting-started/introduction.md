@@ -132,13 +132,12 @@ Start with these guides in order:
 3. **[Rule Engine Guide](../03-guides/rule-engine/rule-engine-guide.md)** — Deep dive into execution, caching, and rollout patterns
 4. **[Decision Table Guide](../03-guides/rule-engine/decision-table-guide.md)** — Master FEEL, hit policies, and persistence
 5. **[Ecosystem Coding Rules](../03-guides/ecosystem-coding-rules.md)** — Wrapper-first patterns and best practices
-6. **[Multi-Tenancy Guide](../03-guides/multi-tenancy-guide.md)** — Isolation, quota, and resolution
-7. **[License & Governance](../03-guides/license-governance-guide.md)** — Activation, heartbeat, and HMAC verification
+6. **[Multi-Tenant Guide](../03-guides/multi-tenancy/multi-tenant-guide.md)** — Isolation, quota, and resolution
+7. **[License & Governance](../03-guides/license-governance/license-activation.md)** — Activation, heartbeat, and HMAC verification
 
 For production deployments, also review:
-- [Canary Rollout](../03-guides/deployment/canary-rollout.md)
-- [Hot-Reload Patterns](../03-guides/deployment/hot-reload-patterns.md)
-- [Proliferation Engine](../04-advanced/proliferation-engine.md) (Track 9)
+- [Canary Rollout](../03-guides/control-plane/canary-rollout-guide.md)
+- [Hot-Reload Patterns](../03-guides/control-plane/signalr-hot-reload.md)
 
 ---
 
@@ -151,6 +150,6 @@ This repository is the **single source of truth** for developer-facing documenta
 - Historical upgrade notes are intentionally removed for clarity
 - Each markdown file maps to a live feature or operational process
 
-**Have questions?** Check the [FAQ](./faq.md) or open an issue on GitHub.
+**Have questions?** Open an issue on GitHub.
 
-**Want to contribute?** See [Contributing](../06-contributing/contributing.md) for guidelines.
+**Want to contribute?** See [Contributing](../06-resources/CONTRIBUTING.md) for guidelines.

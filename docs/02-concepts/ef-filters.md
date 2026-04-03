@@ -316,6 +316,6 @@ await next(context); // Now TenantContext is set for downstream
 
 ## Cross-References
 
-- [Multi-Tenant Guide](/docs/04-guides/multi-tenant-guide.md) — tenant resolution and context propagation
-- [Tenant Isolation](/docs/02-concepts/tenant-isolation.md) — architectural overview
-- [Data Layer](/docs/02-concepts/data-layer.md) — MRepository and MDbContext details
+- [Multi-Tenant Guide](../03-guides/multi-tenancy/multi-tenant-guide.md) — tenant resolution and context propagation
+- [Tenant Isolation](../03-guides/multi-tenancy/tenant-isolation.md) — architectural overview
+- [Data Layer](../03-guides/integration/data-layer.md) — MRepository and MDbContext details

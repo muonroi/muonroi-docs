@@ -773,14 +773,13 @@ dotnet build /p:TreatWarningsAsErrors=true
 ## Cross-References
 
 - **[Roslyn Analyzers Reference](../05-reference/roslyn-analyzers.md)** — Detailed diagnostic codes and fix strategies
-- **[RuleGen Guide](../01-getting-started/rulegen-quickstart.md)** — How to author rules with code-first approach
-- **[Multi-Tenancy Architecture](../02-concepts/multi-tenancy.md)** — Why these rules enforce tenant safety
-- **[Building Block Packages](../05-reference/building-block-packages.md)** — Full package reference and wrapper interfaces
+- **[RuleGen Guide](../01-getting-started/first-rule.md)** — How to author rules with code-first approach
+- **[Architecture Overview](../02-concepts/architecture-overview.md)** — Why these rules enforce tenant safety
+- **[Building Block Packages](../05-reference/package-reference.md)** — Full package reference and wrapper interfaces
 
 ---
 
 ## Related Topics
 
-- [License Governance & Feature Gates](../03-guides/license-governance/feature-gating.md)
-- [Data Isolation Strategies](../03-guides/multi-tenancy/data-isolation.md)
-- [Structured Logging Best Practices](../03-guides/logging/structured-logging.md)
+- [License Governance & Feature Gates](./license-governance/license-activation.md)
+- [Data Isolation Strategies](./multi-tenancy/multi-tenant-guide.md)

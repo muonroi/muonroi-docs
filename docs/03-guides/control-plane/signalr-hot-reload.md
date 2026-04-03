@@ -371,5 +371,5 @@ services.AddHealthChecks()
 
 - [Control Plane Overview](control-plane-overview.md) — API endpoints and architecture
 - [Ruleset Approval Workflow](ruleset-approval-workflow.md) — Approval pipeline and state management
-- [RulesEngineService Architecture](../rule-engine/rules-engine-service.md) — 3-level cache details
-- [Multi-Tenancy](../advanced/multi-tenancy.md) — Tenant isolation and context propagation
+- [Rule Engine Architecture](../rule-engine/rule-engine-guide.md) — 3-level cache details
+- [Multi-Tenancy](../multi-tenancy/multi-tenant-guide.md) — Tenant isolation and context propagation

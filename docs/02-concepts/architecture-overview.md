@@ -556,8 +556,8 @@ Only available internally; not published:
 
 For deeper understanding of individual subsystems, see:
 
-- **[Rule Engine Guide](./rule-engine-guide.md)** — Detailed walk-through of rule evaluation, graph routing, and compensation
-- **[Multi-Tenancy Guide](./multi-tenancy-guide.md)** — Data isolation strategies, context propagation, quota enforcement
-- **[License Activation](./license-activation.md)** — Key generation, activation proof, heartbeat, and revocation
-- **[UI Engine Architecture](./ui-engine-architecture.md)** — Component library, Zustand stores, flow designer, licensing in the browser
-- **[Control Plane Overview](./control-plane-overview.md)** — API structure, approval workflows, canary deployment, audit trails
+- **[Rule Engine Guide](../03-guides/rule-engine/rule-engine-guide.md)** — Detailed walk-through of rule evaluation, graph routing, and compensation
+- **[Multi-Tenancy Guide](../03-guides/multi-tenancy/multi-tenant-guide.md)** — Data isolation strategies, context propagation, quota enforcement
+- **[License Activation](../03-guides/license-governance/license-activation.md)** — Key generation, activation proof, heartbeat, and revocation
+- **[UI Engine Architecture](../03-guides/ui-engine/ui-engine-architecture.md)** — Component library, Zustand stores, flow designer, licensing in the browser
+- **[Control Plane Overview](../03-guides/control-plane/control-plane-overview.md)** — API structure, approval workflows, canary deployment, audit trails

@@ -334,8 +334,8 @@ curl -X POST https://cp.truyentm.xyz/sse/tools/muonroi_audit_get_workflow \
 - [Ruleset Approval Workflow](./ruleset-approval-workflow.md) — Make-checker pattern and approval states
 - [Canary Rollout Guide](./canary-rollout-guide.md) — Safe staged deployment
 - [SignalR Hot-Reload](./signalr-hot-reload.md) — Real-time client synchronization
-- [Decision Table Editor](../../../02-concepts/decision-tables.md) — FEEL expressions and hit policies
-- [Rule Catalog & Contracts](../rule-catalog.md) — Available rules and input/output schemas
+- [Decision Table Editor](../rule-engine/decision-table-guide.md) — FEEL expressions and hit policies
+- [Rule Catalog & Authoring](../rule-studio-authoring.md) — Available rules and input/output schemas
 
 ---
 
@@ -347,4 +347,4 @@ Control Plane is deployed at `https://cp.truyentm.xyz`:
 - Redis: Hot-reload cache (optional)
 - SignalR: WebSocket at `/hubs/*`
 
-See [CLAUDE.md](/docs/references/claude-md.md#live-deployment) for VPS details.
+See [CLAUDE.md](../../../CLAUDE.md) for VPS details.

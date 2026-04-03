@@ -13,7 +13,7 @@ A canary rollout:
 ### When to Use Canary vs. Shadow
 
 - **Canary**: Route real traffic to new version, measure impact, decide to promote or rollback
-- **Shadow**: Compare new version without affecting users (see [Shadow Deployment Guide](canary-shadow.md))
+- **Shadow**: Compare new version without affecting users (see [Shadow Deployment Guide](../../04-operations/canary-shadow.md))
 
 ---
 
@@ -391,6 +391,6 @@ Verify:
 ## Related Guides
 
 - [Ruleset Approval Workflow](ruleset-approval-workflow.md) — How to approve versions before canary
-- [Shadow Deployment Guide](canary-shadow.md) — Run parallel tests without affecting users
+- [Shadow Deployment Guide](../../04-operations/canary-shadow.md) — Run parallel tests without affecting users
 - [SignalR Hot Reload](signalr-hot-reload.md) — Real-time updates via WebSocket
-- [Rule Rollout Guide](../rule-rollout-guide.md) — Broader deployment strategies
+- [Rule Rollout Guide](../rule-engine/rule-rollout-guide.md) — Broader deployment strategies

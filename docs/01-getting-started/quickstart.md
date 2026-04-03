@@ -24,7 +24,7 @@ Muonroi requires a valid license key at startup. Create a `licenses` directory i
 ```
 
 :::info
-License keys start with `MRR-` and are base64url-encoded. See [License Governance](../03-guides/license-governance/license-setup.md) for obtaining a key.
+License keys start with `MRR-` and are base64url-encoded. See [License Governance](../03-guides/license-governance/license-activation.md) for obtaining a key.
 
 For **local development only**, you can use `LicenseMode: Offline` in appsettings.json to skip activation. Production must use online activation.
 :::
@@ -186,7 +186,7 @@ Tenants are resolved from (in order):
 2. Route parameter: `{tenantId}`
 3. Subdomain: `{tenantId}.yourdomain.com`
 
-See [Multi-Tenancy Guide](../03-guides/multi-tenancy/multi-tenant-setup.md) for detailed configuration.
+See [Multi-Tenant Guide](../03-guides/multi-tenancy/multi-tenant-guide.md) for detailed configuration.
 
 ## Available Endpoints Summary
 
@@ -210,9 +210,9 @@ See [Multi-Tenancy Guide](../03-guides/multi-tenancy/multi-tenant-setup.md) for 
 - **[First Rule](./first-rule.md)** — Create your first rule in 5 minutes
 - **[Decision Table Quickstart](./quickstart-decision-table.md)** — Build a decision table
 - **[Rule Engine Guide](../03-guides/rule-engine/rule-engine-guide.md)** — Deep dive into rule execution
-- **[License Governance](../03-guides/license-governance/license-setup.md)** — Production license setup
-- **[Multi-Tenancy Guide](../03-guides/multi-tenancy/multi-tenant-setup.md)** — Configure tenant isolation
-- **[Sample Projects](../06-resources/samples/)** — LoanApproval, MultiTenantSaaS, and more
+- **[License Governance](../03-guides/license-governance/license-activation.md)** — Production license setup
+- **[Multi-Tenancy Guide](../03-guides/multi-tenancy/multi-tenant-guide.md)** — Configure tenant isolation
+- **[Sample Projects](../06-resources/samples/loan-approval.md)** — LoanApproval, MultiTenantSaaS, and more
 
 ## Troubleshooting
 
@@ -220,7 +220,7 @@ See [Multi-Tenancy Guide](../03-guides/multi-tenancy/multi-tenant-setup.md) for 
 - Verify `licenses/license.key` exists and contains valid `MRR-` key
 - Check network connectivity to `https://license.truyentm.xyz`
 - Review activation logs in `licenses/activation_proof.json` for error details
-- See [License Troubleshooting](../04-operations/troubleshooting.md#license)
+- See [License Troubleshooting](../04-operations/troubleshooting-guide.md)
 
 ### Database connection errors
 - Verify PostgreSQL is running: `psql -h localhost -U muonroi -d muonroi_rules`
@@ -230,4 +230,4 @@ See [Multi-Tenancy Guide](../03-guides/multi-tenancy/multi-tenant-setup.md) for 
 ### Redis hot reload not working
 - Verify Redis is running: `redis-cli ping` → should return `PONG`
 - Check connection string matches Redis configuration
-- See [Operations Guide](../04-operations/deployment.md#redis)
+- See [Operations Guide](../04-operations/kubernetes-deployment-guide.md)

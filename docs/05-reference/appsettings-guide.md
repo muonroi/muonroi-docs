@@ -48,7 +48,7 @@ License activation and verification settings for offline and online modes.
 }
 ```
 
-**See also:** [License Activation Guide](../guides/license-activation.md)
+**See also:** [License Activation Guide](../03-guides/license-governance/license-activation.md)
 
 ---
 
@@ -102,7 +102,7 @@ Rule management workflow settings (approval, canary, audit).
 }
 ```
 
-**See also:** [Rule Workflow Guide](../guides/rule-workflow.md)
+**See also:** [Rule Workflow Guide](../03-guides/rule-engine/rule-engine-guide.md)
 
 ---
 
@@ -130,7 +130,7 @@ Decision table execution engine configuration.
 }
 ```
 
-**See also:** [Decision Table Guide](../guides/decision-tables.md)
+**See also:** [Decision Table Guide](../03-guides/rule-engine/decision-table-guide.md)
 
 ---
 
@@ -157,7 +157,7 @@ JWT and token lifetime settings (Access Token / Refresh Token).
 }
 ```
 
-**See also:** [Authentication Guide](../guides/authentication.md)
+**See also:** [Authentication Guide](../03-guides/identity-access/auth-module-guide.md)
 
 ---
 
@@ -182,7 +182,7 @@ Multi-tenancy and data isolation configuration.
 }
 ```
 
-**See also:** [Multi-Tenancy Architecture](../architecture/multi-tenancy.md)
+**See also:** [Multi-Tenancy Architecture](../02-concepts/architecture-overview.md)
 
 ---
 
@@ -210,7 +210,7 @@ In-memory and distributed cache configuration.
 }
 ```
 
-**See also:** [Caching Guide](../guides/caching.md)
+**See also:** [Caching Guide](../03-guides/integration/cache-guide.md)
 
 ---
 
@@ -239,7 +239,7 @@ Message bus and event publishing configuration.
 }
 ```
 
-**See also:** [Event Messaging Guide](../guides/messaging.md)
+**See also:** [Event Messaging Guide](../03-guides/integration/messaging-guide.md)
 
 ---
 
@@ -266,7 +266,7 @@ OpenTelemetry tracing and Prometheus metrics configuration.
 }
 ```
 
-**See also:** [Observability Guide](../guides/observability.md)
+**See also:** [Observability Guide](../04-operations/observability-guide.md)
 
 ---
 
@@ -440,8 +440,8 @@ Minimal production-ready appsettings.json with all major sections:
 
 ## See Also
 
-- [License Activation Guide](../guides/license-activation.md) — Step-by-step license setup
-- [Authentication Guide](../guides/authentication.md) — JWT token generation and validation
-- [Multi-Tenancy Architecture](../architecture/multi-tenancy.md) — Isolation strategies and quota enforcement
-- [Caching Guide](../guides/caching.md) — In-memory vs. Redis configuration
-- [Observability Guide](../guides/observability.md) — Tracing and metrics setup
+- [License Activation Guide](../03-guides/license-governance/license-activation.md) — Step-by-step license setup
+- [Authentication Guide](../03-guides/identity-access/auth-module-guide.md) — JWT token generation and validation
+- [Multi-Tenancy Architecture](../02-concepts/architecture-overview.md) — Isolation strategies and quota enforcement
+- [Caching Guide](../03-guides/integration/cache-guide.md) — In-memory vs. Redis configuration
+- [Observability Guide](../04-operations/observability-guide.md) — Tracing and metrics setup
