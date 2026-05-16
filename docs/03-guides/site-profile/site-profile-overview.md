@@ -146,6 +146,60 @@ The system is distributed across several NuGet packages:
 - `src/Muonroi.Tenancy.SiteProfile/ISiteProfileResolver.cs`
 - `samples/TestProject.Service/` (Reference project structure)
 
+## Template example: Modular template
+
+The **Modular template** (`dotnet new muonroi-modular`) is the primary showcase for Site Profile. After generation, the `Modules/Catalog/` project contains a `CatalogSiteProfile` that registers catalog-specific infrastructure per site.
+
+### CatalogSiteProfile skeleton
+
+```csharp
+// Modules/Catalog/SiteProfiles/CatalogSiteProfile.cs
+using Muonroi.Tenancy.SiteProfile;
+
+[GenerateSiteProfile(SiteIds.DEFAULT, typeof(CatalogDbContext))]
+public class CatalogSiteProfile : ISiteProfile
+{
+    public string SiteId => SiteIds.DEFAULT;
+
+    public void ConfigureServices(IServiceCollection services, IConfiguration configuration)
+    {
+        // Per-site overrides — e.g. custom column mappings or business rule sets
+        // TODO: verify exact API against Muonroi.Tenancy.SiteProfile v*
+    }
+}
+```
+
+### appsettings block
+
+Add the `SiteProfiles` block to `appsettings.json` in the Host project:
+
+```json
+{
+  "SiteProfiles": {
+    "Default": "default",
+    "Sites": [
+      { "SiteId": "default", "DisplayName": "Default Catalog" }
+    ]
+  }
+}
+```
+
+### Wiring in the Host
+
+In `Host/StartupExtensions.cs`, ensure the site profile infrastructure is registered:
+
+```csharp
+builder.Services.AddSiteInfrastructure(builder.Configuration, options =>
+{
+    options.SiteCodeAccessor = sp =>
+        sp.GetRequiredService<IHttpContextAccessor>()
+          .HttpContext?.Request.Headers["X-Site-Code"].FirstOrDefault() ?? "default";
+    options.SiteAssemblies = [typeof(CatalogSiteProfile).Assembly];
+});
+```
+
+This is the starting point. Extend `CatalogSiteProfile` with additional `[GenerateSiteProfile]` attributes for each site variant you need.
+
 ## Next Steps
 
 - [Adding a New Site](adding-a-new-site.md) — Learn how to create your first site variant.

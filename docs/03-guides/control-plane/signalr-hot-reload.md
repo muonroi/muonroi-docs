@@ -367,6 +367,33 @@ services.AddHealthChecks()
     .AddCheck<SignalRHealthCheck>("signalr-ruleset", tags: new[] { "ready" });
 ```
 
+## Wiring in a template
+
+All three Muonroi project templates reference `ControlPlane:SignalRHubPath` in the enterprise `appsettings.json` but do not wire a server-side hub by default. The pattern below is a commented-stub that you can uncomment when enabling the enterprise Control Plane tier.
+
+In `StartupExtensions.cs` (or `ConfigureEndpoints` in the Host project), locate the endpoint mapping block and add:
+
+```csharp
+// --- SignalR Hot Reload (enterprise tier) ---
+// Uncomment when ControlPlane:RuntimeGovernance:Enabled = true
+// and Muonroi.RuleEngine.Runtime.Web is referenced.
+//
+// app.MapHub<RuleSetChangeHub>(
+//     configuration["ControlPlane:SignalRHubPath"] ?? "/hubs/ruleset-changes");
+//
+// app.MapHub<AuthRuleChangeHub>("/hubs/auth-rule-changes");
+```
+
+And in `RegisterService.cs`, inside the enterprise-tier block:
+
+```csharp
+// Uncomment together with the hub mapping above.
+// builder.Services.AddSignalR();
+// builder.Services.AddSingleton<IRuleSetChangeNotifier, SignalRRuleSetChangeNotifier>();
+```
+
+No other changes are required — the templates already include the `ControlPlane:SignalRHubPath` config key. Once uncommented and the enterprise package is restored, the hub connects to Redis pub/sub automatically if `Redis:Enabled = true`.
+
 ## Related Resources
 
 - [Control Plane Overview](control-plane-overview.md) — API endpoints and architecture

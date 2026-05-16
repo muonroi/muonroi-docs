@@ -306,6 +306,89 @@ When the flow executes the decision table task:
 - Output values are written back to the FactBag
 - Execution proceeds to the next node
 
+## Template fixture
+
+All three Muonroi templates ship with `RuleEngineModules:DecisionTable:Enabled = false` in `appsettings.json`. To activate and seed a minimal shipping-discount table from a freshly generated project:
+
+### 1. Enable the module
+
+In `appsettings.json` (or `appsettings.Development.json`):
+
+```json
+{
+  "RuleEngineModules": {
+    "DecisionTable": {
+      "Enabled": true,
+      "Store": "InMemory"
+    }
+  }
+}
+```
+
+### 2. Add the package reference
+
+```xml
+<!-- In your .csproj (enterprise tier or above) -->
+<PackageReference Include="Muonroi.RuleEngine.DecisionTable.Web" Version="*" />
+```
+
+### 3. Seed the fixture at startup
+
+Create a `DecisionTableSeeder` that runs once on application start:
+
+```csharp
+// Infrastructure/Seed/DecisionTableSeeder.cs
+public class DecisionTableSeeder
+{
+    private readonly IDecisionTableStore _store;
+
+    public DecisionTableSeeder(IDecisionTableStore store) => _store = store;
+
+    public async Task SeedAsync()
+    {
+        var shippingDiscount = new DecisionTable
+        {
+            Id = "shipping-discount-001",
+            Name = "Shipping Discount Policy",
+            HitPolicy = HitPolicy.First,
+            InputColumns =
+            [
+                new() { Id = "col-order-amt", Name = "OrderAmount", DataType = "number" }
+            ],
+            OutputColumns =
+            [
+                new() { Id = "col-discount-pct", Name = "DiscountPercent", DataType = "number" }
+            ],
+            Rows =
+            [
+                new() { Order = 1,
+                    InputCells  = [new() { ColumnId = "col-order-amt", Expression = ">= 500" }],
+                    OutputCells = [new() { ColumnId = "col-discount-pct", Expression = "15" }] },
+                new() { Order = 2,
+                    InputCells  = [new() { ColumnId = "col-order-amt", Expression = "[100..499]" }],
+                    OutputCells = [new() { ColumnId = "col-discount-pct", Expression = "5" }] },
+                new() { Order = 3,
+                    InputCells  = [new() { ColumnId = "col-order-amt", Expression = "-" }],
+                    OutputCells = [new() { ColumnId = "col-discount-pct", Expression = "0" }] }
+            ],
+            Version = 1
+        };
+
+        await _store.UpsertAsync(shippingDiscount);
+    }
+}
+```
+
+Register and invoke in `Program.cs`:
+
+```csharp
+// After app.Build()
+using var scope = app.Services.CreateScope();
+await scope.ServiceProvider.GetRequiredService<DecisionTableSeeder>().SeedAsync();
+```
+
+This makes the template self-exercising: the table is available immediately after `dotnet run` and can be called via `IDecisionTableEngine.EvaluateAsync("shipping-discount-001", ...)`.
+
 ## Versioning and History
 
 Decision tables support full versioning with snapshot-based storage:

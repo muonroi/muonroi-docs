@@ -500,6 +500,74 @@ See [Secret Management Guide](secret-management.md) for details.
 - **Cleanup**: Implement periodic cleanup of completed/failed jobs to avoid unbounded growth.
 - **Testing**: Use in-memory scheduler in unit tests; use real database in integration tests.
 
+## Template pattern: IHostedService with feature flag
+
+All Muonroi templates include `FeatureFlags:UseBackgroundJobs = false` in `appsettings.json`. The pattern below matches the template structure and activates when the flag is `true`.
+
+### Skeleton job
+
+```csharp
+// Infrastructure/BackgroundJobs/RuleSetSyncBackgroundJob.cs
+public class RuleSetSyncBackgroundJob : BackgroundService
+{
+    private readonly IServiceScopeFactory _scopeFactory;
+    private readonly IMLog<RuleSetSyncBackgroundJob> _log;
+    private readonly TimeSpan _interval = TimeSpan.FromMinutes(5);
+
+    public RuleSetSyncBackgroundJob(
+        IServiceScopeFactory scopeFactory,
+        IMLog<RuleSetSyncBackgroundJob> log)
+    {
+        _scopeFactory = scopeFactory;
+        _log = log;
+    }
+
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        _log.Info("RuleSetSyncBackgroundJob started");
+
+        while (!stoppingToken.IsCancellationRequested)
+        {
+            try
+            {
+                await using var scope = _scopeFactory.CreateAsyncScope();
+                // TODO: inject and call your sync service here
+                // var syncService = scope.ServiceProvider.GetRequiredService<IRuleSetSyncService>();
+                // await syncService.SyncAsync(stoppingToken);
+            }
+            catch (Exception ex) when (ex is not OperationCanceledException)
+            {
+                _log.Error($"RuleSetSyncBackgroundJob iteration failed: {ex.Message}", ex);
+            }
+
+            await Task.Delay(_interval, stoppingToken);
+        }
+    }
+}
+```
+
+### Registration in RegisterService.cs
+
+```csharp
+var useBackgroundJobs = builder.Configuration.GetValue<bool>("FeatureFlags:UseBackgroundJobs");
+if (useBackgroundJobs)
+{
+    builder.Services.AddHostedService<RuleSetSyncBackgroundJob>();
+}
+```
+
+### Enabling via appsettings
+
+```json
+{
+  "FeatureFlags": {
+    "UseBackgroundJobs": true
+  }
+}
+```
+
+This is intentionally minimal — the Quartz.NET approach above (with `AddMQuartz`) is recommended for production multi-tenant workloads requiring retries and clustering. The `IHostedService` pattern suits lightweight, single-instance scenarios.
+
 ## See Also
 
 - [Observability Guide](observability-guide.md) — Trace and monitor job execution

@@ -1,6 +1,81 @@
 # Gateway Integration Guide
 
-Muonroi services can sit behind Kong, Azure API Management, or other reverse proxies as long as the gateway preserves the headers required for authentication, correlation, and tenant resolution.
+Muonroi services can sit behind Kong, Azure API Management, YARP, or other reverse proxies as long as the gateway preserves the headers required for authentication, correlation, and tenant resolution.
+
+## YARP + Muonroi service discovery (Microservices template)
+
+The **Microservices template** includes a `Muonroi.Microservices.Gateway` project pre-configured with YARP. Service discovery is commented out by default; follow these steps to activate it.
+
+### 1. Add the service discovery package
+
+In `Muonroi.Microservices.Gateway.csproj`:
+
+```xml
+<PackageReference Include="Muonroi.AspNetCore" Version="*" />
+```
+
+### 2. Wire service discovery in Program.cs
+
+```csharp
+// Program.cs — Gateway project
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services
+    .AddReverseProxy()
+    .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
+
+// Uncomment to enable Muonroi service discovery
+// builder.Services.AddMServiceDiscovery(builder.Configuration, builder.Environment);
+// TODO: verify exact AddMServiceDiscovery overload in Muonroi.AspNetCore
+
+var app = builder.Build();
+app.MapReverseProxy();
+await app.RunAsync();
+```
+
+### 3. ReverseProxy appsettings block
+
+Add to `appsettings.json` in the Gateway project:
+
+```json
+{
+  "ReverseProxy": {
+    "Routes": {
+      "catalog-route": {
+        "ClusterId": "catalog-cluster",
+        "Match": { "Path": "/api/catalog/{**catch-all}" },
+        "Transforms": [
+          { "PathRemovePrefix": "/api/catalog" }
+        ]
+      }
+    },
+    "Clusters": {
+      "catalog-cluster": {
+        "Destinations": {
+          "catalog/primary": {
+            "Address": "http://localhost:5001"
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+### Tenant header forwarding
+
+The Gateway is the canonical point for injecting `X-Tenant-Id`. Add a YARP transform to forward the header resolved from the incoming request:
+
+```json
+{
+  "Transforms": [
+    { "RequestHeadersCopy": "true" },
+    { "RequestHeader": "X-Tenant-Id", "Set": "{header:x-tenant-id}" }
+  ]
+}
+```
+
+Downstream services resolve the tenant from this forwarded header — no further configuration is required in the Catalog or Identity services.
 
 ## Core requirements
 

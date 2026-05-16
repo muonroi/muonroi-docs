@@ -8,6 +8,18 @@ sidebar_position: 1
 
 This guide covers the canonical tenant context access pattern, resolution flow, and data isolation strategies in the Muonroi ecosystem.
 
+:::tip Template quick-start
+All three Muonroi project templates ship with multi-tenancy **disabled by default** (`MultiTenantConfigs:Enabled = false` in `appsettings.json`). To activate it:
+
+1. Set `MultiTenantConfigs:Enabled = true` in your `appsettings.json`.
+2. The middleware is already wired in `StartupExtensions.cs` — no code changes needed; `UseMiddleware<TenantResolutionMiddleware>()` is called automatically when the flag is `true`.
+3. Register tenant services by ensuring `services.AddTenancy(configuration)` is present in `RegisterService.cs` (it is included by default in all templates).
+
+**Microservices template**: the Gateway service is responsible for reading the `X-Tenant-Id` header from the client and forwarding it to downstream services. Individual microservices trust the forwarded header.
+
+**Modular template**: tenant is resolved from the incoming request (header → path → subdomain → JWT claim) in the Host project before any module DI resolves tenant-scoped services.
+:::
+
 ## Quick Start
 
 Use `ISystemExecutionContextAccessor` to access tenant context anywhere in your code:

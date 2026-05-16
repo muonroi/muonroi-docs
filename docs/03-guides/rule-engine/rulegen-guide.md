@@ -10,6 +10,75 @@ sidebar_position: 2
 
 Current version: **v2.0.0**
 
+## Using RuleGen in a template project
+
+All three Muonroi project templates (Base, Microservices, Modular) ship with opt-in support for RuleGen. Follow these steps to activate it in a freshly generated project.
+
+### 1. Add the source generator package
+
+In your API/service `.csproj` (e.g. `Muonroi.BaseTemplate.API.csproj`), add:
+
+```xml
+<PackageReference Include="Muonroi.RuleEngine.SourceGenerators" Version="*" PrivateAssets="all" />
+```
+
+### 2. Add the local tool manifest
+
+Create `.config/dotnet-tools.json` in the repository root if it does not already exist:
+
+```json
+{
+  "version": 1,
+  "isRoot": true,
+  "tools": {
+    "muonroi-rule": {
+      "version": "2.0.0",
+      "commands": ["muonroi-rule"]
+    }
+  }
+}
+```
+
+Then restore:
+
+```bash
+dotnet tool restore
+```
+
+### 3. Annotate a rule with `[MExtractAsRule]`
+
+The templates already include example rules (`EvenRule`, `PositiveRule`, `RangeRule`). Annotate the one you want to extract — for example, in `Rules/EvenRule.cs`:
+
+```csharp
+using Muonroi.RuleEngine.SourceGenerators;
+
+[MExtractAsRule("even", Order = 1, HookPoint = HookPoint.OnValidate)]
+public bool IsEven(int value) => value % 2 == 0;
+```
+
+The source generator emits `EvenRule.g.cs` alongside your project output on the next `dotnet build`.
+
+### 4. Run the CLI extraction workflow
+
+```bash
+# Extract all annotated methods into standalone rule files
+muonroi-rule extract \
+  --source src/Muonroi.BaseTemplate.API/Rules \
+  --output src/Muonroi.BaseTemplate.API/Generated/Rules \
+  --namespace Muonroi.BaseTemplate.Rules.Generated \
+  --context-type int
+
+# Validate for circular deps, duplicate codes, missing refs
+muonroi-rule verify --source-dir src/Muonroi.BaseTemplate.API
+
+# Register generated rules with the DI system
+muonroi-rule register --project src/Muonroi.BaseTemplate.API
+```
+
+For Modular template, run `extract` inside each module directory (`Modules/Catalog/`, `Modules/Identity/`) so rules stay module-owned.
+
+---
+
 ## Installation
 
 Install as a global .NET tool:
