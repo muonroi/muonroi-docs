@@ -1,0 +1,18 @@
+{
+  "name": "muonroi-docs-mcp",
+  "version": "1.0.0",
+  "description": "stdio MCP server for Muonroi Building Block docs + recipes (replaces read_file loops)",
+  "main": "src/server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node src/server.js",
+    "ingest": "node ingest/ingest.js",
+    "test": "node --test tests/"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

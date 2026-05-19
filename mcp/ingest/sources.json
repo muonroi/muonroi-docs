@@ -1,0 +1,31 @@
+{
+  "_comment": "Root paths to crawl, relative to D:/sources/Core/. Glob patterns per entry.",
+  "roots": [
+    {
+      "path": "muonroi-docs/docs",
+      "glob": "**/*.md",
+      "label": "muonroi-docs"
+    },
+    {
+      "path": "muonroi-building-block",
+      "glob": "**/README.md",
+      "label": "bb-readme"
+    },
+    {
+      "path": "muonroi-building-block",
+      "glob": "**/Agent.md",
+      "label": "bb-agent"
+    },
+    {
+      "path": "muonroi-building-block",
+      "glob": "**/AGENTS.md",
+      "label": "bb-agents"
+    },
+    {
+      "path": "muonroi-building-block",
+      "glob": "**/EE-INTENT.md",
+      "label": "bb-ee-intent"
+    }
+  ],
+  "skip": ["node_modules", "bin", "obj", ".git", "dist", "build", ".vs", "packages"]
+}

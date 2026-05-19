@@ -216,3 +216,47 @@ docs/
 | Test coverage checklist | Test Matrix Guide | 06-resources/test-matrix-guide.md |
 | Rule unit testing | Testing Guide | 03-guides/rule-engine/rule-engine-testing-guide.md |
 | Governance ops | Governance Ops | 04-operations/ruleset-governance-ops.md |
+
+---
+
+## mcp/ — stdio MCP server (bb-docs semantic search)
+
+Semantic search server for agents — replaces read_file loops over large markdown files.
+
+| Path | Purpose |
+|------|---------|
+| `mcp/src/server.js` | stdio MCP entrypoint (`node mcp/src/server.js`) |
+| `mcp/src/qdrant-client.js` | Qdrant wrapper + embedding (reads `~/.experience/config.json`) |
+| `mcp/src/tools/docs-search.js` | `docs.search` handler |
+| `mcp/src/tools/docs-read.js` | `docs.read` handler |
+| `mcp/src/tools/bb-template-describe.js` | `bb.template.describe` handler |
+| `mcp/src/tools/bb-package-describe.js` | `bb.package.describe` handler |
+| `mcp/src/tools/bb-recipe-list.js` | `bb.recipe.list` handler |
+| `mcp/ingest/crawl.js` | Walk docs + BB sources, chunk markdown |
+| `mcp/ingest/ingest.js` | Embed + upsert into `bb-docs` Qdrant collection |
+| `mcp/ingest/sources.json` | Crawl roots configuration |
+| `mcp/tests/` | `node --test` suite (15 tests, zero extra deps) |
+
+**Tools exposed:**
+
+| Tool | Purpose |
+|------|---------|
+| `docs.search` | Semantic search, returns top-K chunks with score/title/excerpt |
+| `docs.read` | Full content of one chunk by docId |
+| `bb.template.describe` | Template purpose, structure, packages, sample prompt |
+| `bb.package.describe` | Package purpose, dependencies, code samples |
+| `bb.recipe.list` | Recipe list filtered by domain |
+
+**First-time setup:** `cd mcp && npm install && npm run ingest`
+
+**MCP registration:**
+```json
+{
+  "mcpServers": {
+    "muonroi-docs": {
+      "command": "node",
+      "args": ["D:/sources/Core/muonroi-docs/mcp/src/server.js"]
+    }
+  }
+}
+```
