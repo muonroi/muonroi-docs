@@ -144,6 +144,19 @@ No additional wiring is needed. The hooks inject experience-based warnings autom
 
 ---
 
+## Agent Hook Compatibility
+
+| Agent | Windows | macOS / Linux | WSL |
+|-------|---------|---------------|-----|
+| Claude Code | Works | Works | — |
+| Gemini CLI | Works | Works | — |
+| Codex CLI | **Hooks disabled** | Works | **Works** |
+| OpenCode | Works | Works | — |
+
+> **Codex on Windows:** Run Codex from WSL. The `setup.sh` script handles all WSL-specific hook wiring automatically.
+
+---
+
 ## Next Steps
 
 - [Overview](./overview.md) — Understand how Experience Engine works

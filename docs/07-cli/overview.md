@@ -118,6 +118,25 @@ User prompt
 | `src/ee/` | Experience Engine client and hooks |
 | `src/tools/` | Built-in tools (bash, file, grep, LSP, schedule) |
 
+## Development
+
+```bash
+git clone https://github.com/muonroi/muonroi-cli.git
+cd muonroi-cli && bun install
+
+bun run dev           # run from source
+bun run typecheck     # type check
+bun run test          # vitest
+bun run lint          # biome check
+bun run build:binary  # standalone binary
+```
+
+Generate the demo GIF (requires [vhs](https://github.com/charmbracelet/vhs)):
+
+```bash
+vhs docs/demo.tape
+```
+
 ## Related Docs
 
 - [Council Debate](./guides/council-debate) — how multi-model debates are structured and when they trigger
