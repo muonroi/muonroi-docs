@@ -7,15 +7,9 @@ on:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, vps]
     timeout-minutes: 15
 
     steps:
-      - name: Deploy to VPS
-        uses: appleboy/ssh-action@v1.2.0
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.VPS_SSH_KEY }}
-          port: 22
-          script: /opt/muonroi/deploy-docs.sh
+      - name: Deploy docs
+        run: /opt/muonroi/deploy-docs.sh
