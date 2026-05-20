@@ -387,4 +387,4 @@ curl -X POST https://license.truyentm.xyz/api/v1/validate \
 
 - [License Capability Model](license-capability-model.md) — Feature matrix by tier
 - [Tier Enforcement](tier-enforcement.md) — Runtime feature guards
-- [License Server Admin](../license-server/admin-api.md) — Generate and revoke keys
+- [License Server Admin](../../04-operations/license-server-admin.md) — Generate and revoke keys

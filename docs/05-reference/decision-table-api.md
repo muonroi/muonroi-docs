@@ -970,7 +970,7 @@ In addition to REST endpoints, the following MCP tools are available for program
 | `muonroi_decision_table_diff_versions` | Compare two versions |
 | `muonroi_decision_table_evaluate` | Evaluate a table against inputs |
 
-Refer to [MCP Tools Reference](./mcp-tools.md) for detailed documentation on each tool.
+Refer to [MCP Developer Server](../08-mcp/mcp-developer-server.md) for detailed documentation on each tool.
 
 ---
 
@@ -1034,6 +1034,6 @@ Always validate decision table inputs before making API calls:
 
 - [Decision Table Guide](../03-guides/rule-engine/decision-table-guide.md) — How to design and use decision tables
 - [Decision Table Versioning](../03-guides/rule-engine/decision-table-versioning.md) — Version management and deployment strategies
-- [FEEL Expression Reference](./feel-reference.md) — Complete FEEL language documentation
-- [MCP Tools Reference](./mcp-tools.md) — Machine-readable API tools
-- [Rule Engine Architecture](../02-concepts/rule-engine.md) — Decision table execution details
+- [FEEL Expression Reference](../03-guides/rule-engine/feel-reference.md) — Complete FEEL language documentation
+- [MCP Developer Server](../08-mcp/mcp-developer-server.md) — Machine-readable API tools
+- [Rule Engine Architecture](../02-concepts/architecture-overview.md) — Decision table execution details

@@ -153,7 +153,8 @@ function crawlAll() {
         const chunkContent = chunks[i];
         // Deterministic id: hash of filepath + chunkIndex + contentHash (mtime-agnostic)
         const idRaw = `${filepath}:${i}:${fileHash}`;
-        const id = crypto.createHash('sha256').update(idRaw).digest('hex').slice(0, 16);
+        const hex = crypto.createHash('sha256').update(idRaw).digest('hex').slice(0, 32);
+        const id = `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20, 32)}`;
 
         results.push({
           id,

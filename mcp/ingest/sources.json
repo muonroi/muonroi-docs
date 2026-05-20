@@ -25,7 +25,27 @@
       "path": "muonroi-building-block",
       "glob": "**/EE-INTENT.md",
       "label": "bb-ee-intent"
+    },
+    {
+      "path": "muonroi-cli/packages",
+      "glob": "**/README.md",
+      "label": "cli-harness"
+    },
+    {
+      "path": "muonroi-cli",
+      "glob": "CLAUDE.md",
+      "label": "cli-claude"
+    },
+    {
+      "path": "muonroi-cli",
+      "glob": "AGENTS.md",
+      "label": "cli-agents"
+    },
+    {
+      "path": "muonroi-cli/docs",
+      "glob": "**/*.md",
+      "label": "cli-docs"
     }
   ],
-  "skip": ["node_modules", "bin", "obj", ".git", "dist", "build", ".vs", "packages"]
+  "skip": ["node_modules", "bin", "obj", ".git", "dist", "build", ".vs", ".claude", "worktrees"]
 }

@@ -560,6 +560,6 @@ sequenceDiagram
 
 ## See Also
 
-- [License Verification](/docs/governance/license-protection) — JWT RS256 validation
-- [Control Plane API](/docs/guides/control-plane/api-reference) — manifest + rule endpoints
-- [Multi-Tenancy](/docs/architecture/multi-tenancy) — tenant context propagation
+- [License Verification](../license-governance/license-activation.md) — JWT RS256 validation
+- [Control Plane API](../control-plane/control-plane-overview.md) — manifest + rule endpoints
+- [Multi-Tenancy](../../02-concepts/tenancy-models.md) — tenant context propagation

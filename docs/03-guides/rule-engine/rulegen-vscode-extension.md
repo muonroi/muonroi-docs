@@ -1,6 +1,6 @@
 ---
-title: "RuleGen VS Code Extension"
-sidebar_label: "RuleGen VS Code Extension"
+title: RuleGen VS Code Extension
+sidebar_label: RuleGen VS Code Extension
 sidebar_position: 11
 ---
 
@@ -253,7 +253,7 @@ Enhanced watcher that automatically extracts and publishes rules on save.
 1. Ensure Control Plane URL is correct in settings
 2. Verify you have API credentials (usually via VS Code auth flow)
 3. Check network access to Control Plane endpoint
-4. See [Control Plane Overview](../control-plane-overview.md) for authentication details
+4. See [Control Plane Overview](../control-plane/control-plane-overview.md) for authentication details
 
 ### Extension is slow or unresponsive?
 
@@ -275,8 +275,8 @@ Enhanced watcher that automatically extracts and publishes rules on save.
 
 - [RuleGen Guide](./rulegen-guide.md) — Comprehensive RuleGen usage and CLI options
 - [Rule Source Generator](./rule-source-generator.md) — How `.g.cs` files are generated and structured
-- [Control Plane Overview](../control-plane-overview.md) — Publishing, versioning, and deployment
-- [Rule Engine Basics](./rule-engine-fundamentals.md) — Understanding rule execution and flow graphs
+- [Control Plane Overview](../control-plane/control-plane-overview.md) — Publishing, versioning, and deployment
+- [Rule Engine Basics](./rule-engine-guide.md) — Understanding rule execution and flow graphs
 
 ## API Reference (For Contributors)
 

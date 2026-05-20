@@ -25,8 +25,9 @@ builder.Services
     .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
 
 // Uncomment to enable Muonroi service discovery
-// builder.Services.AddMServiceDiscovery(builder.Configuration, builder.Environment);
-// TODO: verify exact AddMServiceDiscovery overload in Muonroi.AspNetCore
+// Exact API: AddServiceDiscovery(IServiceCollection, IConfiguration, IWebHostEnvironment)
+// Source: Muonroi.ServiceDiscovery.Consul (not Muonroi.AspNetCore) — ConsulHandler.cs
+// builder.Services.AddServiceDiscovery(builder.Configuration, builder.Environment);
 
 var app = builder.Build();
 app.MapReverseProxy();

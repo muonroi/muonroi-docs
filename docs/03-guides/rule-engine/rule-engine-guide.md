@@ -516,7 +516,7 @@ builder.Services
 
 ## See Also
 
-- [Decision Table Guide](../decision-table-guide.md) — runtime-managed rules with FEEL
-- [Rule Engine Advanced Patterns](../rule-engine-advanced-patterns.md) — custom evaluators, flow graphs
-- [FEEL Reference](../feel-reference.md) — expression syntax for decision tables
-- [Control Plane API](../../04-api/control-plane-api.md) — ruleset CRUD + dry-run endpoints
+- [Decision Table Guide](./decision-table-guide.md) — runtime-managed rules with FEEL
+- [Rule Engine Advanced Patterns](./rule-engine-advanced-patterns.md) — custom evaluators, flow graphs
+- [FEEL Reference](./feel-reference.md) — expression syntax for decision tables
+- [Control Plane API](../control-plane/control-plane-overview.md) — ruleset CRUD + dry-run endpoints

@@ -347,4 +347,4 @@ Control Plane is deployed at `https://cp.truyentm.xyz`:
 - Redis: Hot-reload cache (optional)
 - SignalR: WebSocket at `/hubs/*`
 
-See [CLAUDE.md](../../../CLAUDE.md) for VPS details.
+See CLAUDE.md for VPS details.

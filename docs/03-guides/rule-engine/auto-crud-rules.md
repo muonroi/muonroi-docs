@@ -575,8 +575,8 @@ public class ProductValidationRuleTests
 
 - [Rule Engine Guide](rule-engine-guide.md) — Core rule execution pipeline and orchestration
 - [Rule Hooks Guide](rule-engine-hooks-guide.md) — Hook points and lifecycle management
-- [FactBag and Context](rule-engine-factbag.md) — Passing data through rule execution
-- [Decision Tables](decision-tables.md) — Table-driven business logic
+- [FactBag and Context](rule-engine-guide.md) — Passing data through rule execution
+- [Decision Tables](decision-table-guide.md) — Table-driven business logic
 
 ## Summary
 

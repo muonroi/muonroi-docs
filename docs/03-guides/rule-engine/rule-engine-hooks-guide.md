@@ -1,6 +1,6 @@
 ---
-title: "Hooks Guide"
-sidebar_label: "Hooks Guide"
+title: Rule Engine Hooks Guide
+sidebar_label: Hooks Guide
 sidebar_position: 13
 ---
 
@@ -483,4 +483,4 @@ RuleOrchestrator.ExecuteAsync(context)
 
 - [Rule Engine Guide](rule-engine-guide.md) — how rules evaluate and execute
 - [Advanced Patterns](rule-engine-advanced-patterns.md) — compensation, flow graphs, decision tables
-- [Architecture Overview](../../01-architecture/rule-engine-architecture.md) — deep dive into the pipeline
+- [Architecture Overview](../../02-concepts/architecture-overview.md) — deep dive into the pipeline

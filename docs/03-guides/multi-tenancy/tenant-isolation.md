@@ -531,7 +531,7 @@ var orders = dbContext.Orders.AsEnumerable().Where(...).ToList();
 
 ## See Also
 
-- [Multi-Tenant Architecture Guide](../multi-tenant-guide.md)
-- [EF Query Filters Reference](../ef-query-filters.md)
-- [Quota & Rate Limiting API](../quota-api-reference.md)
-- [License & Governance](../auth-governance.md)
+- [Multi-Tenant Architecture Guide](./multi-tenant-guide.md)
+- [EF Query Filters Reference](../../02-concepts/ef-filters.md)
+- [Quota & Rate Limiting API](./quota-api-reference.md)
+- Auth Governance

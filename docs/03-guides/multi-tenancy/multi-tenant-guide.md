@@ -187,7 +187,7 @@ var rules = await _db.Rules
     .ToListAsync();  // Automatically filtered by CurrentTenantId
 ```
 
-See [EF Core Filters Guide](ef-filters.md) for details.
+See [EF Core Filters Guide](../../02-concepts/ef-filters.md) for details.
 
 ## Quota System
 
@@ -299,6 +299,6 @@ public async Task AdminResetQuotaAsync(string targetTenantId)
 ## Related Guides
 
 - [Tenant Isolation Strategies](tenant-isolation.md) — Deployment isolation models (SharedSchema, SeparateSchema, SeparateDatabase)
-- [EF Core Query Filters](ef-filters.md) — Automatic tenant filtering in Entity Framework
+- [EF Core Query Filters](../../02-concepts/ef-filters.md) — Automatic tenant filtering in Entity Framework
 - [Multi-Tenant Quota Guide](multi-tenant-quota-guide.md) — Quota enforcement, tier presets, consumption tracking
-- [Authentication & Authorization](../auth/authentication.md) — JWT resolution and claim validation
+- [Authentication & Authorization](../identity-access/auth-module-guide.md) — JWT resolution and claim validation

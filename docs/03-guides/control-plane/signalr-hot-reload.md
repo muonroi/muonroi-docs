@@ -389,7 +389,10 @@ And in `RegisterService.cs`, inside the enterprise-tier block:
 ```csharp
 // Uncomment together with the hub mapping above.
 // builder.Services.AddSignalR();
-// builder.Services.AddSingleton<IRuleSetChangeNotifier, SignalRRuleSetChangeNotifier>();
+// builder.Services.AddHostedService<RuleSetHubNotifier>();
+// Note: RuleSetHubNotifier (Muonroi.RuleEngine.Runtime.Web) is IHostedService, not IRuleSetChangeNotifier.
+// It subscribes to an existing IRuleSetChangeNotifier and bridges events to SignalR.
+// SignalRRuleSetChangeNotifier does not exist — use AddRuleEngineRuntimeWeb() which registers RuleSetHubNotifier.
 ```
 
 No other changes are required — the templates already include the `ControlPlane:SignalRHubPath` config key. Once uncommented and the enterprise package is restored, the hub connects to Redis pub/sub automatically if `Redis:Enabled = true`.

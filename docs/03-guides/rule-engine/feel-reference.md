@@ -560,4 +560,4 @@ If coercion fails, the expression returns `null`:
 
 - [Decision Table Guide](./decision-table-guide.md) — Detailed decision table reference
 - [Rule Engine Advanced Patterns](./rule-engine-advanced-patterns.md) — Complex rule orchestration
-- [Workflow Guide](../workflows/workflow-guide.md) — Using FEEL in workflows
+- Workflow Guide — Using FEEL in workflows

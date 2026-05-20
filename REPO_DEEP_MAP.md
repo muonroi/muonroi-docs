@@ -154,7 +154,7 @@ docs/
 
 ---
 
-## 05-reference/ (7 files)
+## 05-reference/ (7 files + packages/ subdirectory)
 
 | File | Title |
 |------|-------|
@@ -165,6 +165,25 @@ docs/
 | decision-table-api.md | DT REST endpoints |
 | rule-flow-contract-api.md | Flow input/output contracts |
 | roslyn-analyzers.md | MBB001-MBB007 |
+
+### packages/ (12 files) — **Per-package deep-dive docs**
+
+Generated from source code in `muonroi-building-block/src/`. Each file covers purpose, key types, DI registration, usage examples, and configuration.
+
+| File | Packages Covered | Count |
+|------|-----------------|-------|
+| `core-foundation.md` | Core.Abstractions, Core, BuildingBlock.Shared, BuildingBlock.All, Services.Abstractions, Mapper, Mapping.Abstractions, Mediator | 8 |
+| `aspnetcore.md` | AspNetCore, AspNetCore.OpenApi, AspNetCore.RuleEngine | 3 |
+| `auth-identity.md` | Auth, AuthZ, Bff | 3 |
+| `caching.md` | Caching.Abstractions, Caching.Memory, Caching.Redis | 3 |
+| `data-layer.md` | Data.Abstractions, Data.Dapper, Data.EntityFrameworkCore, Data.EntityFrameworkCore.Events, EntityFrameworkCore.Configuration | 5 |
+| `rule-engine-core.md` | RuleEngine.Abstractions, RuleEngine.Core, Rules, RuleEngine.Testing, RuleEngine.SourceGenerators | 5 |
+| `rule-engine-runtime.md` | RuleEngine.Runtime, RuleEngine.Runtime.Web, RuleEngine.CEP, RuleEngine.NRules, RuleEngine.DecisionTable, RuleEngine.DecisionTable.Web, RuleEngine.EntityFrameworkCore, RuleEngine.Proliferation, RuleEngine.Proliferation.Persistence | 9 |
+| `tenancy.md` | Tenancy.Abstractions, Tenancy.Core, Tenancy, Tenancy.SiteProfile, Tenancy.SiteProfile.Grpc, Tenancy.SiteProfile.SourceGenerators, Tenancy.SiteProfile.Web, Quota.Abstractions | 8 |
+| `messaging-integration.md` | Messaging.Abstractions, Messaging.MassTransit, Integration.Abstractions, Integration.Connectors, Integration.Persistence, Grpc, Http, SignalR | 8 |
+| `infrastructure.md` | BackgroundJobs.Abstractions, BackgroundJobs.Hangfire, BackgroundJobs.Quartz, Kubernetes, Resilience, Secrets, ServiceDiscovery.Consul | 7 |
+| `observability-diagnostics.md` | Diagnostics, Diagnostics.Generator, Logging, Logging.Abstractions, Observability | 5 |
+| `governance-experience.md` | Governance.Abstractions, Governance, Governance.Enterprise, Experience.Abstractions, Experience.Runtime, UiEngine.Catalog | 6 |
 
 ---
 

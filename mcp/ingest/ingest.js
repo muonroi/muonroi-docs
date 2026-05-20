@@ -11,10 +11,11 @@
 'use strict';
 
 const { crawlAll } = require('./crawl.js');
-const { upsertPoints, pointExists } = require('../src/qdrant-client.js');
+const { upsertPoints, pointsExist } = require('../src/qdrant-client.js');
 
-const BATCH_SIZE = 50;
+const BATCH_SIZE = 10;
 const PROGRESS_EVERY = 10; // batches
+const EXISTS_BATCH = 200; // ids per bulk-existence check
 
 async function main() {
   console.log('[ingest] Crawling sources...');
@@ -25,14 +26,17 @@ async function main() {
     return;
   }
 
-  console.log(`[ingest] ${chunks.length} chunks to process. Checking existing points...`);
+  console.log(`[ingest] ${chunks.length} chunks to process. Checking existing points (bulk)...`);
 
-  // Idempotency check: skip chunks whose id already exists in Qdrant
-  const toIngest = [];
-  for (const chunk of chunks) {
-    const exists = await pointExists(chunk.id);
-    if (!exists) toIngest.push(chunk);
+  // Idempotency check via bulk `/points` fetch — N HTTP calls → ceil(N/200).
+  // ~10-15 min wall time on the per-id loop collapsed to seconds here.
+  const existing = new Set();
+  for (let i = 0; i < chunks.length; i += EXISTS_BATCH) {
+    const slice = chunks.slice(i, i + EXISTS_BATCH).map((c) => c.id);
+    const hits = await pointsExist(slice);
+    for (const id of hits) existing.add(id);
   }
+  const toIngest = chunks.filter((c) => !existing.has(c.id));
 
   console.log(`[ingest] ${chunks.length - toIngest.length} chunks already ingested, ${toIngest.length} new.`);
 

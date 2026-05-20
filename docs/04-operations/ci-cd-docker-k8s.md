@@ -820,8 +820,8 @@ curl http://localhost:8081/health
 
 - [Secret Management](./secret-management.md)
 - [Kubernetes Deployment Guide](./kubernetes-deployment-guide.md)
-- [Monitoring & Observability](./monitoring-observability.md)
-- [Database Schema](./database-schema.md)
+- [Monitoring & Observability](./observability-guide.md)
+- [Database Schema](../05-reference/database-structure.md)
 
 ---
 

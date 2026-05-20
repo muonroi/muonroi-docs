@@ -1,6 +1,6 @@
 ---
-title: "Ecosystem Coding Rules"
-sidebar_label: "Coding Rules"
+title: Ecosystem Coding Rules
+sidebar_label: Coding Rules
 sidebar_position: 100
 ---
 

@@ -366,7 +366,7 @@ Monitor:
 
 ## Related Documentation
 
-- **[Multi-Tenancy Guide](../multi-tenancy/multi-tenancy-guide.md)** — How TenantContext integrates with caching
+- **[Multi-Tenancy Guide](../multi-tenancy/multi-tenant-guide.md)** — How TenantContext integrates with caching
 - **[Rule Engine Guide](../rule-engine/rule-engine-guide.md)** — 3-level rule cache architecture
-- **[SignalR & Hot-Reload](signalr-hot-reload.md)** — Broadcasting cache invalidation
-- **[License & Governance](../license-governance/license-governance-guide.md)** — Cache feature gating
+- **[SignalR & Hot-Reload](../control-plane/signalr-hot-reload.md)** — Broadcasting cache invalidation
+- **[License & Governance](../license-governance/license-activation.md)** — Cache feature gating

@@ -453,8 +453,8 @@ All enforcement events are logged with prefixes:
 
 - **License Activation** — See [License Activation](./license-activation.md) for setup steps
 - **License Capability Model** — See [License Capability Model](./license-capability-model.md) for feature definitions
-- **Multi-Tenant Quotas** — See [Multi-Tenancy Guide](../multi-tenancy.md) for quota enforcement
-- **Auth Rules** — See [Authorization](../authorization.md) for policy-driven access control
+- **Multi-Tenant Quotas** — See [Multi-Tenancy Guide](../multi-tenancy/multi-tenant-guide.md) for quota enforcement
+- **Auth Rules** — See [Authorization](../identity-access/permission-guide.md) for policy-driven access control
 
 ---
 

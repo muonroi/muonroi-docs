@@ -514,6 +514,6 @@ The license-server maintains its own PostgreSQL database (`muonroi_licenses`) fo
 
 ## Related Resources
 
-- [Multi-Tenancy Guide](../../03-guides/multi-tenancy/tenant-isolation.md) — tenant isolation strategies
-- [Approval Workflow Guide](../../03-guides/rule-engine/approval-guide.md) — approval process details
-- [Decision Table Guide](../../03-guides/rule-engine/decision-table-guide.md) — decision table structure
+- [Multi-Tenancy Guide](../03-guides/multi-tenancy/tenant-isolation.md) — tenant isolation strategies
+- [Approval Workflow Guide](../03-guides/control-plane/ruleset-approval-workflow.md) — approval process details
+- [Decision Table Guide](../03-guides/rule-engine/decision-table-guide.md) — decision table structure

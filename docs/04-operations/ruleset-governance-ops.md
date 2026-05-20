@@ -650,7 +650,7 @@ For teams that want to sync operator-made changes back to source control:
 
 ## Related Docs
 
-- [Control Plane Overview](../03-architecture/control-plane-overview.md)
-- [Ruleset Approval Workflow](../05-workflows/ruleset-approval-workflow.md)
-- [Canary & Shadow Deployments](../05-workflows/canary-shadow.md)
-- [Audit Trail & Compliance](../07-security/audit-compliance.md)
+- [Control Plane Overview](../03-guides/control-plane/control-plane-overview.md)
+- [Ruleset Approval Workflow](../03-guides/control-plane/ruleset-approval-workflow.md)
+- [Canary & Shadow Deployments](./canary-shadow.md)
+- Audit Trail & Compliance

@@ -399,6 +399,6 @@ Don't immediately fail on heartbeat timeout. Wait for the full grace period:
 
 - **[License Activation](license-activation.md)** — How to activate and renew licenses
 - **[Tier Enforcement](tier-enforcement.md)** — Runtime validation and grace period handling
-- **[License Server API](../api-reference/license-server.md)** — Generate keys, manage revocations
-- **[Multi-Tenancy with Enterprise](../../../advanced/multi-tenancy/overview.md)** — Requires Enterprise tier
-- **[Rule Engine Setup](../../../advanced/rule-engine/overview.md)** — Requires `rule-engine` feature
+- **[License Server API](../../04-operations/license-server-admin.md)** — Generate keys, manage revocations
+- **[Multi-Tenancy with Enterprise](../multi-tenancy/multi-tenant-guide.md)** — Requires Enterprise tier
+- **[Rule Engine Setup](../rule-engine/rule-engine-guide.md)** — Requires `rule-engine` feature

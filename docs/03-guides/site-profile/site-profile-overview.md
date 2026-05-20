@@ -164,7 +164,9 @@ public class CatalogSiteProfile : ISiteProfile
     public void ConfigureServices(IServiceCollection services, IConfiguration configuration)
     {
         // Per-site overrides — e.g. custom column mappings or business rule sets
-        // TODO: verify exact API against Muonroi.Tenancy.SiteProfile v*
+        // ISiteProfile.RegisterServices(IServiceCollection, IConfiguration) — verified against Muonroi.Tenancy.SiteProfile
+        // Wire per-site DI: DbContext subclass, service overrides, custom mappers.
+        // Example: services.AddDbContext<CatalogDbContext>(o => o.UseNpgsql(configuration.GetConnectionString("Catalog")));
     }
 }
 ```

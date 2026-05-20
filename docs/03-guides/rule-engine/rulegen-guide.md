@@ -671,8 +671,8 @@ HookPoint = HookPoint.Custom  // Doesn't exist
 
 ## See Also
 
-- [Rule Engine Architecture](../architecture/rule-engine-architecture.md) — How rules execute
-- [Proliferation Engine](../advanced/proliferation-engine.md) — Test scenario generation
-- [Control Plane API](../../api/control-plane/rules-api.md) — Manage v2+ flow graphs
+- [Rule Engine Architecture](../../02-concepts/architecture-overview.md) — How rules execute
+- Proliferation Engine — Test scenario generation
+- [Control Plane API](../control-plane/control-plane-overview.md) — Manage v2+ flow graphs
 - [RuleGen VS Code Extension](rulegen-vscode-extension.md) — IDE integration
-- [Ecosystem Coding Rules](../../coding-standards/ecosystem-rules.md) — Development standards
+- [Ecosystem Coding Rules](../ecosystem-coding-rules.md) — Development standards

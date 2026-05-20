@@ -307,7 +307,7 @@ When installing `Muonroi.Governance.Enterprise`, you automatically get:
 - **npm Packages**: Published to public registry, pinned to stable versions
 
 For detailed package documentation, see individual guides:
-- Rule Engine: [rule-engine-guide.md](../../03-guides/rule-engine/rule-engine-guide.md)
-- Multi-Tenancy: [tenant-isolation.md](../../03-guides/multi-tenancy/tenant-isolation.md)
-- License Server: [license-setup.md](../../03-guides/license/license-setup.md)
+- Rule Engine: [rule-engine-guide.md](../03-guides/rule-engine/rule-engine-guide.md)
+- Multi-Tenancy: [tenant-isolation.md](../03-guides/multi-tenancy/tenant-isolation.md)
+- License Server: [license-setup.md](../03-guides/license-governance/license-activation.md)
 

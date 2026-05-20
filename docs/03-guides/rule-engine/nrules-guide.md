@@ -567,4 +567,4 @@ For most business use cases, **decision tables are preferred over NRules**:
 - Explore [NRules documentation](https://github.com/NRules/NRules/wiki) for advanced Rete patterns
 - Review [Rule Engine Guide](./rule-engine-guide.md) for typed rule alternatives
 - Check [Decision Table Guide](./decision-table-guide.md) for tabular logic
-- See [FEEL Reference](../reference/feel-reference.md) for expression syntax
+- See [FEEL Reference](./feel-reference.md) for expression syntax

@@ -41,47 +41,71 @@ function qdrantHeaders() {
 // ---- Embedding (mirrors experience-engine embedding.js) -------------------
 
 async function embed(text, signal) {
+  const vectors = await embedBatch([text], signal);
+  return vectors[0] ?? null;
+}
+
+/**
+ * embedBatch(texts[], signal) → vector[][]
+ *
+ * Embeds an array of strings in ONE HTTP call when the provider supports
+ * batch input (Ollama, OpenAI, SiliconFlow). Falls back to per-text calls
+ * for providers without batch support (Gemini). Single-element arrays go
+ * through the same path so callers don't need to special-case length 1.
+ */
+async function embedBatch(texts, signal) {
+  if (!texts.length) return [];
   const c = cfg();
   const provider = c.embedProvider || process.env.EXPERIENCE_EMBED_PROVIDER || 'ollama';
   const model = c.embedModel || process.env.EXPERIENCE_EMBED_MODEL || 'nomic-embed-text';
   const key = c.embedKey || process.env.EXPERIENCE_EMBED_KEY || '';
   const endpoint = c.embedEndpoint || process.env.EXPERIENCE_EMBED_ENDPOINT || '';
-  const timeout = signal || AbortSignal.timeout(10000);
+  // Embed timeout scales with batch size — Ollama processes inputs sequentially
+  // inside the call, so 20 chunks ≈ 20× single-embed latency. 6s/chunk ceiling
+  // (network + GPU inference, with safety margin for cold cache).
+  const timeout = signal || AbortSignal.timeout(Math.max(60000, texts.length * 6000));
 
   if (provider === 'openai' || provider === 'siliconflow') {
     const url = endpoint || 'https://api.openai.com/v1/embeddings';
     const res = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
-      body: JSON.stringify({ model, input: text.slice(0, 8000) }),
+      body: JSON.stringify({ model, input: texts.map((t) => t.slice(0, 8000)) }),
       signal: timeout,
     });
     if (!res.ok) throw new Error(`Embed HTTP ${res.status}`);
-    return (await res.json()).data?.[0]?.embedding ?? null;
+    const data = await res.json();
+    return (data.data ?? []).map((d) => d.embedding);
   }
 
   if (provider === 'gemini') {
-    const url = endpoint || `https://generativelanguage.googleapis.com/v1beta/models/${model}:embedContent?key=${key}`;
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ content: { parts: [{ text: text.slice(0, 8000) }] } }),
-      signal: timeout,
-    });
-    if (!res.ok) throw new Error(`Embed HTTP ${res.status}`);
-    return (await res.json()).embedding?.values ?? null;
+    // Gemini has no batch endpoint — fan out sequential per-text calls.
+    const out = [];
+    for (const text of texts) {
+      const url = endpoint || `https://generativelanguage.googleapis.com/v1beta/models/${model}:embedContent?key=${key}`;
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content: { parts: [{ text: text.slice(0, 8000) }] } }),
+        signal: timeout,
+      });
+      if (!res.ok) throw new Error(`Embed HTTP ${res.status}`);
+      out.push((await res.json()).embedding?.values ?? null);
+    }
+    return out;
   }
 
-  // Default: ollama
+  // Default: ollama — `input` accepts a string OR an array, returns
+  // `embeddings: [[...], [...]]` indexed positionally.
   const ollamaBase = c.ollamaUrl || process.env.EXPERIENCE_OLLAMA_URL || 'http://localhost:11434';
   const res = await fetch(`${ollamaBase}/api/embed`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ model, input: text }),
+    body: JSON.stringify({ model, input: texts }),
     signal: timeout,
   });
   if (!res.ok) throw new Error(`Embed HTTP ${res.status}`);
-  return (await res.json()).embeddings?.[0] ?? null;
+  return (await res.json()).embeddings ?? [];
 }
 
 // ---- Qdrant collection bootstrap ------------------------------------------
@@ -173,22 +197,19 @@ async function readDoc(docId) {
  * payload is stored alongside the text field.
  */
 async function upsertPoints(points) {
-  // Embed all in sequence (batching inside caller)
-  const withVectors = [];
-  for (const pt of points) {
-    const vector = await embed(pt.text);
-    if (!vector) throw new Error(`Embedding returned null for id=${pt.id}`);
-    withVectors.push({
-      id: pt.id,
-      vector,
-      payload: { ...pt.payload, text: pt.text },
-    });
-
-    // Ensure collection exists (use first vector dimension)
-    if (withVectors.length === 1) {
-      await ensureCollection(vector.length);
-    }
+  // Embed the whole batch in a single HTTP call — Ollama/OpenAI/SiliconFlow
+  // all accept array input. This collapses N round trips into 1 and is the
+  // dominant speedup vs. the previous per-point sequential loop.
+  const vectors = await embedBatch(points.map((p) => p.text));
+  if (vectors.length !== points.length) {
+    throw new Error(`Embed mismatch: got ${vectors.length} vectors for ${points.length} points`);
   }
+  const withVectors = points.map((pt, i) => {
+    const vector = vectors[i];
+    if (!vector) throw new Error(`Embedding returned null for id=${pt.id}`);
+    return { id: pt.id, vector, payload: { ...pt.payload, text: pt.text } };
+  });
+  await ensureCollection(withVectors[0].vector.length);
 
   const res = await fetch(`${qdrantBase()}/collections/${COLLECTION}/points?wait=true`, {
     method: 'PUT',
@@ -217,10 +238,34 @@ async function pointExists(id) {
 }
 
 /**
+ * pointsExist(ids[]) → Set<string>
+ *
+ * Uses Qdrant's `/points` bulk-fetch endpoint to check existence of many
+ * ids in ONE HTTP call. Returns the subset that already exist. Replaces
+ * the per-id loop used by the ingestion idempotency check.
+ */
+async function pointsExist(ids) {
+  if (!ids.length) return new Set();
+  const res = await fetch(`${qdrantBase()}/collections/${COLLECTION}/points`, {
+    method: 'POST',
+    headers: qdrantHeaders(),
+    body: JSON.stringify({ ids, with_payload: false, with_vector: false }),
+    signal: AbortSignal.timeout(15000),
+  });
+  if (!res.ok) {
+    // Treat collection-missing / bulk-fetch failure as "nothing exists yet"
+    // rather than crashing — first-time ingest creates the collection.
+    return new Set();
+  }
+  const data = await res.json();
+  return new Set((data.result ?? []).map((p) => String(p.id)));
+}
+
+/**
  * contentHash(text) → 16-char hex for idempotent point id suffix
  */
 function contentHash(text) {
   return crypto.createHash('sha256').update(text).digest('hex').slice(0, 16);
 }
 
-module.exports = { search, readDoc, upsertPoints, pointExists, contentHash, embed };
+module.exports = { search, readDoc, upsertPoints, pointExists, pointsExist, contentHash, embed, embedBatch };

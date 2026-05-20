@@ -416,12 +416,12 @@ public class AdminController(MAuthenticateInfoContext auth) : ControllerBase
 
 Use the focused guides when your application needs more than basic bearer-token auth:
 
-- **BFF and secure cookie sessions** — See [BFF Guide](../bff-guide.md)
-- **External OpenID Connect login** — See [OIDC Guide](../oidc-guide.md)
-- **Passkeys and phishing-resistant MFA** — See [WebAuthn MFA Guide](../webauthn-guide.md)
-- **Centralized authorization with OPA or OpenFGA** — See [Policy Decision Guide](../policy-decision-guide.md)
-- **Token management and refresh flows** — See [Token Guide](../token-guide.md)
-- **Permission design patterns** — See [Permission Guide](../permission-guide.md)
+- **BFF and secure cookie sessions** — See [BFF Guide](./bff-guide.md)
+- **External OpenID Connect login** — See [OIDC Guide](./oidc-guide.md)
+- **Passkeys and phishing-resistant MFA** — See [WebAuthn MFA Guide](./webauthn-mfa-guide.md)
+- **Centralized authorization with OPA or OpenFGA** — See [Policy Decision Guide](./policy-decision-guide.md)
+- **Token management and refresh flows** — See [Token Guide](./token-guide.md)
+- **Permission design patterns** — See [Permission Guide](./permission-guide.md)
 
 Keep the base auth setup small unless the product requirements explicitly need those flows.
 

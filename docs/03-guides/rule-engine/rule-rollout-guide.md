@@ -586,8 +586,8 @@ Auto-escalate to immediate rollback if:
 
 # Related Documentation
 
-- [Rule Version Control Guide](./rule-version-control-guide.md) — Approval workflow details
-- [Workflow Execution Guide](./workflow-execution-guide.md) — Execution modes and flow graph routing
-- [Hot-Reload Integration](./hot-reload-integration.md) — SignalR, Redis pub/sub, cache invalidation strategy
-- [Multi-Tenancy Architecture](../architecture/multi-tenancy.md) — Tenant resolution and context propagation
-- [Audit Trail Reference](../reference/audit-trail.md) — Capturing and querying deployment history
+- Rule Version Control Guide — Approval workflow details
+- Workflow Execution Guide — Execution modes and flow graph routing
+- [Hot-Reload Integration](../control-plane/signalr-hot-reload.md) — SignalR, Redis pub/sub, cache invalidation strategy
+- [Multi-Tenancy Architecture](../../02-concepts/tenancy-models.md) — Tenant resolution and context propagation
+- Audit Trail Reference — Capturing and querying deployment history

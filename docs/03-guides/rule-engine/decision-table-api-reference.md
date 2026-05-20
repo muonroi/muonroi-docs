@@ -141,4 +141,4 @@ Refer to the **[Complete Decision Table API Reference](../../05-reference/decisi
 Related guides:
 - [Decision Table Guide](./decision-table-guide.md) — Design and usage patterns
 - [Decision Table Versioning](./decision-table-versioning.md) — Version management
-- [FEEL Expression Reference](../../05-reference/feel-reference.md) — FEEL language
+- [FEEL Expression Reference](./feel-reference.md) — FEEL language

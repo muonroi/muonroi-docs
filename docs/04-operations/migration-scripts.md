@@ -511,9 +511,9 @@ jobs:
 
 ## Related Documentation
 
-- **[Ecosystem Coding Rules](../03-design/ecosystem-coding-rules.md)** — M-prefix naming standard and domain taxonomy
-- **[Package Reference](../02-reference/package-reference.md)** — Complete list of 54 NuGet packages
-- **[Repository Structure](../01-guides/repository-structure.md)** — src/, tests/, Samples/ layout
+- **[Ecosystem Coding Rules](../03-guides/ecosystem-coding-rules.md)** — M-prefix naming standard and domain taxonomy
+- **[Package Reference](../05-reference/package-reference.md)** — Complete list of 54 NuGet packages
+- **[Repository Structure](../01-getting-started/introduction.md)** — src/, tests/, Samples/ layout
 
 ---
 

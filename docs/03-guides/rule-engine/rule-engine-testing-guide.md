@@ -584,6 +584,6 @@ public async Task RulesetLifecycle_SaveAndActivate()
 
 ## References
 
-- [Rule Engine Guide](/docs/03-guides/rule-engine/rule-engine-guide) — architecture and concepts
-- [Decision Tables](/docs/03-guides/rule-engine/decision-tables) — DMN import and FEEL evaluation
-- [Control Plane API](/docs/02-architecture/control-plane-api) — ruleset CRUD and approval workflow
+- [Rule Engine Guide](./rule-engine-guide.md) — architecture and concepts
+- [Decision Tables](./decision-table-guide.md) — DMN import and FEEL evaluation
+- [Control Plane API](../control-plane/control-plane-overview.md) — ruleset CRUD and approval workflow
