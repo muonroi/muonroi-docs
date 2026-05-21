@@ -9,7 +9,8 @@
       "mcp__filesystem__write_file",
       "mcp__filesystem__read_text_file",
       "mcp__filesystem__directory_tree",
-      "PowerShell(Get-ChildItem -Path 'D:\\\\sources\\\\Core\\\\muonroi-building-block' -Depth 0 | Select-Object Name, @{Name='Type';Expression={if\\($_.PSIsContainer\\){'DIR'}else{'FILE'}}} | Sort-Object Name | Format-Table -AutoSize)"
+      "PowerShell(Get-ChildItem -Path 'D:\\\\sources\\\\Core\\\\muonroi-building-block' -Depth 0 | Select-Object Name, @{Name='Type';Expression={if\\($_.PSIsContainer\\){'DIR'}else{'FILE'}}} | Sort-Object Name | Format-Table -AutoSize)",
+      "PowerShell(gh run *)"
     ]
   }
 }

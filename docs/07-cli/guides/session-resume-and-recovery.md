@@ -159,7 +159,7 @@ The checkpoint file is written even when the user exits the CLI without
 pressing R. A future TUI startup hook can scan
 `.muonroi-flow/runs/*/scaffold-checkpoint.json` (via
 `listResumableScaffoldCheckpoints`, already exported) and offer "Resume
-scaffold from <date>?" as a halt-card variant. The persistence layer is
+scaffold from `<date>`?" as a halt-card variant. The persistence layer is
 in place; the boot-time UI is the open follow-up.
 
 ## End-to-end recovery recipe
