@@ -17,33 +17,118 @@ Copy the [Complete Example](#complete-example) below and customize for your envi
 ## LicenseConfigs
 
 License activation and verification settings for offline and online modes.
+Bound from the `LicenseConfigs` section to `Muonroi.Governance.Abstractions.License.LicenseConfigs`.
+
+### Core / activation
 
 | Key | Type | Default | Required | Description |
 |-----|------|---------|----------|-------------|
-| Mode | string | "Online" | No | `Online` (phone-home to license server) or `Offline` (use stored proof). Requires `Online` section if Online mode. |
-| LicenseFilePath | string | "licenses/license.key" | No | Relative or absolute path to license key JSON file. File format: `{ "LicenseKey": "MRR-xxxxx" }` |
-| ActivationProofPath | string | "licenses/activation_proof.json" | No | Relative or absolute path to signed activation proof. Created by license server on first activation. |
-| FallbackToOnlineActivation | bool | true | No | If Offline mode and proof is missing/expired, attempt fallback to Online activation. Requires internet connectivity. |
-| PublicKeyPath | string | — | No | Path to license server's RSA-2048 public key (PEM format). Used to verify activation proof signature. Auto-bundled if not specified. |
-| Online:Endpoint | string | — | Yes (if Mode=Online) | License server base URL (e.g., `https://license.truyentm.xyz`). No trailing slash. |
-| Online:EnableHeartbeat | bool | true | No | Enable automatic heartbeat verification every `HeartbeatIntervalMinutes`. Prevents long-running apps from skipping nonce rotation. |
-| Online:HeartbeatIntervalMinutes | int | 240 | No | Minutes between heartbeat checks (4h default = 6 checks/day). Range: 1–10080 (7 days). |
-| Online:RevocationGraceHours | int | 24 | No | Grace period (hours) to retry after heartbeat failure before degrading to Free tier. Handles network outages. |
-| Online:TimeoutSeconds | int | 10 | No | HTTP request timeout for activation and heartbeat. Increase if license server is slow. |
+| Mode | enum | `Offline` | No | `Offline` (verify a license file locally) or `Online` (phone-home to the license server). **Default is `Offline`.** An invalid string (e.g. `"office"`) fails enum binding at startup. |
+| LicenseFilePath | string | — | No | Relative (to content root) or absolute path to the license file. **Offline:** must be a signed payload JSON (`{ "LicenseId": ..., "Signature": ... }`); a raw-key file `{ "LicenseKey": "MRR-..." }` is ignored by `LicenseStore.Load()`. **Online:** the raw-key file is used to activate against the server. |
+| PublicKeyPath | string | — | No | Path to the license server's RSA public key (PEM). **Required for non-free licenses** — signature verification is mandatory and cannot be bypassed via config. Get it from `GET {Endpoint}/api/v1/signing-key/public`. |
+| ActivationProofPath | string | `licenses/activation_proof.json` | No | Path to the signed activation proof. Created on first online activation; lets production verify offline without internet. |
+| ActivationJwtPath | string | `licenses/activation_jwt.txt` | No | Path to the activation JWT for frontend verification (`MLicenseVerifier`). Created during online activation when the server returns a JWT. |
+| FallbackToOnlineActivation | bool | `true` | No | In Offline mode, if the proof is missing/expired, attempt online activation. Requires connectivity. Set `false` in production to require pre-activation. |
+| ProjectSeed | string | — | No | Per-project seed for the runtime fingerprint (stored obfuscated in memory). Used only when fingerprint/hardware binding applies; a license with `Fingerprint`/`HardwareId` = null is not bound, so changing this does not invalidate it. |
+| FingerprintSalt | string | — | No | Salt mixed into the runtime fingerprint. Same binding caveat as `ProjectSeed`. |
 
-**Example:**
+> **One license, multiple projects?** Yes — verification does **not** compare the payload `ProjectId`/`TenantId` against the consuming app; those fields are only part of the signed canonical data (`LicenseVerifier.VerifySignature`). A license file with null `Fingerprint`/`HardwareId` validates in any project on any machine. `ProjectId` is metadata/audit only. Prefer a dedicated key per project so revocation, expiry, and `MaxActivations` are tracked independently.
+
+### Enforcement / failure handling
+
+| Key | Type | Default | Required | Description |
+|-----|------|---------|----------|-------------|
+| FailMode | enum | `Soft` | No | `Soft` = log and degrade (no throw); `Hard` = throw `MInternalException` (`[SEC_ERR_01]`) on validation/chain failure. Use `Hard` in production with a valid license. |
+| EnforceOnDatabase | bool | `false` | No | Enforce license checks on database operations. |
+| EnforceOnMiddleware | bool | `false` | No | Enforce license checks on the HTTP middleware pipeline. |
+| EnforcementMode | enum? | `null` | No | Force `Free`/`Development`/`Production` enforcement. If null, derived from tier + `ASPNETCORE_ENVIRONMENT`. |
+| SkipSignatureVerification | bool | `false` | No | **Dev/test only.** Ignored for non-free licenses (signature is always mandatory). Never set in production. |
+| SkipAssemblyWhitelist | bool | `false` | No | **Dev/test only.** Skip assembly whitelist verification during activation. |
+| RequireSignedPolicy | bool | `false` | No | Require a valid signed policy file (`PolicyFilePath`) for the app to run. Recommended for enterprise. |
+| PolicyFilePath | string | — | No | Path to the signed policy file (e.g. `licenses/policy.json`). |
+| TrustedPublicKeyTokens | string[] | — | No | Hex-encoded public key tokens of assemblies trusted to call sensitive operations. |
+
+### Anti-tampering (Licensed/Enterprise, production)
+
+| Key | Type | Default | Required | Description |
+|-----|------|---------|----------|-------------|
+| EnableAntiTampering | bool | `false` | No | Enable runtime anti-tampering protection. |
+| AntiTamperingCheckIntervalSeconds | int | `30` | No | Min seconds between anti-tampering checks per tenant partition. `0` = check every guarded call. |
+| EnableHardwareBreakpointDetection | bool | `false` | No | Detect hardware breakpoints on compatible runtimes. |
+| EnableTpmAnchoring | bool | `false` | No | Anchor the license to the machine via Windows DPAPI/TPM, making the file non-transferable. |
+
+### Action chain / audit trail
+
+| Key | Type | Default | Required | Description |
+|-----|------|---------|----------|-------------|
+| EnableChain | bool | `false` | No | Enable action-chain tracking (audit trail). Enable only for Licensed/Enterprise. |
+| ChainStorage | enum | `None` | No | `None` / `File` (other backends per `LicenseChainStorage`). |
+| ChainFilePath | string | — | No | Path to the chain log file when `ChainStorage = File` (e.g. `logs/license-chain.log`). |
+| EnableServerValidation | bool | `false` | No | Submit action chains to the license server for remote audit. |
+| ChainSubmissionIntervalMinutes | int | `60` | No | How often to submit chains to the server. |
+| ChainSubmissionBatchSize | int | `100` | No | Max chain entries per submission batch. |
+
+### Online (used only when `Mode = "Online"`)
+
+| Key | Type | Default | Required | Description |
+|-----|------|---------|----------|-------------|
+| Online:Endpoint | string | — | Yes (if Mode=Online) | License server base URL (e.g. `https://license.muonroi.com`). No trailing slash. Host must be in `Enterprise.TrustedLicenseServerHosts` for Enterprise+Production. |
+| Online:ChainSubmissionEndpoint | string | `/api/v1/chain/submit` | No | Relative path for submitting action chains. |
+| Online:TimeoutSeconds | int | `10` | No | HTTP timeout for activation/heartbeat/refresh. |
+| Online:RefreshMinutes | int | `1440` | No | Interval for the background refresh hosted service (disabled entirely in Offline mode). |
+| Online:EnableHeartbeat | bool | `false` | No | Enable periodic heartbeat verification (nonce rotation). |
+| Online:HeartbeatIntervalMinutes | int | `240` | No | Minutes between heartbeat checks. |
+| Online:RevocationGraceHours | int | `24` | No | Grace period after heartbeat failure before degrading to Free. Handles outages. |
+| Online:EnableCertificatePinning | bool | `true` | No | Pin the server certificate to block MITM/fake servers. |
+| Online:ExpectedCertificateThumbprint | string | — | Yes (if pinning) | SHA-256 thumbprint of the expected server certificate. |
+| Online:TrustedCertificateThumbprints | string[] | — | No | Additional trusted thumbprints for certificate rotation. |
+
+### Enterprise security profile (`LicenseConfigs:Enterprise`)
+
+Secure-by-default for Enterprise + Production. Key knobs: `EnableSecureDefaults` (`true`), `AllowPolicyBypassInProduction` (`false`), `AllowEndpointTrustBypassInProduction` (`false`), `RequireCertificatePinningInProduction` (`true`), `RequireTrustedEndpointInProduction` (`true`), `RequireServerResponseSignatureInProduction` (`true`), and `TrustedLicenseServerHosts` (default: `license.muonroi.com`, `license-backup.muonroi.com`, `license.muonroi.net`, `license-api.muonroi.com`).
+
+> Because `RequireTrustedEndpointInProduction` defaults to `true`, an `Online:Endpoint` whose host is not in `TrustedLicenseServerHosts` is rejected in Enterprise+Production. Use `license.muonroi.com` (already trusted) or add your host to the list.
+
+**Compliance** (`LicenseConfigs:Compliance`) controls evidence-pack export — `Enabled` (`false`), `ExportRootPath`, `ExportIntervalMinutes` (`15`), `EnableBackgroundExport` (`false`), `EvidencePackRetentionDays` (`365`), etc.
+
+**Example — Offline (Enterprise, full feature):**
+```json
+"LicenseConfigs": {
+  "Mode": "Offline",
+  "ProjectSeed": "your-project-seed-min-16-chars",
+  "LicenseFilePath": "licenses/license.json",
+  "PublicKeyPath": "licenses/public.pem",
+  "FingerprintSalt": "your-project-salt",
+  "EnableChain": true,
+  "ChainStorage": "File",
+  "ChainFilePath": "logs/license-chain.log",
+  "FailMode": "Soft",
+  "EnforceOnDatabase": false,
+  "EnforceOnMiddleware": false,
+  "Online": {
+    "Endpoint": "https://license.muonroi.com",
+    "ChainSubmissionEndpoint": "/api/v1/chain/submit",
+    "TimeoutSeconds": 10,
+    "RefreshMinutes": 60
+  }
+}
+```
+
+**Example — Online (with heartbeat + pinning):**
 ```json
 "LicenseConfigs": {
   "Mode": "Online",
   "LicenseFilePath": "licenses/license.key",
-  "ActivationProofPath": "licenses/activation_proof.json",
-  "FallbackToOnlineActivation": true,
+  "PublicKeyPath": "licenses/public.pem",
+  "FailMode": "Hard",
   "Online": {
-    "Endpoint": "https://license.truyentm.xyz",
+    "Endpoint": "https://license.muonroi.com",
     "EnableHeartbeat": true,
     "HeartbeatIntervalMinutes": 240,
     "RevocationGraceHours": 24,
-    "TimeoutSeconds": 10
+    "TimeoutSeconds": 10,
+    "EnableCertificatePinning": true,
+    "ExpectedCertificateThumbprint": "A1:B2:C3:..."
   }
 }
 ```

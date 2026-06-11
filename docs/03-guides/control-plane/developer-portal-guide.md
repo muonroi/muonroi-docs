@@ -1,41 +1,37 @@
 ---
-title: Developer Portal
+title: Developer Portal & Self-Service Onboarding
 sidebar_label: Developer Portal
 sidebar_position: 6
 ---
 
-# Developer Portal
+# Developer Portal & Self-Service Onboarding
 
 The Developer Portal is the self-service surface of the control plane. It lets a developer
 register a project, obtain a Free license, mint MCP API keys, and connect an MCP client to the
 Muonroi ecosystem — without an administrator in the loop for the common path.
 
-All API routes below are relative to the control-plane base group `/api/v1/control-plane`.
+All API routes below are relative to the control-plane base URL and the prefix
+`/api/v1/control-plane`.
 
-## Overview
+---
 
-The portal covers four areas:
+## Tiers at a glance
 
-1. **Project registration** — self-service, anonymous. Returns a tenant id and a one-time
-   plaintext MCP API key.
-2. **License (BFF)** — the control plane issues, inspects, and revokes licenses **server-side**.
-   The browser never calls the license-server directly.
-3. **MCP API keys** — generate, list (masked), and revoke per-project keys used to authenticate
-   MCP requests.
-4. **Tier upgrades** — request a paid tier; an administrator approves or rejects.
+| Tier | Activation | MCP key limit | Key features |
+|------|-----------|---------------|--------------|
+| **Free** | Instant (auto-approved) | 5 active | Rule engine (all rule types), dry-run, 10 k quota/day |
+| **Starter** | Admin approval required | 20 active | + Decision tables, canary rollout |
+| **Professional** | Admin approval required | Unlimited | + Auth rules hot-reload, tenant isolation modes |
+| **Enterprise** | Admin approval required | Unlimited | + Full control plane: connectors, advanced quotas, PDP |
 
-Key facts:
-
-- MCP keys have the format `mpp-` followed by 32 hex characters.
-- Keys are stored as a **SHA256 hash only** — the plaintext is shown exactly once at creation and
-  is never retrievable afterward.
-- A project's tenant id has the format `proj-` followed by 12 hex characters.
+Free tier is the default and requires no approval. Paid tiers are requested via the upgrade flow
+(see [Step 5](#5-request-a-paid-tier-upgrade)) and must be approved by an administrator.
 
 ---
 
 ## 1. Register a project
 
-Registration is anonymous (no auth required).
+Registration is anonymous — no API key or login is required.
 
 ```http
 POST /api/v1/control-plane/proliferation/projects/register
@@ -62,7 +58,13 @@ Response (`200 OK`):
 > The server keeps only its SHA256 hash. A duplicate `projectName` returns `409 Conflict`.
 
 Registration creates one active MCP key (the one returned above). You can mint additional keys at
-any time (see below).
+any time (see [Step 3](#3-manage-mcp-api-keys)).
+
+Key facts:
+- MCP keys have the format `mpp-` followed by 32 hex characters.
+- Keys are stored as a **SHA256 hash only** — the plaintext is shown exactly once at creation and
+  is never retrievable afterward.
+- A project's tenant id has the format `proj-` followed by 12 hex characters.
 
 ---
 
@@ -150,22 +152,74 @@ MCP requests authenticate with the project key sent in the `X-Muonroi-Api-Key` h
 - A valid key resolves the request to its project's tenant automatically (the API-key tenant takes
   precedence over any JWT/header tenant).
 
-Add the key to your MCP client configuration, for example:
+### Claude Code
+
+Place this in `~/.claude/mcp.json` (global) or `.claude/mcp.json` in your project root.
+Replace `YOUR_API_KEY` with the `apiKey` value from registration and `YOUR_TENANT_ID` with the
+`tenantId` value (e.g. `proj-1a2b3c4d5e6f`).
 
 ```json
 {
   "mcpServers": {
     "muonroi-control-plane": {
-      "url": "https://your-control-plane-host/mcp",
+      "url": "https://cp.truyentm.xyz/mcp",
+      "transport": "http",
       "headers": {
-        "X-Muonroi-Api-Key": "mpp-0123456789abcdef0123456789abcdef"
+        "X-Muonroi-Api-Key": "YOUR_API_KEY",
+        "X-TenantId": "YOUR_TENANT_ID"
       }
+    },
+    "muonroi-docs": {
+      "type": "sse",
+      "url": "https://docs.muonroi.com/mcp"
     }
   }
 }
 ```
 
-The dashboard's **MCP Install Guide** page provides copy-paste configurations for common clients.
+#### Per-repo configs committed in each repo
+
+Each Muonroi repo ships a `.claude/mcp.json` you can copy into your checkout:
+
+| Repo | Config path | Notes |
+|------|-------------|-------|
+| `muonroi-control-plane` | `.claude/mcp.json` | Preconfigured for `http://localhost:5035/mcp`; swap host and key for production |
+| `muonroi-building-block` | `.claude/mcp.json` | Adds the local `muonroi-dev` stdio server for RuleGen |
+| `muonroi-ui-engine` | `.claude/mcp.json` | Adds the local `muonroi-dev` stdio server for UI rule components |
+| `muonroi-docs` | n/a — docs only | Add the global config above to your client |
+| `experience-engine` | n/a — standalone JS | Add the global config above to your client |
+| `muonroi-cli` | n/a — standalone CLI | No MCP server dependency |
+
+### Cursor
+
+Place this in `.cursor/mcp.json` (project-level) or `~/.cursor/mcp.json` (global).
+
+```json
+{
+  "mcpServers": {
+    "muonroi-control-plane": {
+      "url": "https://cp.truyentm.xyz/mcp",
+      "transport": "http",
+      "headers": {
+        "X-Muonroi-Api-Key": "YOUR_API_KEY",
+        "X-TenantId": "YOUR_TENANT_ID"
+      }
+    },
+    "muonroi-docs": {
+      "url": "https://docs.muonroi.com/mcp",
+      "transport": "sse"
+    }
+  }
+}
+```
+
+### Available MCP servers
+
+| Server | Transport | Purpose |
+|--------|-----------|---------|
+| `muonroi-control-plane` | HTTP | Rule authoring, dry-run, approval, canary, proliferation, portal operations |
+| `muonroi-docs` | SSE | Documentation search and reference |
+| `muonroi-dev` (building-block) | stdio | Local rule code generation (requires repo checkout) |
 
 ---
 
@@ -198,7 +252,7 @@ The same flows are available in the control-plane dashboard under **Developer Po
 |------|---------|
 | Projects & License | Registered projects, license tier/status, issue-free / revoke / request-upgrade |
 | MCP API Keys | Generate (plaintext shown once), list (masked), revoke keys per project |
-| MCP Install Guide | Copy-paste MCP client configurations |
+| MCP Install Guide | Copy-paste MCP client configurations for Claude Code and Cursor |
 | Ecosystem Catalog | Browse Muonroi repos and NuGet/npm packages |
 
 ---
@@ -210,6 +264,10 @@ The same flows are available in the control-plane dashboard under **Developer Po
 - **Revoke promptly.** A revoked key is rejected at the MCP middleware on the next request.
 - **The browser must not call the license-server directly** — always go through the control-plane
   license BFF endpoints described above.
+- **One key per deployment context.** Mint separate keys for local dev, staging, and production so
+  you can revoke a single environment without affecting others.
+
+---
 
 ## See also
 
