@@ -11,6 +11,9 @@ RUN npm ci --omit=dev --no-audit --no-fund
 # App sources (server-http reuses server.js's buildServer()).
 COPY src/ ./src/
 
+# Setup recipes — read directly by the deterministic setup.guide tool (no Qdrant dependency).
+COPY recipes/ ./recipes/
+
 ENV PORT=8086
 EXPOSE 8086
 
