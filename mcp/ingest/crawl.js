@@ -23,7 +23,9 @@ const path = require('node:path');
 const crypto = require('node:crypto');
 
 const SOURCES = require('./sources.json');
-const CORE_ROOT = 'D:/sources/Core';
+// Workspace root the sources.json paths are relative to. Override with CORE_ROOT on other
+// machines (e.g. the VPS: CORE_ROOT=/opt/muonroi npm run ingest); defaults to the dev layout.
+const CORE_ROOT = process.env.CORE_ROOT || 'D:/sources/Core';
 
 const CHUNK_SIZE = 800;
 const CHUNK_OVERLAP = 100;
