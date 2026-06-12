@@ -1,7 +1,7 @@
 /**
  * bb-template-describe.js — tool handler for bb.template.describe
  * Args: { shortName: string }  e.g. "mr-micro-sln", "mr-modular", "mr-api"
- * Returns: { shortName, purpose, structure, knownPackages, samplePrompt, sourceDoc }
+ * Returns: { shortName, purpose, structure, packages, samplePrompt, sourceDoc }
  *
  * Derives the response from docs.search — no separate schema.
  */
@@ -20,7 +20,7 @@ async function bbTemplateDescribe({ shortName }) {
       shortName,
       purpose: 'No information found — run `npm run ingest` to populate the bb-docs collection.',
       structure: null,
-      knownPackages: [],
+      packages: [],
       samplePrompt: null,
       sourceDoc: null,
     };
@@ -30,13 +30,13 @@ async function bbTemplateDescribe({ shortName }) {
   // Extract known packages: look for "Muonroi." prefixed identifiers in excerpts
   const allText = hits.map((h) => h.excerpt).join('\n');
   const pkgMatches = [...allText.matchAll(/Muonroi\.[A-Za-z.]+/g)].map((m) => m[0]);
-  const knownPackages = [...new Set(pkgMatches)].slice(0, 10);
+  const packages = [...new Set(pkgMatches)].slice(0, 10);
 
   return {
     shortName,
     purpose: top.excerpt,
     structure: hits.length > 1 ? hits[1].excerpt : null,
-    knownPackages,
+    packages,
     samplePrompt: `dotnet new ${shortName} -n MyProject`,
     sourceDoc: top.source,
   };

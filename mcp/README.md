@@ -44,7 +44,7 @@ Add to `~/.claude/claude_desktop_config.json` (or equivalent MCP config):
 |------|------|---------|
 | `docs.search` | `{ query: string, topK?: number }` | `Array<{ docId, score, title, excerpt, source }>` |
 | `docs.read` | `{ docId: string }` | `{ docId, title, content, source }` |
-| `bb.template.describe` | `{ shortName: string }` e.g. `"mr-micro-sln"` | `{ shortName, purpose, structure, knownPackages, samplePrompt, sourceDoc }` |
+| `bb.template.describe` | `{ shortName: string }` e.g. `"mr-micro-sln"` | `{ shortName, purpose, structure, packages, samplePrompt, sourceDoc }` |
 | `bb.package.describe` | `{ packageId: string }` e.g. `"Muonroi.RuleEngine.Runtime"` | `{ packageId, purpose, dependsOn, samples, sourceDoc }` |
 | `bb.recipe.list` | `{ domain?: string }` e.g. `"auth"` | `Array<{ recipeId, title, summary, sourceDoc }>` |
 

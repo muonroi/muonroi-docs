@@ -157,7 +157,13 @@ function buildServer() {
     { capabilities: { tools: {} } }
   );
 
-  server.setRequestHandler(ListToolsRequestSchema, async () => ({ tools: TOOLS }));
+  server.setRequestHandler(ListToolsRequestSchema, async () => {
+    const toolsWithParams = TOOLS.map((t) => ({
+      ...t,
+      parameters: t.inputSchema,
+    }));
+    return { tools: toolsWithParams };
+  });
 
   server.setRequestHandler(CallToolRequestSchema, async (request) => {
     const { name, arguments: args } = request.params;
