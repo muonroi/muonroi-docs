@@ -3,9 +3,10 @@
 FROM node:20-slim AS base
 WORKDIR /app
 
-# Install prod deps against the committed lockfile.
-COPY package.json package-lock.json ./
-RUN npm ci --omit=dev
+# Install prod deps. The lockfile is gitignored, so resolve from package.json
+# (single pinned dependency: @modelcontextprotocol/sdk).
+COPY package.json ./
+RUN npm install --omit=dev --no-audit --no-fund
 
 # App sources (server-http reuses server.js's buildServer()).
 COPY src/ ./src/
