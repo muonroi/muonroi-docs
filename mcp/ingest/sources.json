@@ -45,6 +45,11 @@
       "path": "muonroi-cli/docs",
       "glob": "**/*.md",
       "label": "cli-docs"
+    },
+    {
+      "path": "muonroi-docs/mcp/recipes",
+      "glob": "*.md",
+      "label": "setup-recipes"
     }
   ],
   "skip": ["node_modules", "bin", "obj", ".git", "dist", "build", ".vs", ".claude", "worktrees"]

@@ -2,12 +2,13 @@
 /**
  * server.js — stdio MCP server for Muonroi BB docs + recipes.
  *
- * Exposes 5 tools:
+ * Exposes 6 tools:
  *   docs.search          — semantic search across all ingested docs
  *   docs.read            — fetch full content of one doc chunk by docId
  *   bb.template.describe — structured info about a dotnet new template
  *   bb.package.describe  — structured info about a NuGet package
  *   bb.recipe.list       — list recipes by optional domain
+ *   setup.guide          — full ordered setup recipe for an ecosystem component (deterministic)
  *
  * Boot: node src/server.js
  * Register in MCP client: { "command": "node", "args": ["/path/to/mcp/src/server.js"] }
@@ -26,6 +27,7 @@ const { docsRead } = require('./tools/docs-read.js');
 const { bbTemplateDescribe } = require('./tools/bb-template-describe.js');
 const { bbPackageDescribe } = require('./tools/bb-package-describe.js');
 const { bbRecipeList } = require('./tools/bb-recipe-list.js');
+const { setupGuide } = require('./tools/setup-guide.js');
 
 // ---- Tool registry --------------------------------------------------------
 
@@ -105,6 +107,27 @@ const TOOLS = [
       },
     },
   },
+  {
+    name: 'setup.guide',
+    description:
+      'Returns the full, ordered, agent-executable setup recipe for a Muonroi ecosystem component — ' +
+      'prerequisites, the exact values to ask the user for, numbered steps, verification, and ' +
+      'troubleshooting. Deterministic (no search). Use this INSTEAD of docs.search whenever the task ' +
+      'is to set up / install / configure one of these components.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        component: {
+          type: 'string',
+          enum: ['experience-engine', 'muonroi-cli', 'muonroi-tools', 'harness', 'ecosystem'],
+          description:
+            'Which component to set up. "ecosystem" = the full toolchain in dependency order. ' +
+            '"muonroi-tools" = the tools-mcp server; "harness" = the mcp-driver server. Default "ecosystem".',
+          default: 'ecosystem',
+        },
+      },
+    },
+  },
 ];
 
 // ---- Dispatch -------------------------------------------------------------
@@ -116,6 +139,7 @@ async function dispatch(name, args) {
     case 'bb.template.describe': return bbTemplateDescribe(args);
     case 'bb.package.describe':  return bbPackageDescribe(args);
     case 'bb.recipe.list':   return bbRecipeList(args);
+    case 'setup.guide':      return setupGuide(args);
     default: throw new Error(`Unknown tool: ${name}`);
   }
 }
