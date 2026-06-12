@@ -122,7 +122,12 @@ async function dispatch(name, args) {
 
 // ---- Server ---------------------------------------------------------------
 
-async function main() {
+/**
+ * Builds a fully-wired MCP Server (tool list + dispatch). Transport-agnostic so both the
+ * stdio entrypoint (this file) and the HTTP entrypoint (server-http.js) share identical behavior.
+ * A fresh Server is created per call — the HTTP transport wants one server per session.
+ */
+function buildServer() {
   const server = new Server(
     { name: 'muonroi-docs', version: '1.0.0' },
     { capabilities: { tools: {} } }
@@ -145,12 +150,22 @@ async function main() {
     }
   });
 
+  return server;
+}
+
+async function main() {
+  const server = buildServer();
   const transport = new StdioServerTransport();
   await server.connect(transport);
   // Server is running — no further output to stdout (stdio transport owns stdout)
 }
 
-main().catch((err) => {
-  process.stderr.write(`Fatal: ${err}\n`);
-  process.exit(1);
-});
+module.exports = { buildServer, TOOLS };
+
+// Only auto-boot the stdio server when run directly (not when imported by server-http.js / tests).
+if (require.main === module) {
+  main().catch((err) => {
+    process.stderr.write(`Fatal: ${err}\n`);
+    process.exit(1);
+  });
+}

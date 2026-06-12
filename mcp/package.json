@@ -6,6 +6,7 @@
   "type": "commonjs",
   "scripts": {
     "start": "node src/server.js",
+    "start:http": "node src/server-http.js",
     "ingest": "node ingest/ingest.js",
     "test": "node --test tests/"
   },
