@@ -1,6 +1,6 @@
 # muonroi-docs MCP server
 
-stdio MCP server that provides semantic search over Muonroi Building Block docs and recipes — replacing 8-10 `read_file` loops with 1-2 `docs.search` calls.
+stdio MCP server that provides semantic search over Muonroi Building Block docs and recipes — replacing 8-10 `read_file` loops with 1-2 `docs_search` calls.
 
 ## How it works
 
@@ -42,28 +42,28 @@ Add to `~/.claude/claude_desktop_config.json` (or equivalent MCP config):
 
 | Tool | Args | Returns |
 |------|------|---------|
-| `docs.search` | `{ query: string, topK?: number }` | `Array<{ docId, score, title, excerpt, source }>` |
-| `docs.read` | `{ docId: string }` | `{ docId, title, content, source }` |
-| `bb.template.describe` | `{ shortName: string }` e.g. `"mr-micro-sln"` | `{ shortName, purpose, structure, packages, samplePrompt, sourceDoc }` |
-| `bb.package.describe` | `{ packageId: string }` e.g. `"Muonroi.RuleEngine.Runtime"` | `{ packageId, purpose, dependsOn, samples, sourceDoc }` |
-| `bb.recipe.list` | `{ domain?: string }` e.g. `"auth"` | `Array<{ recipeId, title, summary, sourceDoc }>` |
+| `docs_search` | `{ query: string, topK?: number }` | `Array<{ docId, score, title, excerpt, source }>` |
+| `docs_read` | `{ docId: string }` | `{ docId, title, content, source }` |
+| `bb_template_describe` | `{ shortName: string }` e.g. `"mr-micro-sln"` | `{ shortName, purpose, structure, packages, samplePrompt, sourceDoc }` |
+| `bb_package_describe` | `{ packageId: string }` e.g. `"Muonroi.RuleEngine.Runtime"` | `{ packageId, purpose, dependsOn, samples, sourceDoc }` |
+| `bb_recipe_list` | `{ domain?: string }` e.g. `"auth"` | `Array<{ recipeId, title, summary, sourceDoc }>` |
 
 ### Examples
 
 ```json
 // Find where auth is documented
-{ "tool": "docs.search", "arguments": { "query": "OIDC authentication BFF pattern", "topK": 3 } }
+{ "tool": "docs_search", "arguments": { "query": "OIDC authentication BFF pattern", "topK": 3 } }
 
 // Describe a template
-{ "tool": "bb.template.describe", "arguments": { "shortName": "mr-micro-sln" } }
+{ "tool": "bb_template_describe", "arguments": { "shortName": "mr-micro-sln" } }
 
 // List caching recipes
-{ "tool": "bb.recipe.list", "arguments": { "domain": "caching" } }
+{ "tool": "bb_recipe_list", "arguments": { "domain": "caching" } }
 ```
 
 ## Troubleshooting
 
-- **`docs.search` returns empty** — run `npm run ingest` to populate the `bb-docs` collection.
+- **`docs_search` returns empty** — run `npm run ingest` to populate the `bb-docs` collection.
 - **Embedding fails** — check `~/.experience/config.json` for `embedProvider`/`embedModel`/`embedKey`. For Ollama: ensure `ollama serve` is running and `nomic-embed-text` model is pulled.
 - **Qdrant not reachable** — check `qdrantUrl` in `~/.experience/config.json`.
 

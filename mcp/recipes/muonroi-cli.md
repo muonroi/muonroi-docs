@@ -73,4 +73,4 @@
 
 - docs.muonroi.com → CLI → *Quickstart*, *Providers Reference*, *Settings Reference*.
 - This CLI is the host for `tools-mcp` and `mcp-driver` — see the **muonroi-tools** and **harness**
-  setup recipes (via this MCP's `setup.guide`) to wire them into your agent.
+  setup recipes (via this MCP's `setup_guide`) to wire them into your agent.

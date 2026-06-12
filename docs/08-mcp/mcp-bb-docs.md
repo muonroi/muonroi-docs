@@ -35,7 +35,7 @@ docs/
 
 ## Tools
 
-### `docs.search`
+### `docs_search`
 
 Semantic search across all ingested docs and recipes. Returns ranked chunks with score, title, excerpt, and source path.
 
@@ -47,7 +47,7 @@ Semantic search across all ingested docs and recipes. Returns ranked chunks with
 **Example:**
 ```json
 {
-  "tool": "docs.search",
+  "tool": "docs_search",
   "arguments": {
     "query": "how to configure canary rollout for rule engine",
     "topK": 5
@@ -68,15 +68,15 @@ Semantic search across all ingested docs and recipes. Returns ranked chunks with
 ]
 ```
 
-### `docs.read`
+### `docs_read`
 
-Fetch full markdown content of one doc chunk by its `docId`. Get IDs from `docs.search` first.
+Fetch full markdown content of one doc chunk by its `docId`. Get IDs from `docs_search` first.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `docId` | string | Chunk ID returned by `docs.search` |
+| `docId` | string | Chunk ID returned by `docs_search` |
 
-### `bb.package.describe`
+### `bb_package_describe`
 
 Structured info about a Muonroi NuGet package — purpose, dependencies, and code samples. Derived from semantic search over the `05-reference/packages/` docs.
 
@@ -86,7 +86,7 @@ Structured info about a Muonroi NuGet package — purpose, dependencies, and cod
 
 **Returns:** `{ packageId, purpose, dependsOn[], samples[], sourceDoc }`
 
-### `bb.template.describe`
+### `bb_template_describe`
 
 Structured info about a `dotnet new` template from `muonroi-building-block`.
 
@@ -96,7 +96,7 @@ Structured info about a `dotnet new` template from `muonroi-building-block`.
 
 **Returns:** `{ shortName, purpose, structure, packages[], samplePrompt, sourceDoc }`
 
-### `bb.recipe.list`
+### `bb_recipe_list`
 
 List available how-to recipes, optionally filtered by domain.
 
@@ -185,5 +185,5 @@ node --test tests/
 ## See Also
 
 - [MCP Developer Server](./mcp-developer-server.md) — Developer-side MCP server (RuleGen, scaffold, compliance tools)
-- [Package Reference](../05-reference/packages/core-foundation.md) — Per-package deep-dive docs that populate `bb.package.describe`
+- [Package Reference](../05-reference/packages/core-foundation.md) — Per-package deep-dive docs that populate `bb_package_describe`
 - [appsettings Configuration](../05-reference/appsettings-guide.md) — General configuration reference

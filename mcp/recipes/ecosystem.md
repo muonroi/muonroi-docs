@@ -3,7 +3,7 @@
 > Agent-executable playbook for setting up the **whole** Muonroi agent toolchain on a fresh machine:
 > muonroi-cli + Experience Engine + the two local MCP servers (`tools-mcp`, `mcp-driver`). Do the
 > components in this order — later ones depend on earlier ones. For each component, call
-> `setup.guide` with that component name for the detailed steps; this file is the orchestration map.
+> `setup_guide` with that component name for the detailed steps; this file is the orchestration map.
 
 ## Prerequisites
 
@@ -26,14 +26,14 @@ Gather these up front so the whole flow runs without stopping:
 
 ## Steps
 
-1. **Install muonroi-cli** → `setup.guide { component: "muonroi-cli" }`.
+1. **Install muonroi-cli** → `setup_guide { component: "muonroi-cli" }`.
    End state: `muonroi-cli`/`mu` on PATH, provider key stored, `muonroi-cli --smoke-boot-only` passes.
-2. **Set up Experience Engine** → `setup.guide { component: "experience-engine" }`.
+2. **Set up Experience Engine** → `setup_guide { component: "experience-engine" }`.
    End state: `~/.experience/config.json` exists; `curl <serverBaseUrl-or-localhost>:8082/health`
    returns `status: ok`. (Required for the `ee.*` tools in step 3; skippable if you don't need recall.)
-3. **Register `tools-mcp`** in the MCP client → `setup.guide { component: "muonroi-tools" }`.
+3. **Register `tools-mcp`** in the MCP client → `setup_guide { component: "muonroi-tools" }`.
    End state: client advertises 9 tools; `ee.health` returns `{ ok: true }`.
-4. **Register `mcp-driver`** in the MCP client → `setup.guide { component: "harness" }`.
+4. **Register `mcp-driver`** in the MCP client → `setup_guide { component: "harness" }`.
    End state: client advertises 16 `tui.*` tools; `tui.capabilities` responds.
 
 > `tools-mcp` and `mcp-driver` are **local by design** — they act on the caller's own machine and are
@@ -51,11 +51,11 @@ End-to-end checklist after all four components:
 ## Troubleshooting
 
 - Resolve failures **per component** using that component's own recipe Troubleshooting section
-  (`setup.guide { component: "<name>" }`).
+  (`setup_guide { component: "<name>" }`).
 - Most common ordering mistake: registering `tools-mcp` before Experience Engine is configured →
   `ee.*` tools return error envelopes until `~/.experience/config.json` is populated.
 
 ## Deep references
 
-- Each component's deep docs are linked from its individual recipe; use `docs.search` (this MCP) for
-  any field not covered, e.g. `docs.search "muonroi-cli providers reference"`.
+- Each component's deep docs are linked from its individual recipe; use `docs_search` (this MCP) for
+  any field not covered, e.g. `docs_search "muonroi-cli providers reference"`.

@@ -10,12 +10,12 @@ const { buildServer, TOOLS } = require('../src/server.js');
 const { setupGuide, RECIPES } = require('../src/tools/setup-guide.js');
 
 const EXPECTED_TOOLS = [
-  'docs.search',
-  'docs.read',
-  'bb.template.describe',
-  'bb.package.describe',
-  'bb.recipe.list',
-  'setup.guide',
+  'docs_search',
+  'docs_read',
+  'bb_template_describe',
+  'bb_package_describe',
+  'bb_recipe_list',
+  'setup_guide',
 ];
 
 // Sections every setup recipe must expose so an agent can execute it end-to-end.

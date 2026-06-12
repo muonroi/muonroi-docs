@@ -91,4 +91,4 @@ Ask the user for these BEFORE running any step. Pick the deployment mode first; 
 - docs.muonroi.com → Experience Engine → *Getting Started*, *Configuration* (full `config.json` shape:
   `qdrant.url`, `embedProvider`/`embedModel`/`embedApiKey`, `brainProvider`/`brainModel`/`brainApiKey`,
   `maxWarningsPerSession`, `brainTimeoutMs`).
-- Use `docs.search` (this MCP) for any field not covered here, e.g. `docs.search "experience engine config.json brainProvider"`.
+- Use `docs_search` (this MCP) for any field not covered here, e.g. `docs_search "experience engine config.json brainProvider"`.

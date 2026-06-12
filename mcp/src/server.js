@@ -33,7 +33,7 @@ const { setupGuide } = require('./tools/setup-guide.js');
 
 const TOOLS = [
   {
-    name: 'docs.search',
+    name: 'docs_search',
     description:
       'Semantic search across all ingested Muonroi Building Block docs and recipes. ' +
       'Returns ranked chunks with title, excerpt, and source path. ' +
@@ -48,20 +48,20 @@ const TOOLS = [
     },
   },
   {
-    name: 'docs.read',
+    name: 'docs_read',
     description:
       'Fetch the full markdown content of a single doc chunk by its docId. ' +
-      'Get docIds from docs.search first.',
+      'Get docIds from docs_search first.',
     inputSchema: {
       type: 'object',
       properties: {
-        docId: { type: 'string', description: 'Chunk ID returned by docs.search' },
+        docId: { type: 'string', description: 'Chunk ID returned by docs_search' },
       },
       required: ['docId'],
     },
   },
   {
-    name: 'bb.template.describe',
+    name: 'bb_template_describe',
     description:
       'Get structured information about a muonroi-building-block dotnet new template. ' +
       'Returns purpose, project structure, known NuGet packages, and a sample prompt.',
@@ -77,7 +77,7 @@ const TOOLS = [
     },
   },
   {
-    name: 'bb.package.describe',
+    name: 'bb_package_describe',
     description:
       'Get structured information about a Muonroi NuGet package. ' +
       'Returns purpose, dependencies, and code samples.',
@@ -93,7 +93,7 @@ const TOOLS = [
     },
   },
   {
-    name: 'bb.recipe.list',
+    name: 'bb_recipe_list',
     description:
       'List available recipes (how-to guides and patterns) for a given domain. ' +
       'Omit domain to list all top recipes.',
@@ -108,11 +108,11 @@ const TOOLS = [
     },
   },
   {
-    name: 'setup.guide',
+    name: 'setup_guide',
     description:
       'Returns the full, ordered, agent-executable setup recipe for a Muonroi ecosystem component — ' +
       'prerequisites, the exact values to ask the user for, numbered steps, verification, and ' +
-      'troubleshooting. Deterministic (no search). Use this INSTEAD of docs.search whenever the task ' +
+      'troubleshooting. Deterministic (no search). Use this INSTEAD of docs_search whenever the task ' +
       'is to set up / install / configure one of these components.',
     inputSchema: {
       type: 'object',
@@ -134,12 +134,12 @@ const TOOLS = [
 
 async function dispatch(name, args) {
   switch (name) {
-    case 'docs.search':      return docsSearch(args);
-    case 'docs.read':        return docsRead(args);
-    case 'bb.template.describe': return bbTemplateDescribe(args);
-    case 'bb.package.describe':  return bbPackageDescribe(args);
-    case 'bb.recipe.list':   return bbRecipeList(args);
-    case 'setup.guide':      return setupGuide(args);
+    case 'docs_search':          return docsSearch(args);
+    case 'docs_read':            return docsRead(args);
+    case 'bb_template_describe': return bbTemplateDescribe(args);
+    case 'bb_package_describe':  return bbPackageDescribe(args);
+    case 'bb_recipe_list':       return bbRecipeList(args);
+    case 'setup_guide':          return setupGuide(args);
     default: throw new Error(`Unknown tool: ${name}`);
   }
 }

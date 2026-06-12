@@ -246,11 +246,11 @@ Semantic search server for agents — replaces read_file loops over large markdo
 |------|---------|
 | `mcp/src/server.js` | stdio MCP entrypoint (`node mcp/src/server.js`) |
 | `mcp/src/qdrant-client.js` | Qdrant wrapper + embedding (reads `~/.experience/config.json`) |
-| `mcp/src/tools/docs-search.js` | `docs.search` handler |
-| `mcp/src/tools/docs-read.js` | `docs.read` handler |
-| `mcp/src/tools/bb-template-describe.js` | `bb.template.describe` handler |
-| `mcp/src/tools/bb-package-describe.js` | `bb.package.describe` handler |
-| `mcp/src/tools/bb-recipe-list.js` | `bb.recipe.list` handler |
+| `mcp/src/tools/docs-search.js` | `docs_search` handler |
+| `mcp/src/tools/docs-read.js` | `docs_read` handler |
+| `mcp/src/tools/bb-template-describe.js` | `bb_template_describe` handler |
+| `mcp/src/tools/bb-package-describe.js` | `bb_package_describe` handler |
+| `mcp/src/tools/bb-recipe-list.js` | `bb_recipe_list` handler |
 | `mcp/ingest/crawl.js` | Walk docs + BB sources, chunk markdown |
 | `mcp/ingest/ingest.js` | Embed + upsert into `bb-docs` Qdrant collection |
 | `mcp/ingest/sources.json` | Crawl roots configuration |
@@ -260,11 +260,11 @@ Semantic search server for agents — replaces read_file loops over large markdo
 
 | Tool | Purpose |
 |------|---------|
-| `docs.search` | Semantic search, returns top-K chunks with score/title/excerpt |
-| `docs.read` | Full content of one chunk by docId |
-| `bb.template.describe` | Template purpose, structure, packages, sample prompt |
-| `bb.package.describe` | Package purpose, dependencies, code samples |
-| `bb.recipe.list` | Recipe list filtered by domain |
+| `docs_search` | Semantic search, returns top-K chunks with score/title/excerpt |
+| `docs_read` | Full content of one chunk by docId |
+| `bb_template_describe` | Template purpose, structure, packages, sample prompt |
+| `bb_package_describe` | Package purpose, dependencies, code samples |
+| `bb_recipe_list` | Recipe list filtered by domain |
 
 **First-time setup:** `cd mcp && npm install && npm run ingest`
 
