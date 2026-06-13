@@ -120,13 +120,41 @@ Config saved to `~/.experience/config.json`:
 
 ## Bootstrap from Existing Memory
 
-If you have existing Claude Code memories and want to seed the brain:
+The recommended import path uses the adapter-based `import-memory.js` tool, which supports all four runtimes (Claude, Gemini, Antigravity, Codex) and is mtime-gated so only changed files re-import:
 
 ```bash
-node tools/experience-bulk-seed.js --memory-dir ~/.claude/projects/*/memory
+node .experience/tools/import-memory.js
 ```
 
-This imports past patterns and decisions into the knowledge base.
+This scans `~/.claude/projects/*/memory/`, `~/.gemini/projects/*/memory/MEMORY.md`, `~/.gemini/antigravity/projects/*/memory/MEMORY.md`, and `~/.codex/projects/*/memory/MEMORY.md`, then upserts entries into the brain.
+
+> **Legacy path (Claude-only):** `node tools/experience-bulk-seed.js --memory-dir ~/.claude/projects/*/memory` still works for Claude projects but is not adapter-aware and does not cover Gemini, Antigravity, or Codex memory. Prefer `import-memory.js` for new setups.
+
+See [Memory Adapters](./memory-adapters) for full CLI flags, type routing, and the MEMORY.md bullet format.
+
+## Upgrade (existing installs)
+
+To refresh an existing install with the latest code and sync all agent sessions into the brain:
+
+```bash
+bash upgrade.sh
+```
+
+What this does:
+1. `git pull --ff-only` to fetch the latest code
+2. Detects your install mode from `~/.experience/config.json` (`thin-client` or `full`)
+3. Delegates to the appropriate setup script to refresh the runtime
+4. **Step 4 — Session sync:** runs `bulk-extract.js` to extract new experiences from local agent sessions, then runs `import-memory.js` to sync curated agent memory from all four runtime adapters
+
+Options:
+
+| Flag | Description |
+|------|-------------|
+| `--sync-only` | Skip pull and runtime refresh; only run Step 4 (bulk-extract + import-memory) |
+| `--no-sync` | Skip Step 4 entirely (pull + runtime refresh only) |
+| `--no-pull` | Skip git pull, run everything else |
+| `--dry-run` | Print what would happen; change nothing |
+| `--sync-max N` | Limit session extraction batch size (default 30) |
 
 ## Wiring to Claude Code
 

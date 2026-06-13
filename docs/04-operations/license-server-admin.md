@@ -539,6 +539,80 @@ Fix:
 - reduce `RevocationRefreshMinutes` if appropriate
 - verify the client heartbeat interval
 
+## PDF Entitlements
+
+The license server exposes a dedicated surface for granting and revoking PDF capability keys on an existing license key. This is separate from key generation and does not require re-activation.
+
+### Capability keys
+
+| Key | Component |
+|-----|-----------|
+| `pdf.designer` | PDF Designer commercial component (`@muonroi/ui-engine-pdf-designer`) |
+| `pdf.registry` | PDF template registry — control-plane backend and hot-reload |
+| `pdf.canary` | PDF canary quality-gate — SSIM scorer and automatic rollback |
+
+Keys are stored in `LicenseRecord.AllowedFeatures` (PostgreSQL `text[]`) and are embedded verbatim in the RSA-signed `ActivationProof`. No database migration is required to start using them.
+
+### REST API
+
+**Endpoint:** `POST /api/v1/keys/{licenseKey}/features`
+
+**Authorization:** requires the `license-generate` policy (same admin key used for key generation).
+
+**Request body** (both fields are optional; at least one must be present; the operation is atomic):
+
+```json
+{
+  "add": ["pdf.designer"],
+  "remove": ["pdf.canary"]
+}
+```
+
+**Response:**
+
+```json
+{
+  "licenseKey": "MRR-...",
+  "allowedFeatures": ["pdf.designer", "pdf.registry"]
+}
+```
+
+- Pass `add` to grant capabilities.
+- Pass `remove` to revoke capabilities.
+- Pass both to update in one atomic call.
+- `404 Not Found` is returned when the license key does not exist.
+
+### CLI
+
+The service entry point supports a `features` sub-command:
+
+```bash
+dotnet run --project src/Muonroi.LicenseServer -- features \
+  --key MRR-... \
+  --add pdf.designer,pdf.registry \
+  --remove pdf.canary
+```
+
+Options:
+
+| Flag | Default | Notes |
+|------|---------|-------|
+| `--key` | (required) | License key in `MRR-...` format |
+| `--add` | — | Comma-separated capability keys to grant |
+| `--remove` | — | Comma-separated capability keys to revoke |
+| `--server` | `http://localhost:5010` | License server base URL |
+| `--admin-token` | `MUONROI_LICENSE_ADMIN_TOKEN` env var | Admin API key sent as `X-Admin-Api-Key` |
+
+At least one of `--add` or `--remove` must be provided.
+
+### Operational notes
+
+- The proof the runtime holds does **not** update until the license is re-activated. Re-activate after changing features for the change to appear in offline proof checks.
+- Enterprise keys default to `["*"]` at issuance and already pass every feature gate. Explicit `pdf.*` keys are relevant for Licensed-tier keys.
+- Use `GET /api/v1/validate` with the target `actionType` to confirm a feature is currently allowed before re-activation.
+
+---
+
 ## Recommended next reading
 
 - [License Activation](../03-guides/license-governance/license-activation.md)

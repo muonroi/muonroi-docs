@@ -31,6 +31,7 @@ Core abstractions for license state management, feature enforcement, and anti-ta
 | `ILicenseStore` | interface | Load/save activation proofs |
 | `IFingerprintChainStore` | interface | Persist HMAC chain signatures |
 | `ILicenseGuardEnhancer` | interface | Lifecycle hooks: OnStartup, OnEnsureValid, OnRecordAction |
+| `MCapability` | enum (`[Flags]`) | Bit-flags for ecosystem capability detection: `None=0`, `Logging=1`, `RuleEngine=2`, `MultiTenant=4`, `Auth=8`, `Governance=16` |
 
 ### License Tiers & Features
 
@@ -193,6 +194,9 @@ public class LicenseConfigs
     /// Fall back to online activation if offline fails.
     public bool FallbackToOnlineActivation { get; set; } = true;
     
+    /// Controls fingerprint factors: MachineAndProject (default) or ProjectOnly.
+    public LicenseFingerprintScope FingerprintScope { get; set; } = LicenseFingerprintScope.MachineAndProject;
+    
     /// Hard (throw on failure) or Soft (log and continue).
     public LicenseFailMode FailMode { get; set; } = LicenseFailMode.Hard;
     
@@ -238,7 +242,7 @@ OSS-safe implementation of license protection, activation, and basic feature enf
 | `LicenseVerifier` | Validates proofs and checks expiry |
 | `LicenseActivationService` | Client for `/api/v1/activate` endpoint |
 | `LicenseRefreshHostedService` | Background heartbeat service (Online mode) |
-| `DefaultLicenseFingerprintProvider` | Hardware fingerprint (MAC address + CPU ID) |
+| `DefaultLicenseFingerprintProvider` | Runtime fingerprint derived from `MachineName`, `OSDescription`, `OSArchitecture`, `ProcessorCount`, `ApplicationName`, `ProjectSeed`, and `FingerprintSalt`; hardware/OS factors are omitted when `FingerprintScope = ProjectOnly` |
 | `AssemblyHashCollector` | SHA256 hashes of loaded assemblies |
 
 ### DI Registration

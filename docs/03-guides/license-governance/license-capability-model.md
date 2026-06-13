@@ -99,6 +99,18 @@ Unlocked with an Enterprise license. Includes the full feature set with governan
 | **Integrations** | | | |
 | connectors | | | ✓ |
 | js-expressions | | | ✓ |
+| **PDF Product Line** *(add-on)* | | | |
+| pdf.designer | | add-on | add-on |
+| pdf.registry | | add-on | add-on |
+| pdf.canary | | add-on | add-on |
+
+> **PDF capability keys are add-ons, not tier features.** `pdf.designer`, `pdf.registry`, and `pdf.canary` are granted per-license-key regardless of tier and are not part of any tier's default feature set. Enable them with the grant/revoke endpoint or CLI — see [License Server Admin → PDF Entitlements](../../04-operations/license-server-admin.md#pdf-entitlements).
+
+| Key | Component |
+|-----|-----------|
+| `pdf.designer` | PDF Designer commercial component (`@muonroi/ui-engine-pdf-designer`) |
+| `pdf.registry` | PDF template registry (control-plane backend + hot-reload) |
+| `pdf.canary` | PDF canary quality-gate (SSIM scorer + rollback) |
 
 ---
 
@@ -320,6 +332,7 @@ guard.HasFeature("anything")      // true
 {
   "LicenseConfigs": {
     "Mode": "Online",
+    "FingerprintScope": "MachineAndProject",
     "LicenseFilePath": "licenses/license.key",
     "ActivationProofPath": "licenses/activation_proof.json",
     "FallbackToOnlineActivation": true,
@@ -335,6 +348,15 @@ guard.HasFeature("anything")      // true
   }
 }
 ```
+
+**`FingerprintScope`** controls which factors the runtime fingerprint is derived from:
+
+| Value | Factors | Use case |
+|-------|---------|----------|
+| `MachineAndProject` (default) | `MachineName`, OS description, OS architecture, CPU count, `ApplicationName`, `ProjectSeed`, `FingerprintSalt` | Production: bind a license to one specific machine |
+| `ProjectOnly` | `ApplicationName`, `ProjectSeed`, `FingerprintSalt` only | Dev / UAT / prod fleet: one key validates on any machine |
+
+> Changing `FingerprintScope` after activation against `MachineAndProject` produces a different fingerprint and requires re-activation.
 
 ### Program.cs Registration
 

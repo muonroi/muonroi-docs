@@ -107,10 +107,11 @@ Env-only cost knobs (no `UserSettings` field):
 
 | Key | Type | Default | Description |
 |---|---|---|---|
-| `lsp.autoInstall` | `boolean` | `false` | Auto-install missing language servers. |
-| `lsp.builtins` | `Record<LspBuiltInServerId, LspBuiltInServerSettings>` | `{}` | Overrides for built-in language servers (`enabled`, `command`, `args`, `env`, `initialization`, `rootMarkers`, `extensions`). |
+| `lsp.autoInstall` | `boolean` | `true` | Auto-install missing language servers. |
+| `lsp.builtins` | `Record<LspBuiltInServerId, LspBuiltInServerSettings>` | `{}` | Overrides for built-in language servers (`enabled`, `command`, `args`, `env`, `initialization`, `rootMarkers`, `extensions`). Built-in ids: `typescript`, `pyright`, `gopls`, `rust-analyzer`, `bash-language-server`, `yaml-language-server`, `clangd`, `jdtls`, `sourcekit-lsp`, `csharp-ls`. `csharp-ls` resolves from `PATH` first, then `~/.dotnet/tools` (`src/lsp/types.ts:15`, `src/lsp/builtins.ts:237`). |
 | `lsp.diagnosticsDebounceMs` | `number` | `200` | Debounce window (ms) for LSP diagnostics. |
 | `lsp.enabled` | `boolean` | `true` | Master switch for the LSP subsystem. |
+| `lsp.requestTimeoutMs` | `number` | `30000` | Per-request LSP operation timeout (ms). Distinct from `lsp.startupTimeoutMs` (server startup). (`src/lsp/types.ts:90`, `src/utils/settings.ts:71`) |
 | `lsp.servers` | `LspCustomServerConfig[]` | `[]` | User-defined LSP servers. |
 | `lsp.startupTimeoutMs` | `number` | `30000` | Max time (ms) to wait for an LSP server to come up. |
 | `lsp.tool` | `boolean` | `true` | Expose the LSP tool to the agent. |

@@ -149,29 +149,54 @@ MCP requests authenticate with the project key sent in the `X-Muonroi-Api-Key` h
 `McpTenantContextMiddleware` validates the key on every `/mcp` request:
 
 - Unknown or revoked keys are rejected with **`401 Unauthorized`**.
-- A valid key resolves the request to its project's tenant automatically (the API-key tenant takes
-  precedence over any JWT/header tenant).
+- A valid key resolves the request to its project's tenant automatically — the tenant is derived
+  from the key server-side; no `X-TenantId` header is needed or accepted.
 
-### Claude Code
+### Start here: add muonroi-docs first
+
+`muonroi-docs` is the gateway MCP server. It is hosted, anonymous (Streamable HTTP, no key), and
+ships a `setup.guide` tool. Once it is connected, your agent can bootstrap the rest of the
+ecosystem — experience-engine, muonroi-cli, agent tools, harness — by asking for a setup recipe.
+Add it first, then add the control-plane server.
+
+**Claude Code (terminal):**
+
+```bash
+claude mcp add --transport http muonroi-docs https://docs-mcp.muonroi.com/mcp
+```
+
+> **Note:** Connecting `muonroi-docs` first exposes the `setup.guide` tool, which walks you
+> through setting up the full Muonroi ecosystem (experience-engine, muonroi-cli, agent tools) on
+> demand — no manual steps required beyond providing the values it asks for.
+
+### Add the control-plane server
+
+**Claude Code (terminal):**
+
+```bash
+claude mcp add --transport http muonroi-control-plane https://control-plane.muonroi.com/mcp \
+  --header "X-Muonroi-Api-Key: YOUR_MCP_API_KEY"
+```
+
+Replace `YOUR_MCP_API_KEY` with the `apiKey` value from project registration.
+
+### Claude Code (JSON config)
 
 Place this in `~/.claude/mcp.json` (global) or `.claude/mcp.json` in your project root.
-Replace `YOUR_API_KEY` with the `apiKey` value from registration and `YOUR_TENANT_ID` with the
-`tenantId` value (e.g. `proj-1a2b3c4d5e6f`).
 
 ```json
 {
   "mcpServers": {
+    "muonroi-docs": {
+      "url": "https://docs-mcp.muonroi.com/mcp",
+      "transport": "http"
+    },
     "muonroi-control-plane": {
-      "url": "https://cp.truyentm.xyz/mcp",
+      "url": "https://control-plane.muonroi.com/mcp",
       "transport": "http",
       "headers": {
-        "X-Muonroi-Api-Key": "YOUR_API_KEY",
-        "X-TenantId": "YOUR_TENANT_ID"
+        "X-Muonroi-Api-Key": "YOUR_MCP_API_KEY"
       }
-    },
-    "muonroi-docs": {
-      "type": "sse",
-      "url": "https://docs.muonroi.com/mcp"
     }
   }
 }
@@ -197,17 +222,16 @@ Place this in `.cursor/mcp.json` (project-level) or `~/.cursor/mcp.json` (global
 ```json
 {
   "mcpServers": {
+    "muonroi-docs": {
+      "url": "https://docs-mcp.muonroi.com/mcp",
+      "transport": "http"
+    },
     "muonroi-control-plane": {
-      "url": "https://cp.truyentm.xyz/mcp",
+      "url": "https://control-plane.muonroi.com/mcp",
       "transport": "http",
       "headers": {
-        "X-Muonroi-Api-Key": "YOUR_API_KEY",
-        "X-TenantId": "YOUR_TENANT_ID"
+        "X-Muonroi-Api-Key": "YOUR_MCP_API_KEY"
       }
-    },
-    "muonroi-docs": {
-      "url": "https://docs.muonroi.com/mcp",
-      "transport": "sse"
     }
   }
 }
@@ -215,11 +239,11 @@ Place this in `.cursor/mcp.json` (project-level) or `~/.cursor/mcp.json` (global
 
 ### Available MCP servers
 
-| Server | Transport | Purpose |
-|--------|-----------|---------|
-| `muonroi-control-plane` | HTTP | Rule authoring, dry-run, approval, canary, proliferation, portal operations |
-| `muonroi-docs` | SSE | Documentation search and reference |
-| `muonroi-dev` (building-block) | stdio | Local rule code generation (requires repo checkout) |
+| Server | URL | Transport | Purpose |
+|--------|-----|-----------|---------|
+| `muonroi-docs` | `https://docs-mcp.muonroi.com/mcp` | Streamable HTTP | Documentation search, `setup.guide` ecosystem bootstrapper — no key |
+| `muonroi-control-plane` | `https://control-plane.muonroi.com/mcp` | Streamable HTTP | Rule authoring, dry-run, approval, canary, proliferation, portal operations |
+| `muonroi-dev` (building-block) | `http://localhost:…` | stdio | Local rule code generation (requires repo checkout) |
 
 ---
 

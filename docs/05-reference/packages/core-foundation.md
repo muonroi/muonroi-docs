@@ -32,7 +32,8 @@ Defines the ecosystem contract interfaces and models for date/time services, JSO
 | `IContextResolver` | interface | Resolves context from requests |
 | `ITenantContextPolicy` | interface | Tenant context validation/resolution policy |
 | `IMEcosystemRegistry` | interface | Registry for ecosystem capabilities and metadata |
-| `MCapability` | class | Represents a capability: name, version, features |
+| `MCapability` | enum (`[Flags]`) | Bit-flags for ecosystem capability detection: `None=0`, `Logging=1`, `RuleEngine=2`, `MultiTenant=4`, `Auth=8`, `Governance=16`. Bits 5–15 reserved for consumer-defined extensions. |
+| `EcosystemServiceCollectionExtensions` | static | `GetOrCreateRegistry(IServiceCollection)` — ensures `IMEcosystemRegistry` singleton and registers startup capability logging (idempotent); `AddEcosystemStartupLog(IServiceCollection)` — registers `MEcosystemStartupFilter` as `IStartupFilter` (idempotent). |
 
 ### DI Registration
 

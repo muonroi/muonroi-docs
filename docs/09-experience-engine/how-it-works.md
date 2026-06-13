@@ -128,6 +128,22 @@ Memory **shrinks** as capability grows: a single T0 principle replaces multiple 
 
 3. **T1 to T0** — When a cluster of similar T1 entries accumulates, the evolution engine asks the brain LLM to generalize them into a principle. The resulting T0 entry uses the format: "when X class of failure appears, do Y because Z."
 
+### Runbook Reconfirm on Supersede (§3.6)
+
+A runbook entry (`nodeKind: 'runbook'`) stitches several atomic experience entries together via `derivedFromId` (a list of 8-character ID prefixes). When one of those referenced entries is superseded, the runbook's procedure step may be stale — but the runbook body is human-authored ground truth, so the engine **never auto-edits it**.
+
+Instead, when the evolution cycle detects that a superseded entry's 8-char ID prefix matches any entry in a runbook's `derivedFromId` list, it flags the runbook:
+
+- Sets `needsReconfirm: true` on the payload
+- Records `reconfirmAt` (ISO timestamp)
+- Sets `reconfirmReason: "derivedFrom superseded: <id>,<id>"`
+- Records the triggered IDs in `reconfirmTriggeredBy`
+- Appends an `op: runbook-needs-reconfirm` row to the activity log
+
+The flagging is **idempotent**: if the runbook is already flagged and no new superseded ID appeared, the payload is not re-written. Runbooks that are themselves already superseded are exempt.
+
+The `needsReconfirm` flag surfaces in the session-end nudge and the dashboard, prompting a human to re-validate the runbook body against current practice.
+
 ### Demotion Path
 
 An entry that receives three ignored or noise verdicts is demoted and archived. Archived entries retain their history but are excluded from retrieval.
@@ -180,6 +196,38 @@ Mar:  "Actually, use IHttpClientFactory"  → contradicts Jan entry
 ```
 
 This means the engine handles library upgrades and breaking changes without losing the historical record of why a pattern existed.
+
+---
+
+## Agent Instruction Injection
+
+On every install and upgrade, `inject-agent-instructions.sh` writes a marker-delimited block into each supported agent's config file:
+
+| Agent | Config file |
+|-------|-------------|
+| Claude Code | `~/.claude/CLAUDE.md` |
+| Gemini CLI | `~/.gemini/GEMINI.md` |
+| Codex CLI | `~/.codex/AGENTS.md` |
+| OpenCode | `~/.config/opencode/AGENTS.md` |
+
+The block is wrapped in HTML comment markers:
+
+```
+<!-- experience-engine:start -->
+## Experience Engine
+...
+<!-- experience-engine:end -->
+```
+
+The script is **idempotent**:
+- If the target file does not exist but its parent directory does, the file is created containing only the block.
+- If the target file already contains the managed block, the block is replaced in-place (auto-migrating stale/older versions).
+- If the target file exists without a managed block, the block is appended.
+- If the parent directory does not exist (agent not installed), the file is silently skipped.
+
+**Opt out:** Set `EXPERIENCE_SKIP_MD_INJECT=1` before running setup or upgrade to skip injection entirely.
+
+The injected block includes a "Project Memory Self-Curation" subsection that instructs each agent how to write lessons back to its own memory directory (`MEMORY.md` bullets for Gemini/Antigravity/Codex; per-file frontmatter under `~/.claude/projects/<slug>/memory/` for Claude). This closes the curation loop: agents write memory, `import-memory.js` reads it back into the brain.
 
 ---
 

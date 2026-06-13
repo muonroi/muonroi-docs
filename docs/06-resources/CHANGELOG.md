@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.9.7] - 2026-06-13
+
+### Added
+- **building-block** `MBB008` analyzer: cross-capability type reference inside an `AddM*` extension method must be guarded by `IMEcosystemRegistry.Has(MCapability.X)`. Anchors: `Logging`, `RuleEngine`, `MultiTenant`, `Auth`, `Governance`.
+- **building-block** `MBB009` analyzer: forbids raw `Exception`/`ArgumentException` throws inside `Muonroi.*` namespaces — use the `MException` hierarchy (test assemblies exempt).
+- **building-block** `MBB010` analyzer: requires a null guard on every non-nullable reference-type parameter of a public method (`MGuard.NotNull`, `ArgumentNullException.ThrowIfNull`, `if (x == null)`, `x ?? throw`); value types and `T?` exempt.
+- **building-block** `LicenseFingerprintScope` enum + `LicenseConfigs.FingerprintScope` key (`MachineAndProject` default / `ProjectOnly`). `ProjectOnly` omits hardware + OS so one license key validates on any machine (dev / UAT / prod).
+- **building-block** `MCapability.Governance = 1 << 4` added to the `MCapability` flags enum, registered by the governance `AddM*` extension so `MBB008` can guard calls into `Muonroi.Governance.*`.
+- **building-block** `CopilotDraftProvenanceRecord` entity + `DbSet` on `RuleEngineDbContext` (AI-copilot draft hash/snapshot/`EditedBeforeApproval`/`ApprovedAt`, tenant-scoped RLS); `(Draft, Rejected)` copilot-discard transition (`Rejected` remains terminal).
+- **ui-engine** `@muonroi/ui-engine-rule-components` 0.1.23 — `mu-impact-list` Lit component (cross-version impact, three-state coverage badges, UAT checklist, virtualized, trace-jump) + `MuImpactListReact` wrapper + `getImpactList` client. Living Docs suite: `mu-living-docs`, `mu-traceability-matrix`. New commercial package `@muonroi/ui-engine-pdf-designer` 1.0.0 (Monaco-based PDF template designer, PROFILE-V1 lint, `pdf.designer` gated).
+- **license-server** PDF entitlements — per-key grant/revoke endpoint `POST /api/v1/keys/{licenseKey}/features` + `features` CLI; capability keys `pdf.designer`, `pdf.registry`, `pdf.canary` (stored in `LicenseRecord.AllowedFeatures` `text[]`, no migration).
+- **muonroi-cli** 1.4.1 — `ee_feedback` MCP tool + session pending-recall feedback gate; `csharp-ls` built-in LSP + per-request timeout; `lsp.autoInstall` default on. `muonroi-tools` MCP tool names normalized to underscores (`ee_query`, `selfverify_*`, `usage_forensics`, `lsp_query`).
+- **experience-engine** Gemini, Antigravity, and Codex memory adapters (single-file `MEMORY.md` parsing) alongside Claude; curated-memory import wired into `upgrade.sh`; runbook re-confirm flagging on supersede.
+
+### Fixed
+- **building-block** `OwnedPdfWriter` emits deterministic LF line endings in content/CMap streams (cross-platform golden parity).
+- **building-block** EF Core migration chain consolidated (`CatchUpRlsProvenanceWriteCheck`): RLS `WITH CHECK` applied to all six tenant-scoped tables (`RuleSets`, `CanaryRollouts`, `RuleSetAudits`, `TenantRuleAssignments`, `TenantQuotaOverrides`, `CopilotDraftProvenance`).
+
 ## [1.9.6] - 2026-03-12
 
 ### Added

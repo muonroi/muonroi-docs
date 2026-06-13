@@ -40,6 +40,22 @@ Base route: `/api/v1/rule-engine/rulesets`
 | `GET` | `/{workflowName}/audit` | Inspect change history |
 | `POST` | `/{workflowName}/versions/{v1}/diff/{v2}` | Compare two versions |
 
+### Approval Endpoints
+
+These endpoints are only active when `RuleControlPlane:RequireApproval=true` (the production default). See [Ruleset Approval Workflow](../03-guides/control-plane/ruleset-approval-workflow.md) for the full maker-checker pattern.
+
+Base route: `/api/v1/control-plane`
+
+| Method | Endpoint | Policy | Purpose |
+|--------|----------|--------|---------|
+| `POST` | `/rulesets/{workflow}/{version}/submit` | Admin | Submit a draft version for review; moves state to `PendingApproval` |
+| `POST` | `/rulesets/{workflow}/{version}/approve` | Approver | Approve a pending-approval version; moves state to `Approved` |
+| `POST` | `/rulesets/{workflow}/{version}/reject` | Approver | Reject a pending-approval version with a mandatory `reason`; reverts to `Draft` |
+
+**Conflict responses (`409 Conflict`)** are returned for:
+- Self-approval (the actor who submitted cannot approve the same version)
+- Wrong state transitions (e.g. approving an already-active version)
+
 ## CRUD Operations
 
 ### List All Rulesets

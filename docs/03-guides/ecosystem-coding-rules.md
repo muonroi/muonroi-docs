@@ -14,7 +14,7 @@ The Muonroi ecosystem enforces **wrapper-first design** across the building bloc
 - **Standardized logging** — consistent structured logging across all packages with scope management
 - **Testability** — all dependencies are injected interfaces, never hard-coded framework APIs
 
-Roslyn code analyzers (`MBB001`–`MBB007` for building block, `MRG001`–`MRG010` for RuleGen) enforce these rules at compile time with detailed diagnostics.
+Roslyn code analyzers (`MBB001`–`MBB010` for building block, `MRG001`–`MRG010` for RuleGen) enforce these rules at compile time with detailed diagnostics.
 
 ---
 
@@ -375,6 +375,158 @@ public class OrderService
 
 ---
 
+### MBB008: Cross-Capability Reference Without Guard
+
+**Rule**: Inside an `AddM*` extension method, every reference to a type from a *different* capability anchor must be wrapped in an `IMEcosystemRegistry.Has(MCapability.X)` guard.
+
+**Why**: Capability packages are optional. Accessing types from a capability that is not registered causes startup failures and violates the "better together" opt-in model.
+
+**Capability anchors and their namespace prefixes**:
+
+| Capability | Namespace prefixes |
+|------------|-------------------|
+| `Logging` | `Muonroi.Logging`, `Muonroi.Observability` |
+| `RuleEngine` | `Muonroi.RuleEngine`, `Muonroi.Rules` |
+| `MultiTenant` | `Muonroi.Tenancy`, `Muonroi.MultiTenant` |
+| `Auth` | `Muonroi.Auth` |
+| `Governance` | `Muonroi.Governance` |
+
+**Accepted guard shapes**:
+
+```csharp
+// Shape 1: if-block
+if (registry.Has(MCapability.Logging)) { services.AddMLogging(); }
+
+// Shape 2: logical-and short-circuit
+registry.Has(MCapability.MultiTenant) && services.AddMTenancy() != null;
+
+// Shape 3: ternary
+var store = registry.Has(MCapability.RuleEngine) ? BuildStore() : null;
+
+// Shape 4: negated early-exit
+if (!registry.Has(MCapability.Auth)) return;
+services.AddMAuth();
+```
+
+**Limitation**: cross-method guards (guard delegated to a helper method) are not detected — the analyzer requires the `Has(MCapability.X)` call to appear in the same method body.
+
+**Code Pair**:
+
+```csharp
+// ❌ Incorrect — triggers MBB008 (Auth type used inside a Logging AddM* method without a guard)
+public static IServiceCollection AddMLoggingWithAuth(
+    this IServiceCollection services, IMEcosystemRegistry registry)
+{
+    services.AddSingleton<IMLog, DefaultLog>();
+    services.AddSingleton<IAuthTokenProvider, DefaultAuthTokenProvider>(); // cross-capability, no guard
+    return services;
+}
+```
+
+```csharp
+// ✅ Correct
+public static IServiceCollection AddMLoggingWithAuth(
+    this IServiceCollection services, IMEcosystemRegistry registry)
+{
+    services.AddSingleton<IMLog, DefaultLog>();
+    if (registry.Has(MCapability.Auth))
+    {
+        services.AddSingleton<IAuthTokenProvider, DefaultAuthTokenProvider>();
+    }
+    return services;
+}
+```
+
+---
+
+### MBB009: Forbidden Raw Exception
+
+**Rule**: Never `throw new SomeException(...)` inside a `Muonroi.*` namespace. Use the `MException` hierarchy instead.
+
+**Why**: The `MException` hierarchy carries consistent layer tags and structured metadata that flow through the ecosystem's error handling pipeline. Raw exceptions lose that context and create inconsistent error surfaces.
+
+**Exceptions**: test assemblies (assembly name contains `.Tests`) are exempt.
+
+**Code Pair**:
+
+```csharp
+// ❌ Incorrect — triggers MBB009 (inside Muonroi.* namespace)
+namespace Muonroi.RuleEngine.Services
+{
+    public class RuleValidator
+    {
+        public void Validate(string ruleCode)
+        {
+            if (string.IsNullOrEmpty(ruleCode))
+                throw new ArgumentNullException(nameof(ruleCode)); // raw exception
+        }
+    }
+}
+```
+
+```csharp
+// ✅ Correct
+namespace Muonroi.RuleEngine.Services
+{
+    public class RuleValidator
+    {
+        public void Validate(string ruleCode)
+        {
+            if (string.IsNullOrEmpty(ruleCode))
+                throw new MArgumentException("Rule code cannot be null or empty.", nameof(ruleCode));
+        }
+    }
+}
+```
+
+---
+
+### MBB010: Missing Null Guard on Public Parameters
+
+**Rule**: Every public method with a non-nullable reference-type parameter must contain a null guard for that parameter in its body.
+
+**Accepted guard patterns**:
+- `MGuard.NotNull(param, ...)`
+- `MGuard.NotEmpty(param, ...)`
+- `ArgumentNullException.ThrowIfNull(param, ...)`
+- `if (param == null) ...`
+- `if (param is null) ...`
+- `param ?? throw ...`
+
+**Exempt**:
+- Value types (`int`, `bool`, structs, etc.)
+- Nullable reference types (`T?`)
+- Parameters with a `null` default value
+- Test assemblies (assembly name contains `.Tests`)
+
+**Code Pair**:
+
+```csharp
+// ❌ Incorrect — triggers MBB010 (no null guard for `ruleCode`)
+public class RuleService
+{
+    public void RegisterRule(string ruleCode, IRuleDefinition definition)
+    {
+        _registry.Add(ruleCode, definition);
+    }
+}
+```
+
+```csharp
+// ✅ Correct
+public class RuleService
+{
+    public void RegisterRule(string ruleCode, IRuleDefinition definition)
+    {
+        MGuard.NotNull(ruleCode, nameof(ruleCode));
+        MGuard.NotNull(definition, nameof(definition));
+        _registry.Add(ruleCode, definition);
+    }
+}
+```
+
+---
+
 ## MRG Analyzer Rules (RuleGen)
 
 These rules apply when using **RuleGen** (code-first rule authoring).
@@ -653,6 +805,9 @@ public async Task<RuleResult> EvaluateAsync(FactBag facts)
 | MBB005 | Architecture | Infrastructure in abstractions | Error | None |
 | MBB006 | Licensing | Missing tier guard on premium | Error | Free features |
 | MBB007 | Logging | `Serilog.LogContext.PushProperty` | Error | None |
+| MBB008 | Architecture | Cross-capability ref without `Has()` guard | Error | Same-capability refs; cross-method guards |
+| MBB009 | Error Handling | Raw exception in `Muonroi.*` namespace | Error | Test assemblies (`.Tests`) |
+| MBB010 | Null Safety | Missing null guard on public parameter | Warning | Value types, `T?`, test assemblies |
 | MRG001 | Code | Duplicate rule code | Error | None |
 | MRG002 | Code | Invalid hook point | Error | None |
 | MRG003 | DI | Non-interface dependencies | Warning | None |
@@ -747,7 +902,7 @@ public class OrderService
 
 All analyzers are packaged in **`Muonroi.RuleEngine.SourceGenerators`** and auto-loaded by Visual Studio / Rider:
 
-- Errors (MBB001–MBB007, MRG001–MRG010) appear as red squiggles
+- Errors (MBB001–MBB010, MRG001–MRG010) appear as red squiggles
 - Warnings (MRG003–MRG009) appear as yellow squiggles
 - Hover for detailed explanations and code fix suggestions
 

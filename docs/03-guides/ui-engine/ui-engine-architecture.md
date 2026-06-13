@@ -8,7 +8,7 @@ sidebar_position: 1
 
 ## Overview
 
-The Muonroi UI Engine is a schema-driven framework for building rule-authoring interfaces with zero-config runtime resolution. Built on TypeScript with Web Components (Lit), it provides 23 reusable custom elements that automatically bind to Muonroi rule definitions, decision tables, and flow graphs. The architecture prioritizes:
+The Muonroi UI Engine is a schema-driven framework for building rule-authoring interfaces with zero-config runtime resolution. Built on TypeScript with Web Components (Lit), it provides 26 reusable custom elements that automatically bind to Muonroi rule definitions, decision tables, and flow graphs. The architecture prioritizes:
 
 - **O(1) component lookup** via indexed manifest maps
 - **Framework agnostic** — works in React, Angular, vanilla JS
@@ -119,7 +119,7 @@ interface MUiEngineManifest {
 
 ## Component Inventory
 
-The UI Engine ships with **23 Lit custom elements** (all prefixed `mu-`):
+The UI Engine ships with **26 Lit custom elements** (all prefixed `mu-`):
 
 ### Core Components (OSS)
 | Component | Purpose |
@@ -161,6 +161,13 @@ The UI Engine ships with **23 Lit custom elements** (all prefixed `mu-`):
 | `mu-rule-result-panel` | Formatted result display |
 | `mu-schema-watcher` | Real-time schema change detector |
 | `mu-ui-engine-app` | Full-featured rule authoring shell |
+
+### Living Docs Components (Commercial)
+| Component | Purpose |
+|-----------|---------|
+| `mu-living-docs` | BA-facing living document viewer — renders rule prose with trace-jump buttons |
+| `mu-traceability-matrix` | Requirement-to-rule traceability matrix with coverage badges and virtualized rows |
+| `mu-impact-list` | Between-version impact analysis with UAT checklist and coverage badges |
 
 ## Decision Table Widget Deep Dive
 
@@ -476,18 +483,18 @@ export class MUiEngineSignalRSchemaWatcher {
 ### Open Source
 | Package | Purpose |
 |---------|---------|
-| `@muonroi/m-ui-engine-core` | Runtime, bootstrap, contracts |
-| `@muonroi/m-ui-engine-react` | React adapter + hooks |
-| `@muonroi/m-ui-engine-angular` | Angular route/menu mappers |
-| `@muonroi/m-ui-engine-primeng` | PrimeNG component adapter |
+| `@muonroi/ui-engine-core` | Runtime, bootstrap, contracts |
+| `@muonroi/ui-engine-react` | React adapter + hooks |
+| `@muonroi/ui-engine-angular` | Angular route/menu mappers |
+| `@muonroi/ui-engine-primeng` | PrimeNG component adapter |
 
 ### Commercial
 | Package | Purpose |
 |---------|---------|
-| `@muonroi/m-ui-engine-rule-components` | 23 Lit custom elements |
-| `@muonroi/m-ui-engine-signalr` | SignalR schema watcher |
-| `@muonroi/m-ui-engine-sync-tooling` | Manifest sync utilities |
-| `@muonroi/m-ui-engine-license-tools` | JWT verification helpers |
+| `@muonroi/ui-engine-rule-components` | 26 Lit custom elements |
+| `@muonroi/ui-engine-signalr` | SignalR schema watcher |
+| `@muonroi/ui-engine-sync` | Manifest sync utilities |
+| `@muonroi/ui-engine-pdf-designer` | React PDF template designer (v1.0.0 GA) |
 
 All packages exported from monorepo with shared Zustand stores and license verification.
 
@@ -557,6 +564,10 @@ sequenceDiagram
 - [Decision Table Widget](/docs/guides/ui-engine/decision-table-widget) — virtualization + undo/redo detailed
 - [Rule Flow Designer](/docs/guides/ui-engine/rule-flow-designer) — graph editing + publish workflow
 - [FEEL Autocomplete Widget](/docs/guides/ui-engine/feel-autocomplete-widget) — context-aware suggestions
+- [Living Docs Widget](/docs/guides/ui-engine/living-docs-widget) — BA-facing living document viewer
+- [Traceability Matrix Widget](/docs/guides/ui-engine/traceability-matrix-widget) — requirement-to-rule matrix with trace-jump wiring
+- [Impact List Widget](/docs/guides/ui-engine/impact-list-widget) — between-version impact analysis
+- [PDF Template Designer](/docs/guides/ui-engine/pdf-template-designer) — React PDF template editor with PROFILE-V1 lint
 
 ## See Also
 

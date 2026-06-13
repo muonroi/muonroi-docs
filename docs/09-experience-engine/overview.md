@@ -109,7 +109,7 @@ Hooks run locally on the agent machine. The brain server handles all inference a
 | Automatic feedback loop | No | No | No | Yes — judge-worker, no agent cooperation needed |
 | Local-first | Optional | Optional | Partial | Yes — FileStore default, zero cloud required |
 | Runtime dependencies | Python + SDK | PostgreSQL + pgvector | PostgreSQL | Zero — Node.js built-in |
-| Multi-agent | Yes | Yes | Limited | Claude / Gemini / Codex / OpenCode |
+| Multi-agent | Yes | Yes | Limited | Claude / Gemini / Antigravity / Codex / OpenCode |
 | Data ownership | Vendor cloud | SaaS | Vendor cloud | You own everything |
 | Token cost trend | Grows | Grows | Grows | Shrinks |
 
@@ -117,6 +117,7 @@ Hooks run locally on the agent machine. The brain server handles all inference a
 
 - Claude Code
 - Gemini CLI
+- Antigravity (separate Gemini CLI runtime; memory at `~/.gemini/antigravity/projects/<slug>/memory/MEMORY.md`)
 - Codex CLI
 - OpenCode
 

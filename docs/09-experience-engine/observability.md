@@ -156,6 +156,69 @@ Specify memory directories from Claude project folders, workspace memories, or o
 
 ---
 
+## Activity Log (`~/.experience/activity.jsonl`)
+
+Every recall and feedback event is appended to a local newline-delimited JSON log at `~/.experience/activity.jsonl`. This file is the observability foundation for the session-end nudge, the `ee_feedback` MCP gate, and the usage forensics tool.
+
+### `recall` events
+
+Written when an active-recall call surfaces experience entries:
+
+```json
+{
+  "op": "recall",
+  "query": "how to wire hooks for gemini",
+  "sourceSession": "session-abc123",
+  "project_slug": "muonroi-cli",
+  "surfacedIds": ["a1b2c3d4-...", "e5f6a7b8-..."],
+  "count": 2
+}
+```
+
+| Field | Description |
+|-------|-------------|
+| `query` | Recall query string (truncated to 200 chars) |
+| `surfacedIds` | Array of Qdrant point IDs that were returned to the caller |
+| `project_slug` | Active project at recall time |
+| `sourceSession` | Session identifier from hook context |
+
+### `feedback` events
+
+Written when `exp-feedback.js` successfully submits a verdict and mirrors it locally:
+
+```json
+{
+  "op": "feedback",
+  "pointId": "a1b2c3d4-...",
+  "collection": "experience-behavioral",
+  "verdict": "FOLLOWED",
+  "reason": null
+}
+```
+
+| Field | Description |
+|-------|-------------|
+| `pointId` | Qdrant point ID (resolves to the server-confirmed ID if available) |
+| `collection` | Qdrant collection name |
+| `verdict` | One of `FOLLOWED`, `IGNORED`, or `IRRELEVANT` |
+| `reason` | Present only for `IRRELEVANT` (noise reason: `stale_rule`, `wrong_repo`, `wrong_language`, `wrong_task`) |
+
+### Unrated recall debt
+
+The session-end nudge and `ee_feedback` MCP gate compute **unrated recall debt** by comparing `surfacedIds` from all `recall` events within a session window against the `pointId` values from `feedback` events in the same window. Any surfaced ID that has not received a feedback verdict is "unrated debt" — an experience that was seen but never evaluated.
+
+High unrated debt means the engine cannot learn whether its hints are helping. The session-end nudge surfaces this as a reminder to run `exp-feedback` on any hints that fired during the session.
+
+### Debugging local mirror failures
+
+The local activity mirror in `exp-feedback.js` is best-effort (failures do not block the feedback call). To see mirror errors:
+
+```bash
+EXP_FEEDBACK_DEBUG=1 node ~/.experience/exp-feedback.js followed <id> <collection>
+```
+
+---
+
 ## Related Resources
 
 - [Experience Engine Overview](./overview)

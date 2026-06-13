@@ -8,6 +8,32 @@ sidebar_position: 3
 
 The control plane implements a **maker-checker approval pattern** for ruleset releases. This ensures that rule changes are reviewed and approved by a different actor before activation, enforcing separation of duties and audit compliance.
 
+## Configuration
+
+The approval workflow is controlled by the `RuleControlPlane:RequireApproval` flag in
+`appsettings.json`:
+
+```json
+{
+  "RuleControlPlane": {
+    "RequireApproval": true
+  }
+}
+```
+
+| Value | Behavior |
+|-------|----------|
+| `true` (default) | Full maker-checker cycle enforced: save → submit → approve → activate |
+| `false` | Save + activate skip the submit/approve cycle; use in dev or CI only |
+
+Environment variable override: `RuleControlPlane__RequireApproval=false`
+
+> **Production rule:** keep `RequireApproval=true` in production. Setting it to `false` disables
+> the separation-of-duties guarantee and the submit/approve endpoints become no-ops. The approval
+> endpoints documented below are only active when `RequireApproval=true`.
+
+---
+
 ## Overview
 
 The approval workflow enforces:

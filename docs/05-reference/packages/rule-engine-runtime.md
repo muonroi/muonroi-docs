@@ -57,15 +57,17 @@ Core runtime layer. Provides `RulesEngineService` — the primary façade for lo
 
 ```
 Draft → PendingApproval → Active → Archived
-         ↓ (rejected)
-       Rejected
+  ↓      ↓ (rejected)
+  ↓    Rejected (terminal)
+  ↓
+Rejected  (copilot-draft discard — terminal, never reaches Active)
 ```
 
 - **Draft** — ruleset saved but not yet submitted for review.
 - **PendingApproval** — submitted; awaiting maker-checker approval.
 - **Active** — current live version served to all rule executions.
 - **Archived** — superseded version retained for audit history.
-- **Rejected** — approval was denied; returned to Draft or discarded.
+- **Rejected** — terminal state reached via two paths: (1) approval denial from `PendingApproval`; (2) copilot-draft discard directly from `Draft` (`Draft → Rejected`). In both cases `Rejected` is terminal — no onward transition leads to `Active`, preserving the never-Active invariant.
 
 When `RuleControlPlaneOptions.RequireApproval = true`, a ruleset must pass through `IRuleSetApprovalService.ApproveAsync()` before `SetActiveVersionAsync` will serve it to callers.
 
@@ -530,6 +532,7 @@ EF Core persistence layer for the rule engine runtime. Replaces the file-backed 
 | `TenantRlsConnectionInterceptor` | Interceptor | Sets `app.current_tenant_id` session variable for Postgres RLS policies |
 | `TenantQuotaOverrideRecord` | Entity | Per-tenant quota overrides for concurrency and evaluation limits |
 | `TenantRuleAssignmentRecord` | Entity | Canary version assignments keyed by `(TenantId, WorkflowName)` |
+| `CopilotDraftProvenanceRecord` | Entity | Provenance of an AI-copilot-generated ruleset draft (see below) |
 
 ### Migrations
 
@@ -537,6 +540,7 @@ EF Core persistence layer for the rule engine runtime. Replaces the file-backed 
 |-----------|-------------|
 | `20260306055106_InitialRuleControlPlane` | Initial schema: rulesets, audit, assignments |
 | `20260325000000_AddRowLevelSecurityPolicies` | Postgres RLS policies for tenant isolation |
+| `20260613011007_CatchUpRlsProvenanceWriteCheck` | Creates `CopilotDraftProvenance` table; backfills RLS `WITH CHECK` on the original five tenant-scoped tables (`RuleSets`, `CanaryRollouts`, `RuleSetAudits`, `TenantRuleAssignments`, `TenantQuotaOverrides`) and adds `WITH CHECK` to `CopilotDraftProvenance`; migration fails hard if any asserted table is missing its `tenant_isolation` policy. |
 
 ### DI Registration
 
@@ -563,6 +567,29 @@ builder.Services.AddMRuleEngineApprovalWorkflow();
 // Optional: enable canary rollout explicitly
 builder.Services.AddMCanaryRollout();
 ```
+
+### CopilotDraftProvenanceRecord
+
+Captures provenance of AI-copilot-generated ruleset drafts. Stored in the `CopilotDraftProvenance` table, tenant-scoped with Postgres RLS `USING` + `WITH CHECK`.
+
+**Columns:**
+
+| Column | Type | Notes |
+|--------|------|-------|
+| `Id` | `uuid` PK | Surrogate primary key, server-generated |
+| `TenantId` | `varchar(128)` | Owning tenant; RLS key |
+| `Workflow` | `varchar(256)` | Target workflow name |
+| `Version` | `int` | Ruleset version this provenance row describes |
+| `AiOriginalHash` | `varchar(64)` | Server-side SHA-256 of the original AI draft |
+| `AiOriginalSnapshot` | `text` | Full serialized original AI draft |
+| `GeneratedAt` | `timestamptz` | UTC timestamp the AI draft was generated |
+| `GeneratedBy` | `varchar(256)` | Actor/model that generated the draft |
+| `EditedBeforeApproval` | `bool?` | Null until activation hook resolves it; `true` if a human edited before approval |
+| `ApprovedAt` | `timestamptz?` | Null until approved |
+
+**Unique index**: `(TenantId, Workflow, Version)`.
+
+**Copilot-draft discard transition**: the `(Draft, Rejected)` transition in `RuleSetStatus` is used to soft-discard a copilot-generated draft that was never submitted for approval. `Rejected` is terminal — no further transition reaches `Active`. The provenance record is retained for audit purposes even after discard.
 
 ---
 

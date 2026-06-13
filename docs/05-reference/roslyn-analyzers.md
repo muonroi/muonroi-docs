@@ -9,6 +9,9 @@
 - `MBB005`: abstractions must not reference infrastructure
 - `MBB006`: missing startup tier guard
 - `MBB007`: forbidden direct Serilog `LogContext`
+- `MBB008`: cross-capability type reference inside an `AddM*` method without an `IMEcosystemRegistry.Has(MCapability.X)` guard
+- `MBB009`: raw exception thrown inside a `Muonroi.*` namespace — use `MException` hierarchy instead (test assemblies exempt)
+- `MBB010`: public method has a non-nullable reference-type parameter without a null guard (`MGuard.NotNull`, `ArgumentNullException.ThrowIfNull`, `if (x==null)`, `x ?? throw`); value types and `T?` exempt; test assemblies exempt
 
 ## Rule authoring analyzers
 

@@ -89,6 +89,35 @@ exp-feedback noise <pointId> <collection> <reason>
 
 `<pointId>` and `<collection>` are printed in the `[id:xxxx col:name]` line of the warning.
 
+### MCP surface (`ee_feedback` tool)
+
+When the agent is using the `muonroi-tools` MCP server, rate entries via the
+`ee_feedback` tool instead of the CLI helper. The tool is equivalent and
+additionally clears the entry from the session pending-feedback gate managed by
+`src/ee/recall-ledger.ts`.
+
+```json
+{
+  "name": "ee_feedback",
+  "arguments": {
+    "id": "<pointId>",
+    "collection": "<collection>",
+    "verdict": "followed"
+  }
+}
+```
+
+For noise verdicts, include `"reason"` (`wrong_repo`, `wrong_language`,
+`wrong_task`, or `stale_rule`).
+
+The feedback gate is controlled by two environment variables
+(`src/mcp/ee-tools.ts:63`):
+
+| Variable | Default | Values | Description |
+|---|---|---|---|
+| `EXPERIENCE_RECALL_FEEDBACK_GATE` | `soft` | `off \| soft \| hard` | `off` disables the gate. `soft` warns when unrated entries accumulate. `hard` refuses new `ee_query` calls until the unrated count drops below the threshold. |
+| `EXPERIENCE_RECALL_FEEDBACK_THRESHOLD` | `3` | positive integer | Number of unrated `ee_query` results that triggers a `hard` gate refusal. |
+
 ### Feedback reason values
 
 | Reason | When to use | Engine action |

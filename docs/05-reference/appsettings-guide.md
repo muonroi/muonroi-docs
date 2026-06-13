@@ -31,6 +31,7 @@ Bound from the `LicenseConfigs` section to `Muonroi.Governance.Abstractions.Lice
 | FallbackToOnlineActivation | bool | `true` | No | In Offline mode, if the proof is missing/expired, attempt online activation. Requires connectivity. Set `false` in production to require pre-activation. |
 | ProjectSeed | string | — | No | Per-project seed for the runtime fingerprint (stored obfuscated in memory). Used only when fingerprint/hardware binding applies; a license with `Fingerprint`/`HardwareId` = null is not bound, so changing this does not invalidate it. |
 | FingerprintSalt | string | — | No | Salt mixed into the runtime fingerprint. Same binding caveat as `ProjectSeed`. |
+| FingerprintScope | enum | `MachineAndProject` | No | Controls fingerprint factors. `MachineAndProject` (default) binds to hardware + OS + project seed; `ProjectOnly` omits hardware/OS so the same license validates on any machine (dev / UAT / prod). |
 
 > **One license, multiple projects?** Yes — verification does **not** compare the payload `ProjectId`/`TenantId` against the consuming app; those fields are only part of the signed canonical data (`LicenseVerifier.VerifySignature`). A license file with null `Fingerprint`/`HardwareId` validates in any project on any machine. `ProjectId` is metadata/audit only. Prefer a dedicated key per project so revocation, expiry, and `MaxActivations` are tracked independently.
 
@@ -99,6 +100,7 @@ Secure-by-default for Enterprise + Production. Key knobs: `EnableSecureDefaults`
   "LicenseFilePath": "licenses/license.json",
   "PublicKeyPath": "licenses/public.pem",
   "FingerprintSalt": "your-project-salt",
+  "FingerprintScope": "MachineAndProject",
   "EnableChain": true,
   "ChainStorage": "File",
   "ChainFilePath": "logs/license-chain.log",

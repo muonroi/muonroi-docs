@@ -123,14 +123,18 @@ docs/
 | rule-rollout-guide.md | Rule Rollout | Approval → activation → canary → notify |
 | mcp-developer-server.md | MCP Developer Server | MCP server for IDE/tool integration |
 
-### ui-engine/ (5 files)
+### ui-engine/ (9 files)
 | File | Title | Key Content |
 |------|-------|-------------|
 | rule-studio-authoring.md | **Rule Studio Authoring** | **BA/QC primary** — palette, node contracts, publish, approval |
 | rule-flow-designer.md | Rule Flow Designer | Visual flow graph authoring |
 | decision-table-widget.md | Decision Table Widget | `mu-decision-table` web component |
 | feel-autocomplete-widget.md | FEEL Autocomplete | Intelligent expression editor |
-| ui-engine-architecture.md | UI Engine Architecture | Component model, manifest-driven |
+| ui-engine-architecture.md | UI Engine Architecture | Component model, manifest-driven (26 custom elements) |
+| living-docs-widget.md | Living Docs Widget | `mu-living-docs` — BA-facing rule doc viewer per workflow version |
+| traceability-matrix-widget.md | Traceability Matrix Widget | `mu-traceability-matrix` — rule↔requirement matrix, 3-state coverage |
+| impact-list-widget.md | Impact List Widget | `mu-impact-list` — cross-version impact + UAT checklist + trace-jump |
+| pdf-template-designer.md | PDF Template Designer | `MuPdfTemplateDesigner` React component, `@muonroi/ui-engine-pdf-designer`, PROFILE-V1 lint |
 
 ---
 
@@ -201,6 +205,42 @@ Generated from source code in `muonroi-building-block/src/`. Each file covers pu
 | rule-engine-samples.md | Rule Engine Samples | Quickstart projects |
 | test-matrix-guide.md | **Test Matrix** | **QA baseline** — auth, multi-tenancy, rules, rollout |
 | ui-engine-registry-migration.md | UI Registry Migration | |
+
+---
+
+## 07-cli/ — muonroi-cli (agent harness + MCP tools)
+
+### guides/
+agent-harness, cost-leak-forensics, council-debate, experience-engine, ideal-product-loop, pil-pipeline, scaffold-ideal-bb, session-resume-and-recovery
+
+### reference/
+| File | Key Content |
+|------|-------------|
+| cli-settings-reference.md | Settings schema incl. `lsp.*` (autoInstall default on, `requestTimeoutMs`, built-ins incl. `csharp-ls`) |
+| commands-reference.md | CLI commands |
+| mcp-tools-mcp.md | `muonroi-tools` MCP server — 10 tools: `selfverify_*` (5), `ee_query`/`ee_feedback`/`ee_health`, `usage_forensics`, `lsp_query` (underscore naming); recall feedback gate |
+| mcp-harness-driver.md, protocol-schema.md, providers-reference.md | Harness driver, protocol, providers |
+
+---
+
+## 08-mcp/ (1 file)
+
+| File | Key Content |
+|------|-------------|
+| mcp-developer-server.md | `muonroi-mcp-dev` stdio server for local authoring |
+
+---
+
+## 09-experience-engine/ (8 files)
+
+| File | Key Content |
+|------|-------------|
+| overview.md | 4-tier brain; supported agents (Claude, Gemini, Antigravity, Codex) |
+| getting-started.md | Install + `upgrade.sh` (extract sessions + import curated memory) |
+| how-it-works.md | Hook lifecycle, evolution, agent-instruction injection, runbook reconfirm |
+| memory-adapters.md | Claude/Gemini/Antigravity/Codex MEMORY.md adapters, type routing, `import-memory.js` |
+| observability.md | Health, gates, `activity.jsonl` (op:recall / op:feedback), unrated-recall debt |
+| configuration.md, api-reference.md, python-sdk.md | Config, REST API, Python SDK |
 
 ---
 
