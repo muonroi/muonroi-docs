@@ -6,11 +6,86 @@ sidebar_position: 2
 
 # Getting Started with Experience Engine
 
-Experience Engine is a local-first AI memory system that learns from your development patterns. Get started in minutes with Docker, npm, or setup scripts.
+Experience Engine is a local-first AI memory system that learns from your development patterns. If you only want to **use** it, one command installs and wires everything — no clone, no Docker, no bash.
 
-## Docker (Recommended)
+## Quick Install (Recommended)
 
-The fastest way to get running: starts Qdrant (vector store), Ollama (embeddings), and Experience Engine API in one command.
+Works on **any OS** (Windows, macOS, Linux). No `git clone`, no Docker, no Git Bash:
+
+```bash
+npx @muonroi/experience-engine init
+```
+
+`init` auto-detects a brain and wires your coding agent's hooks for you, resolving the mode in this order:
+
+1. A local brain already running at `http://localhost:8082` → uses it (no token needed).
+2. Otherwise, if Docker is available, it offers to start the local stack for you.
+3. Otherwise it configures a **thin client** against a remote brain — point it at yours:
+
+```bash
+npx @muonroi/experience-engine init \
+  --server https://your-vps:8082 \
+  --token YOUR_TOKEN
+```
+
+Add `--yes` for a fully non-interactive install. Useful flags:
+
+| Flag | Purpose |
+|------|---------|
+| `--server URL` | Remote brain base URL (thin-client mode) |
+| `--token TOKEN` | Bearer token for write/feedback endpoints |
+| `--read-token TOKEN` | Read-only token for `/api/stats`, `/api/gates` |
+| `--local` / `--remote` | Force a mode instead of auto-detecting |
+| `--agents claude,codex` | Wire only specific agents |
+| `--yes`, `-y` | Non-interactive (never prompts, never runs Docker) |
+
+Config is saved to `~/.experience/config.json`. Re-running `init` is idempotent (preserves `org` settings, dedups hooks). Restart your agent session afterward so it picks up the new hooks.
+
+:::tip Already have a brain on a VPS?
+On a clean machine, skip all prompts:
+`npx @muonroi/experience-engine init --server https://your-vps:8082 --token YOUR_TOKEN --yes`
+:::
+
+## Feed the brain — `sync`
+
+`init` makes your agent learn *going forward*. To backfill the brain from this machine's
+**existing** agent history — and to top it up periodically — run `sync` (also
+cross-platform, no bash, no repo checkout):
+
+```bash
+npx @muonroi/experience-engine sync
+```
+
+It scans your Claude/Codex/Gemini **sessions** and curated **`MEMORY.md`** files and pushes
+new experiences to the configured brain. Incremental and idempotent — each run only sends
+what changed since the last.
+
+| Flag | Effect |
+| --- | --- |
+| `--max N` | Max sessions to extract this run (default 30) |
+| `--max-age DUR` | Only sessions newer than `DUR`, e.g. `90d` (default `365d`) |
+| `--runtime CSV` | Limit to `claude,codex,gemini,muonroi-cli,antigravity` |
+| `--project SLUG` | Limit to one project slug |
+| `--sessions-only` | Skip curated-memory import |
+| `--memory-only` | Only import `MEMORY.md` |
+| `--include-reference` | Also import `reference`-type memory |
+| `--reset-marker` | Reprocess everything (ignore incremental markers) |
+| `--upgrade` | Refresh the thin-client runtime (`init --yes`) first, then sync |
+| `--dry-run` | Detect only; write nothing |
+| `-v` | Verbose per-item output |
+
+It honors `~/.experience/config.json`, so a thin client POSTs to your remote brain. This is
+the cross-platform equivalent of `bash upgrade.sh --sync-only`. Schedule it (cron on
+Linux/macOS, Task Scheduler on Windows) to keep the brain current.
+
+:::tip Recommended cadence
+After the first `init`, run `npx @muonroi/experience-engine sync` once to backfill, then on a
+daily schedule. Use `--upgrade` occasionally to also refresh the runtime in the same pass.
+:::
+
+## Self-host the brain (Docker)
+
+To run the full stack (Qdrant + Ollama + API) on your own machine, then point `init` at it. Starts Qdrant (vector store), Ollama (embeddings), and Experience Engine API in one command.
 
 ```bash
 git clone https://github.com/muonroi/experience-engine.git
@@ -44,19 +119,9 @@ Response:
 
 Everything runs locally. Zero API keys. Zero config files.
 
-## npm
+## Full local-install wizard (setup.sh)
 
-Install via npm for programmatic access:
-
-```bash
-npx @muonroi/experience-engine setup
-```
-
-This launches an interactive setup wizard.
-
-## Interactive Setup (setup.sh)
-
-For advanced configuration, use the setup script:
+For advanced configuration (choosing vector store, embedding/brain providers, and which agents to wire), use the interactive bash wizard. This is the heavier path — prefer `npx … init` unless you need to pick providers:
 
 ```bash
 bash .experience/setup.sh
@@ -96,13 +161,15 @@ Configuration is saved to `~/.experience/config.json`.
 
 ## Thin Client Setup (Team/VPS)
 
-If your team runs a shared Experience Engine on a VPS, connect your workstation as a thin client:
+If your team runs a shared Experience Engine on a VPS, connect your workstation as a thin client. The cross-platform `init` command is the simplest path:
 
 ```bash
-npx @muonroi/experience-engine setup-thin-client \
+npx @muonroi/experience-engine init \
   --server http://your-vps:8082 \
-  --token YOUR_TOKEN
+  --token YOUR_TOKEN --yes
 ```
+
+The legacy bash installer is still available (`npx @muonroi/experience-engine setup-thin-client --server … --token …`), but requires bash/Git Bash on Windows.
 
 Config saved to `~/.experience/config.json`:
 ```json
@@ -181,6 +248,8 @@ No additional wiring is needed. The hooks inject experience-based warnings autom
 | Codex CLI | **Hooks disabled** | Works | **Works** |
 | OpenCode | Works | Works | — |
 
+> **Windows installs:** `npx @muonroi/experience-engine init` runs natively — no Git Bash required (hook commands invoke `node` with absolute paths). The bash `setup.sh` / `setup-thin-client.sh` paths still need Git Bash or WSL.
+>
 > **Codex on Windows:** Run Codex from WSL. The `setup.sh` script handles all WSL-specific hook wiring automatically.
 
 ---
