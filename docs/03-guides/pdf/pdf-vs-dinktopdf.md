@@ -43,9 +43,12 @@ pick the right tool.
 | Tables, floats, absolute pos | Yes | Yes |
 | `background-color` / images / `@font-face` | Yes (data-URI + resolver, glyph subsetting) | Yes |
 | Vietnamese / full Unicode | Yes (subset-embedded) | Yes |
+| `@page` margin boxes (`@top-center { content }`) | ✅ pure-CSS running header/footer | ✅ |
+| `background: linear-gradient(...)` | ✅ (PDF axial shading) | ✅ |
+| `transform: rotate()` (watermark) | ✅ (single `rotate()` only) | ✅ |
 | **Flexbox / CSS Grid** | ❌ (rejected; soft-degrade → block) | ✅ |
 | **JavaScript execution** | ❌ (not executed; `<script>` rejected) | ✅ (with `javascript-delay`) |
-| **CSS transforms / gradients / animations** | ❌ | ✅ |
+| **radial/conic gradients, non-rotate transforms, animations** | ❌ | ✅ |
 | Multi-tenant cache isolation | ✅ built-in | n/a |
 | Maintenance status | **Active** | wkhtmltopdf core **archived/unmaintained** |
 
@@ -91,11 +94,15 @@ Honest list of what DinkToPdf/WebKit still does that the managed engine does not
 2. **No flexbox / CSS grid.** Modern layout must be expressed with tables/floats.
    *Mitigation:* the [PDF Template Designer](../ui-engine/pdf-template-designer.md) lints templates
    against the print profile; soft-degrade mode downgrades flex/grid to block during migration.
-3. **No CSS transforms, gradients, filters, animations.** Use solid fills and pre-rendered images.
-4. **`@page` margin boxes** (`@top-center { content: ... }`) are not parsed yet — use the
-   `options.Header`/`Footer` API for running content (a follow-up will wire the CSS `@page` boxes).
-5. **CSS subset, not full CSS 2.1/3.** Exotic selectors and properties outside
+3. **Limited CSS transforms/gradients; no filters/animations.** `transform:rotate()` and
+   `linear-gradient` **are** supported; `translate`/`scale`/`matrix`/`skew`, `radial`/`conic`
+   gradients, CSS filters, and animations are not. Use solid fills and pre-rendered images for the rest.
+4. **CSS subset, not full CSS 2.1/3.** Exotic selectors and properties outside
    [the supported list](./supported-html-css.md) are ignored or rejected.
+
+> **Closed in Phase 14:** `@page` margin boxes (`@top-center { content: ... }`) now drive a pure-CSS
+> running header/footer; `background: linear-gradient(...)` renders as a PDF axial shading; and
+> `transform: rotate()` renders a diagonal watermark.
 
 For server-generated business documents these gaps are rarely blocking, and you gain no native
 dependency, deterministic output, thread-safe concurrency, a security policy gate, and an actively

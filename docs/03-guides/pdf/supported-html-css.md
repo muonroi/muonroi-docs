@@ -59,16 +59,27 @@ margin attributes (`leftmargin`, `topmargin`, …) are honored when CSS hasn't s
 ### Backgrounds
 - `background-color` (solid fill — painted behind any box)
 - `background-image: url(data:...)` (data-URI only)
-- `background` shorthand resolves to a solid color.
+- `background-image: linear-gradient(...)` / `background: linear-gradient(...)` — rendered as a PDF
+  axial shading. Supports an angle (`Ndeg`/`to <side>`) and two or more color stops with optional
+  `%` positions. `radial-gradient`, `conic-gradient`, and `repeating-*` gradients are **not**
+  supported.
+- `background` shorthand resolves to a solid color (or a linear-gradient, per above).
 
 ### Layout & flow
 - `display`: `block`, `inline`, `inline-block`, `flow-root`, `list-item`, `table*`
 - `float: left | right`, `clear: left | right | both`
 - `position: absolute | relative` (CSS 2.1 print positioning)
 - `vertical-align` (notably `top` for table cells)
+- `transform: rotate(<angle>)` — a **single** `rotate()` only (e.g. a diagonal `BẢN NHÁP` watermark);
+  rotates the block and its text about the block center. `translate`/`scale`/`matrix`/`skew` and
+  multi-function transforms are **not** supported.
 
 ### Paged media
 - `@page { size: A4|A5|...; margin: ... }` — page size + margins from CSS (options override CSS).
+- `@page` margin boxes — `@top-left/@top-center/@top-right` and `@bottom-left/@bottom-center/@bottom-right`
+  declare a pure-CSS running header/footer. `content:` may mix string literals with
+  `counter(page)`/`counter(pages)`. A programmatic `options.Header`/`Footer` overrides the matching
+  band (API wins per band).
 - `page-break-before` / `page-break-after` / `page-break-inside: avoid`
 - `counter(page)` / `counter(pages)` — page numbering (resolved via a two-pass layout).
 - `@font-face` (data-URI `src`) — subset & embedded.
@@ -86,8 +97,8 @@ violation):
 | `display: grid` / `inline-grid` | Use `display:table`. |
 | Flex/grid sub-properties (`gap`, `justify-content`, `grid-template-*`, …) | Dropped; only meaningful with flex/grid. |
 | `position: fixed` / `sticky` | Use `position:absolute` or a running header/footer. |
-| `transform` (geometric) | Not renderable. |
-| `background: linear-gradient(...)` / any gradient | Use a solid `background-color`. |
+| `transform` other than a single `rotate()` (translate/scale/matrix/skew, multi-function) | Only `transform:rotate(<angle>)` is supported. |
+| `radial-gradient` / `conic-gradient` / `repeating-*` gradients | Use `linear-gradient(...)` or a solid `background-color`. (`linear-gradient` **is** supported.) |
 | `@keyframes` / `animation` / `transition` | Static documents only. |
 | External `@import url(http...)` | Inline the stylesheet. |
 | `<script>` element | **Forbidden.** Render content server-side. |
@@ -110,8 +121,10 @@ remain hard errors regardless.
 - ✅ Use `%` widths for columns so layout adapts to page size; `table-layout: fixed` for predictable tables.
 - ✅ Page numbers via `counter(page)` / `counter(pages)`, in the body or in a running header/footer.
 - ✅ Control page breaks with `page-break-inside: avoid` on rows/blocks that must not split.
-- ✅ Solid `background-color` for shading (e.g. a colored table header band) — gradients are rejected.
-- ⛔ No `display:flex` / `grid`, `position:fixed/sticky`, `transform`, gradients, animations, `<script>`.
+- ✅ Solid `background-color` or `linear-gradient(...)` for shading (e.g. a colored/graded header band).
+- ✅ Running header/footer via `options.Header`/`Footer` **or** `@page` margin boxes (`@top-center { content: ... }`).
+- ✅ `transform:rotate(<angle>)` for a diagonal watermark (single `rotate()` only).
+- ⛔ No `display:flex` / `grid`, `position:fixed/sticky`, non-rotate `transform`, radial/conic gradients, animations, `<script>`.
 
 See the [PDF Engine Guide](./pdf-engine-guide.md) for the API and a worked example, and
 [vs DinkToPdf](./pdf-vs-dinktopdf.md) for what differs from a wkhtmltopdf-based pipeline.
