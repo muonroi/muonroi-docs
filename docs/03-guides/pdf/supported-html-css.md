@@ -60,19 +60,26 @@ margin attributes (`leftmargin`, `topmargin`, …) are honored when CSS hasn't s
 - `background-color` (solid fill — painted behind any box)
 - `background-image: url(data:...)` (data-URI only)
 - `background-image: linear-gradient(...)` / `background: linear-gradient(...)` — rendered as a PDF
-  axial shading. Supports an angle (`Ndeg`/`to <side>`) and two or more color stops with optional
-  `%` positions. `radial-gradient`, `conic-gradient`, and `repeating-*` gradients are **not**
-  supported.
-- `background` shorthand resolves to a solid color (or a linear-gradient, per above).
+  axial shading (ShadingType 2). Supports an angle (`Ndeg`/`to <side>`) and two or more color stops
+  with optional `%` positions.
+- `background-image: radial-gradient(...)` / `background: radial-gradient(...)` — rendered as a PDF
+  radial shading (ShadingType 3). Supports `circle` and `ellipse` (ellipse is the CSS default),
+  `at <keyword>` positions (`center`/`top`/`left`/…), and two or more color stops. Extent defaults to
+  `farthest-corner`; explicit sizes and the `closest-*`/`farthest-side` extent keywords are not yet
+  supported. `conic-gradient` and `repeating-*` gradients are **not** supported.
+- `background` shorthand resolves to a solid color (or a linear-/radial-gradient, per above).
 
 ### Layout & flow
 - `display`: `block`, `inline`, `inline-block`, `flow-root`, `list-item`, `table*`
 - `float: left | right`, `clear: left | right | both`
 - `position: absolute | relative` (CSS 2.1 print positioning)
 - `vertical-align` (notably `top` for table cells)
-- `transform: rotate(<angle>)` — a **single** `rotate()` only (e.g. a diagonal `BẢN NHÁP` watermark);
-  rotates the block and its text about the block center. `translate`/`scale`/`matrix`/`skew` and
-  multi-function transforms are **not** supported.
+- `transform` — the full CSS 2D affine set: `translate`/`translateX`/`translateY`,
+  `scale`/`scaleX`/`scaleY`, `rotate`, `skew`/`skewX`/`skewY`, `matrix(a,b,c,d,e,f)`, and
+  multi-function chains (e.g. `translate(..) rotate(..) scale(..)`). All functions compose
+  left-to-right into a single CTM and transform the block and its text about the block center
+  (the CSS default `transform-origin: 50% 50%`; non-center `transform-origin` is not yet supported).
+  Unknown transform functions (e.g. `perspective()`) are rejected.
 
 ### Paged media
 - `@page { size: A4|A5|...; margin: ... }` — page size + margins from CSS (options override CSS).
@@ -97,8 +104,8 @@ violation):
 | `display: grid` / `inline-grid` | Use `display:table`. |
 | Flex/grid sub-properties (`gap`, `justify-content`, `grid-template-*`, …) | Dropped; only meaningful with flex/grid. |
 | `position: fixed` / `sticky` | Use `position:absolute` or a running header/footer. |
-| `transform` other than a single `rotate()` (translate/scale/matrix/skew, multi-function) | Only `transform:rotate(<angle>)` is supported. |
-| `radial-gradient` / `conic-gradient` / `repeating-*` gradients | Use `linear-gradient(...)` or a solid `background-color`. (`linear-gradient` **is** supported.) |
+| `transform-origin` (non-center) / `perspective()` & 3D transforms | Transforms pivot about the box center only; 2D affine functions (translate/scale/rotate/skew/matrix + chains) **are** supported. |
+| `conic-gradient` / `repeating-*` gradients | Use `linear-gradient(...)` or `radial-gradient(...)` (both supported) or a solid `background-color`. |
 | `@keyframes` / `animation` / `transition` | Static documents only. |
 | External `@import url(http...)` | Inline the stylesheet. |
 | `<script>` element | **Forbidden.** Render content server-side. |
@@ -121,10 +128,10 @@ remain hard errors regardless.
 - ✅ Use `%` widths for columns so layout adapts to page size; `table-layout: fixed` for predictable tables.
 - ✅ Page numbers via `counter(page)` / `counter(pages)`, in the body or in a running header/footer.
 - ✅ Control page breaks with `page-break-inside: avoid` on rows/blocks that must not split.
-- ✅ Solid `background-color` or `linear-gradient(...)` for shading (e.g. a colored/graded header band).
+- ✅ Solid `background-color`, `linear-gradient(...)` or `radial-gradient(...)` for shading (e.g. a colored/graded header band or a soft radial vignette).
 - ✅ Running header/footer via `options.Header`/`Footer` **or** `@page` margin boxes (`@top-center { content: ... }`).
-- ✅ `transform:rotate(<angle>)` for a diagonal watermark (single `rotate()` only).
-- ⛔ No `display:flex` / `grid`, `position:fixed/sticky`, non-rotate `transform`, radial/conic gradients, animations, `<script>`.
+- ✅ `transform` for watermarks/badges — `rotate()`, `scale()`, `translate()`, `matrix()` and chains (pivot about box center).
+- ⛔ No `display:flex` / `grid`, `position:fixed/sticky`, non-center `transform-origin`/3D transforms, `conic-gradient`/`repeating-*` gradients, animations, `<script>`.
 
 See the [PDF Engine Guide](./pdf-engine-guide.md) for the API and a worked example, and
 [vs DinkToPdf](./pdf-vs-dinktopdf.md) for what differs from a wkhtmltopdf-based pipeline.

@@ -44,11 +44,11 @@ pick the right tool.
 | `background-color` / images / `@font-face` | Yes (data-URI + resolver, glyph subsetting) | Yes |
 | Vietnamese / full Unicode | Yes (subset-embedded) | Yes |
 | `@page` margin boxes (`@top-center { content }`) | ✅ pure-CSS running header/footer | ✅ |
-| `background: linear-gradient(...)` | ✅ (PDF axial shading) | ✅ |
-| `transform: rotate()` (watermark) | ✅ (single `rotate()` only) | ✅ |
+| `background: linear-gradient(...)` / `radial-gradient(...)` | ✅ (PDF axial + radial shading) | ✅ |
+| `transform` (translate/scale/rotate/skew/matrix + chains) | ✅ (composed to one CTM, box-center pivot) | ✅ |
 | **Flexbox / CSS Grid** | ❌ (rejected; soft-degrade → block) | ✅ |
 | **JavaScript execution** | ❌ (not executed; `<script>` rejected) | ✅ (with `javascript-delay`) |
-| **radial/conic gradients, non-rotate transforms, animations** | ❌ | ✅ |
+| **conic gradients, non-center `transform-origin`/3D transforms, animations** | ❌ | ✅ |
 | Multi-tenant cache isolation | ✅ built-in | n/a |
 | Maintenance status | **Active** | wkhtmltopdf core **archived/unmaintained** |
 
@@ -94,15 +94,21 @@ Honest list of what DinkToPdf/WebKit still does that the managed engine does not
 2. **No flexbox / CSS grid.** Modern layout must be expressed with tables/floats.
    *Mitigation:* the [PDF Template Designer](../ui-engine/pdf-template-designer.md) lints templates
    against the print profile; soft-degrade mode downgrades flex/grid to block during migration.
-3. **Limited CSS transforms/gradients; no filters/animations.** `transform:rotate()` and
-   `linear-gradient` **are** supported; `translate`/`scale`/`matrix`/`skew`, `radial`/`conic`
-   gradients, CSS filters, and animations are not. Use solid fills and pre-rendered images for the rest.
+3. **Limited CSS effects; no filters/animations.** The full 2D affine `transform` set
+   (translate/scale/rotate/skew/matrix + chains) and both `linear-gradient` and `radial-gradient`
+   **are** supported; `conic-gradient`/`repeating-*` gradients, non-center `transform-origin`, 3D
+   transforms, CSS filters, and animations are not. Use solid fills and pre-rendered images for the rest.
 4. **CSS subset, not full CSS 2.1/3.** Exotic selectors and properties outside
    [the supported list](./supported-html-css.md) are ignored or rejected.
 
 > **Closed in Phase 14:** `@page` margin boxes (`@top-center { content: ... }`) now drive a pure-CSS
 > running header/footer; `background: linear-gradient(...)` renders as a PDF axial shading; and
 > `transform: rotate()` renders a diagonal watermark.
+>
+> **Closed in Phase 15:** `transform` now covers the full 2D affine set (translate/scale/rotate/skew/
+> matrix + multi-function chains, composed to one CTM); `background: radial-gradient(...)` renders as
+> a PDF radial shading (ShadingType 3, circle + ellipse). `conic-gradient`/`repeating-*`, non-center
+> `transform-origin`, and 3D transforms remain unsupported.
 
 For server-generated business documents these gaps are rarely blocking, and you gain no native
 dependency, deterministic output, thread-safe concurrency, a security policy gate, and an actively
