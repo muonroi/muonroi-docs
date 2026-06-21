@@ -1,0 +1,21 @@
+# Normalize line endings across Windows, Linux, and macOS.
+# Git stores LF in the index; working tree uses LF on all platforms.
+* text=auto eol=lf
+
+# Windows scripts keep CRLF when checked out on Windows.
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+
+# Binary assets — never modify line endings.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.webp binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
+*.pdf binary

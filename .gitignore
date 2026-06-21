@@ -11,7 +11,14 @@
 
 # Misc
 .DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+desktop.ini
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 package-lock.json
+
+# Local editor / agent overrides (machine-specific; do not commit)
+.claude/settings.local.json
