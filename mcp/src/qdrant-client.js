@@ -26,7 +26,23 @@ function cfg() {
 }
 
 function qdrantBase() {
-  return cfg().qdrantUrl || process.env.EXPERIENCE_QDRANT_URL || 'http://localhost:6333';
+  const c = cfg();
+  if (c.qdrantUrl || process.env.EXPERIENCE_QDRANT_URL) {
+    return c.qdrantUrl || process.env.EXPERIENCE_QDRANT_URL;
+  }
+  // Thin-client detection: serverBaseUrl present means brain/Qdrant live on remote VPS.
+  // Direct localhost Qdrant will not work. We still return a default so that read paths
+  // can fail with a clear message instead of a cryptic ECONNREFUSED.
+  if (c.serverBaseUrl) {
+    // Signal that we are in thin-client; callers can detect and give actionable error.
+    return 'thin-client';
+  }
+  return 'http://localhost:6333';
+}
+
+function isThinClient() {
+  const c = cfg();
+  return !c.qdrantUrl && !process.env.EXPERIENCE_QDRANT_URL && !!c.serverBaseUrl;
 }
 
 function qdrantKey() {
@@ -36,6 +52,17 @@ function qdrantKey() {
 function qdrantHeaders() {
   const k = qdrantKey();
   return { 'Content-Type': 'application/json', ...(k ? { 'api-key': k } : {}) };
+}
+
+function assertDirectQdrant(opName) {
+  if (isThinClient()) {
+    throw new Error(
+      `${opName} requires direct Qdrant access (qdrantUrl in ~/.experience/config.json or EXPERIENCE_QDRANT_URL). ` +
+      'You are in thin-client mode (serverBaseUrl set). ' +
+      'Ingest must be run on the Experience Engine host, or configure explicit Qdrant credentials/URL if the VPS exposes it. ' +
+      'See recipes/experience-engine.md for thin-client ingest notes.'
+    );
+  }
 }
 
 // ---- Embedding (mirrors experience-engine embedding.js) -------------------
@@ -111,7 +138,9 @@ async function embedBatch(texts, signal) {
 // ---- Qdrant collection bootstrap ------------------------------------------
 
 async function ensureCollection(dim) {
-  const url = `${qdrantBase()}/collections/${COLLECTION}`;
+  assertDirectQdrant('ensureCollection');
+  const base = qdrantBase();
+  const url = `${base}/collections/${COLLECTION}`;
   const check = await fetch(url, {
     headers: qdrantHeaders(),
     signal: AbortSignal.timeout(5000),
@@ -134,10 +163,20 @@ async function ensureCollection(dim) {
  * search(query, topK) → Array<{ docId, score, title, excerpt, source }>
  */
 async function search(query, topK = 5) {
+  // Thin-client: search is not implemented here; MCP server must delegate to VPS.
+  // For now we throw a clear error so callers (docs_search tool) surface actionable guidance.
+  if (isThinClient()) {
+    throw new Error(
+      'docs_search is not available in thin-client mode from this MCP. ' +
+      'The docs are served from the remote Experience Engine brain. ' +
+      'Use ee.* recall tools or run ingest on the host that has direct Qdrant access.'
+    );
+  }
   const vector = await embed(query);
   if (!vector) throw new Error('Embedding failed — check embed provider config');
 
-  const res = await fetch(`${qdrantBase()}/collections/${COLLECTION}/points/query`, {
+  const base = qdrantBase();
+  const res = await fetch(`${base}/collections/${COLLECTION}/points/query`, {
     method: 'POST',
     headers: qdrantHeaders(),
     body: JSON.stringify({ query: vector, limit: topK, with_payload: true }),
@@ -168,7 +207,11 @@ async function search(query, topK = 5) {
  * If you want the full file, use the source path directly.
  */
 async function readDoc(docId) {
-  const res = await fetch(`${qdrantBase()}/collections/${COLLECTION}/points/${docId}`, {
+  if (isThinClient()) {
+    throw new Error('docs_read not supported in thin-client mode from this MCP. Use remote brain recall instead.');
+  }
+  const base = qdrantBase();
+  const res = await fetch(`${base}/collections/${COLLECTION}/points/${docId}`, {
     headers: qdrantHeaders(),
     signal: AbortSignal.timeout(5000),
   });
@@ -197,6 +240,7 @@ async function readDoc(docId) {
  * payload is stored alongside the text field.
  */
 async function upsertPoints(points) {
+  assertDirectQdrant('upsertPoints');
   // Embed the whole batch in a single HTTP call — Ollama/OpenAI/SiliconFlow
   // all accept array input. This collapses N round trips into 1 and is the
   // dominant speedup vs. the previous per-point sequential loop.
@@ -211,7 +255,8 @@ async function upsertPoints(points) {
   });
   await ensureCollection(withVectors[0].vector.length);
 
-  const res = await fetch(`${qdrantBase()}/collections/${COLLECTION}/points?wait=true`, {
+  const base = qdrantBase();
+  const res = await fetch(`${base}/collections/${COLLECTION}/points?wait=true`, {
     method: 'PUT',
     headers: qdrantHeaders(),
     body: JSON.stringify({ points: withVectors }),
@@ -246,7 +291,13 @@ async function pointExists(id) {
  */
 async function pointsExist(ids) {
   if (!ids.length) return new Set();
-  const res = await fetch(`${qdrantBase()}/collections/${COLLECTION}/points`, {
+  if (isThinClient()) {
+    // No direct Qdrant in thin-client; treat as "nothing exists locally" so ingest fails fast later
+    // with the upsert guard message. Returning empty would make it try to upsert and hit the same error.
+    assertDirectQdrant('pointsExist');
+  }
+  const base = qdrantBase();
+  const res = await fetch(`${base}/collections/${COLLECTION}/points`, {
     method: 'POST',
     headers: qdrantHeaders(),
     body: JSON.stringify({ ids, with_payload: false, with_vector: false }),
@@ -268,4 +319,15 @@ function contentHash(text) {
   return crypto.createHash('sha256').update(text).digest('hex').slice(0, 16);
 }
 
-module.exports = { search, readDoc, upsertPoints, pointExists, pointsExist, contentHash, embed, embedBatch };
+module.exports = {
+  search,
+  readDoc,
+  upsertPoints,
+  pointExists,
+  pointsExist,
+  contentHash,
+  embed,
+  embedBatch,
+  isThinClient,
+  qdrantBase,
+};

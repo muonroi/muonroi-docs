@@ -11,13 +11,20 @@
 'use strict';
 
 const { crawlAll } = require('./crawl.js');
-const { upsertPoints, pointsExist } = require('../src/qdrant-client.js');
+const { upsertPoints, pointsExist, isThinClient } = require('../src/qdrant-client.js');
 
 const BATCH_SIZE = 10;
 const PROGRESS_EVERY = 10; // batches
 const EXISTS_BATCH = 200; // ids per bulk-existence check
 
 async function main() {
+  if (isThinClient && isThinClient()) {
+    console.error('[ingest] ERROR: Thin-client detected (serverBaseUrl present, no qdrantUrl).');
+    console.error('Ingest must run on the Experience Engine host (VPS) that has direct Qdrant access.');
+    console.error('See recipes/experience-engine.md for details.');
+    process.exit(1);
+  }
+
   console.log('[ingest] Crawling sources...');
   const chunks = crawlAll();
 
