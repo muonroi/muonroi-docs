@@ -200,7 +200,8 @@ Bound from the `"PdfConfigs"` section. All limits are enforced and reject oversi
       "MaxFontFiles": 32
     },
     "Policy": {
-      "SoftDegradeUnknownDisplay": false
+      "SoftDegradeUnknownDisplay": false,
+      "AllowModernLayout": false
     }
   }
 }
@@ -219,6 +220,12 @@ Bound from the `"PdfConfigs"` section. All limits are enforced and reject oversi
 `Policy.SoftDegradeUnknownDisplay = true` turns `display:flex/grid` violations into **warnings**
 (the element renders as `display:block`) instead of hard errors — useful when migrating legacy
 templates. Default is strict (fail-loud).
+
+`Policy.AllowModernLayout = true` enables the **real Flexbox and CSS Grid layout engines** —
+`display:flex/grid` then renders for real (not downgraded to block). Off by default so existing
+templates keep byte-identical output. The two flags are independent; `AllowModernLayout` wins when
+both are set. See [Supported HTML / CSS → Modern layout](./supported-html-css.md#modern-layout)
+for the supported flex/grid property surface.
 
 ---
 
@@ -256,6 +263,7 @@ ambient tenant id.
 
 ## See also
 
+- [PDF Examples / Sample Templates](./pdf-examples.md) — copy-paste worked examples (invoice, report, flex/grid, …).
 - [Supported HTML / CSS / JS](./supported-html-css.md) — what you can write in a template.
 - [PDF Engine vs DinkToPdf](./pdf-vs-dinktopdf.md) — feature + speed comparison and remaining gaps.
 - [PDF Template Designer](../ui-engine/pdf-template-designer.md) — the React authoring component with PROFILE-V1 lint.

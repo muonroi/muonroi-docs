@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Added
+- **building-block** PDF **modern layout** (opt-in `PdfConfigs:Policy:AllowModernLayout`): real **Flexbox** layout engine — `flex-direction`/`flex-wrap`, `justify-content`/`align-items`/`align-content`, `gap`/`row-gap`/`column-gap`, and item `flex-grow`/`flex-shrink`/`flex-basis`/`order`/`align-self` (Phase 18) — and real **CSS Grid** layout engine — `grid-template-columns/rows` with `px`/`%`/`fr`/`auto`/`minmax()`/`repeat()` incl. `repeat(auto-fill|auto-fit)`, `grid-auto-columns/rows`, sparse `grid-auto-flow`, `grid-template-areas`, gaps, and item `grid-column`/`grid-row`/`grid-area`/`justify-self`/`align-self` (Phase 19). Off by default → existing templates keep byte-identical golden output.
+- **building-block** PDF image decoder now accepts **8-bit grayscale (`color_type=0`)** and **grayscale+alpha (`color_type=4`)** PNG in addition to RGB/palette/RGBA; 16-bit and sub-8-bit grayscale rejected with clear codes (`PNG-16BIT` / `PNG-GRAYSCALE-DEPTH`).
+- **building-block** Governance.Enterprise compliance **evidence-pack chain-of-custody signing** — RSA via `IMControlPlaneSigner` with fail-closed HMAC fallback — plus `VerifyAsync` for tamper detection (content-hash + signature) on load.
+- **building-block** Governance.Enterprise **durable retry for failed audit-chain submissions** (`IFailedChainSubmissionStore` + `ChainSubmitter.RetryPendingAsync`): transient (5xx/network) failures are persisted and retried; dead-lettered after N attempts; 4xx/license failures are not enqueued.
+- **building-block** Pdf.Enterprise **HTTP template registry** (`HttpPdfTemplateRegistry`) + transport-agnostic **polling hot-reload** (`PdfTemplateHotReload`) over any `IMPdfTemplateRegistry`.
+
+### Fixed
+- **building-block** PDF strict policy (`DefaultStrictPolicy`) now **fails loud** on unsupported visual CSS (`filter`, `backdrop-filter`, `clip-path`, `mix-blend-mode`) by scanning raw `<style>`/inline CSS — these are dropped from the CSSOM by AngleSharp and would otherwise be silently ignored.
+
 ## [1.9.7] - 2026-06-13
 
 ### Added

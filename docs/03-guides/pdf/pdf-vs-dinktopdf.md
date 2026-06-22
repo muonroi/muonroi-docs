@@ -21,8 +21,10 @@ pick the right tool.
 - Choose **Muonroi.Pdf** for server-generated business documents (invoices, reports, shipping forms,
   contracts): no native deps, deterministic output, thread-safe, sandboxed, AOT-friendly,
   tenant-aware. This covers the large majority of back-office PDF needs.
-- Choose **DinkToPdf / a browser engine** when templates genuinely require **JavaScript execution**,
-  **flexbox/grid layout**, or arbitrary modern-CSS fidelity you cannot rewrite into the print subset.
+- Choose **DinkToPdf / a browser engine** when templates genuinely require **JavaScript execution**
+  or arbitrary modern-CSS fidelity (CSS filters, blend modes, animations) you cannot rewrite into the
+  print subset. Note Muonroi.Pdf now renders **Flexbox and CSS Grid** for real behind the opt-in
+  `AllowModernLayout` flag, so modern layout alone is no longer a reason to reach for a browser engine.
 
 ---
 
@@ -46,7 +48,7 @@ pick the right tool.
 | `@page` margin boxes (`@top-center { content }`) | ✅ pure-CSS running header/footer | ✅ |
 | `background: linear-gradient(...)` / `radial-gradient(...)` | ✅ (PDF axial + radial shading) | ✅ |
 | `transform` (translate/scale/rotate/skew/matrix + chains) | ✅ (composed to one CTM, box-center pivot) | ✅ |
-| **Flexbox / CSS Grid** | ❌ (rejected; soft-degrade → block) | ✅ |
+| **Flexbox / CSS Grid** | ✅ opt-in (`AllowModernLayout`) — real layout engines; off by default → reject/soft-degrade | ✅ |
 | **JavaScript execution** | ❌ (not executed; `<script>` rejected) | ✅ (with `javascript-delay`) |
 | **conic gradients, non-center `transform-origin`/3D transforms, animations** | ❌ | ✅ |
 | Multi-tenant cache isolation | ✅ built-in | n/a |
@@ -91,9 +93,11 @@ Honest list of what DinkToPdf/WebKit still does that the managed engine does not
 
 1. **No JavaScript.** Dynamic templates, client-side charting libraries, or `onload` hooks won't run.
    *Mitigation:* render data and charts (as images/SVG-less data-URI PNGs) server-side.
-2. **No flexbox / CSS grid.** Modern layout must be expressed with tables/floats.
-   *Mitigation:* the [PDF Template Designer](../ui-engine/pdf-template-designer.md) lints templates
-   against the print profile; soft-degrade mode downgrades flex/grid to block during migration.
+2. **Flexbox / CSS grid are opt-in.** They render for real only when
+   `PdfConfigs:Policy:AllowModernLayout = true`; with the flag off (default) modern layout must be
+   expressed with tables/floats. *Mitigation:* enable `AllowModernLayout` for full flex/grid, or use
+   soft-degrade mode (downgrades flex/grid to block) during migration. The
+   [PDF Template Designer](../ui-engine/pdf-template-designer.md) lints templates against the profile.
 3. **Limited CSS effects; no filters/animations.** The full 2D affine `transform` set
    (translate/scale/rotate/skew/matrix + chains) and both `linear-gradient` and `radial-gradient`
    **are** supported; `conic-gradient`/`repeating-*` gradients, non-center `transform-origin`, 3D
@@ -109,6 +113,12 @@ Honest list of what DinkToPdf/WebKit still does that the managed engine does not
 > matrix + multi-function chains, composed to one CTM); `background: radial-gradient(...)` renders as
 > a PDF radial shading (ShadingType 3, circle + ellipse). `conic-gradient`/`repeating-*`, non-center
 > `transform-origin`, and 3D transforms remain unsupported.
+>
+> **Closed in Phase 18/19 (opt-in `AllowModernLayout`):** real **Flexbox** (`flex-direction`, `wrap`,
+> `justify-content`/`align-*`, `gap`, item `flex-grow`/`shrink`/`basis`/`order`) and **CSS Grid**
+> (`grid-template-*` with `fr`/`minmax`/`repeat(auto-fill|auto-fit)`, named areas, sparse auto-flow,
+> `gap`, item placement) layout engines — pure-managed and golden-tested. Off by default; `dense`
+> grid packing and subgrid remain unimplemented.
 
 For server-generated business documents these gaps are rarely blocking, and you gain no native
 dependency, deterministic output, thread-safe concurrency, a security policy gate, and an actively
