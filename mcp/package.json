@@ -1,6 +1,8 @@
 {
   "name": "muonroi-docs-mcp",
   "version": "1.0.0",
+  "private": true,
+  "license": "UNLICENSED",
   "description": "stdio MCP server for Muonroi Building Block docs + recipes (replaces read_file loops)",
   "main": "src/server.js",
   "type": "commonjs",
