@@ -15,16 +15,35 @@ sidebar_position: 1
 
 ## Installation
 
-### Via Bun (recommended)
+### Recommended — Global Package Install (NPM or Bun)
 
+To install globally via NPM (requires Node.js ≥ 20):
+```bash
+npm install -g muonroi-cli
+```
+
+To install globally via Bun (requires Bun ≥ 1.3):
 ```bash
 bun add -g muonroi-cli
 ```
 
-### Via curl
-
+Once installed, run the TUI directly:
 ```bash
-curl -fsSL https://raw.githubusercontent.com/muonroi/muonroi-cli/main/install.sh | bash
+muonroi-cli
+```
+
+### Alternative — Prebuilt Standalone Binary (requires repository access)
+
+Linux / macOS:
+```bash
+# Note: Requires github authorization if the repository is private
+curl -fsSL https://raw.githubusercontent.com/muonroi/muonroi-cli/master/install.sh | bash
+```
+
+Windows PowerShell:
+```powershell
+# Note: Requires github authorization if the repository is private
+irm https://raw.githubusercontent.com/muonroi/muonroi-cli/master/install.ps1 | iex
 ```
 
 ## Quick Start
