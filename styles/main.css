@@ -1,35 +1,788 @@
+/* ============================================================
+   Muonroi Docs — "Control Plane" theme for DocFX
+   Deep-space teal · dark-first · Inter + JetBrains Mono
+   The DocFX "default" template auto-includes styles/main.css and
+   styles/main.js on every page — this IS the customization point
+   (docfx.json's build.styles/build.scripts array is not read by
+   the default template, so those keys were removed from docfx.json).
+   ============================================================ */
 
-/* --- Custom home styles --- */
-.home-hero { text-align:center; margin:2rem auto 2.5rem; max-width:900px; }
-.home-hero h1 { font-size:2.2rem; margin:0 0 .5rem; }
-.home-hero p { color:#555; margin:.25rem 0; }
-.home-actions { margin-top:1rem; }
-.home-actions .btn { display:inline-block; margin:.25rem .5rem; padding:.5rem .9rem; border:1px solid #ccc; border-radius:6px; text-decoration:none; }
-.home-actions .btn-primary { background:#1f6feb; color:#fff; border-color:#1f6feb; }
-.home-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:1.25rem; }
-.home-grid section { background:#fff; border:1px solid #e5e5e5; border-radius:10px; padding:1rem; }
-.home-grid h2 { margin:0 0 .75rem; font-size:1.15rem; }
-.cards { display:grid; grid-template-columns:1fr; gap:.6rem; }
-.card { display:block; border:1px solid #eee; border-radius:8px; padding:.75rem .9rem; text-decoration:none; color:inherit; background:#fafafa; }
-.card:hover { background:#f5f9ff; border-color:#cfe3ff; }
-.card h3 { margin:0 0 .25rem; font-size:1rem; }
-.card p { margin:0; color:#666; font-size:.9rem; }
-.home-more { text-align:center; margin:2rem 0 0; }
 
-/* --- Auto dark mode based on user preference --- */
-@media (prefers-color-scheme: dark) {
-  body, .body-content, .content.wrap { background:#0d1117; color:#c9d1d9; }
-  .navbar-inverse, .navbar-default, .subnav.navbar { background:#161b22; border-color:#30363d; }
-  .navbar-inverse .navbar-brand, .navbar-inverse .navbar-nav>li>a { color:#c9d1d9; }
-  .sidenav, .sidetoggle, .affix { background:#161b22; border-color:#30363d; }
-  a { color:#58a6ff; }
-  pre, code, .hljs { background:#0b1320; color:#d1d5db; border-color:#30363d; }
-  table, th, td, hr, .panel, .well { border-color:#30363d; }
-  #search-query, input, textarea { background:#161b22; color:#c9d1d9; border-color:#30363d; }
-  .home-grid section { background:#161b22; border-color:#30363d; }
-  .card { background:#0f1622; border-color:#30363d; }
-  .card:hover { background:#0f1b2d; border-color:#375a7f; }
-  .home-actions .btn { border-color:#30363d; color:#c9d1d9; }
-  .home-actions .btn-primary { background:#1f6feb; border-color:#1f6feb; color:#fff; }
+/* ---------- 1. Fonts ---------- */
+@import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+/* ---------- 2. Design tokens (dark = default) ---------- */
+:root {
+  --mr-bg:            hsl(195 55% 3.5%);
+  --mr-surface-1:     hsl(192 42% 5.5%);
+  --mr-surface-2:     hsl(192 36% 8%);
+  --mr-surface-3:     hsl(190 30% 11%);
+  --mr-ink-1:         hsl(168 28% 94%);
+  --mr-ink-2:         hsl(176 16% 66%);
+  --mr-ink-3:         hsl(178 12% 48%);
+  --mr-hairline:      hsl(174 30% 88% / 0.09);
+  --mr-hairline-soft: hsl(174 30% 88% / 0.055);
+  --mr-teal:          hsl(172 66% 50%);
+  --mr-teal-bright:   hsl(168 76% 64%);
+  --mr-teal-dim:      hsl(172 66% 50% / 0.14);
+  --mr-cyan:          hsl(187 85% 53%);
+  --mr-amber:         hsl(38 92% 62%);
+  --mr-red:           hsl(0 72% 62%);
+  --mr-violet:        hsl(262 70% 72%);
+  --mr-radius:        10px;
+  --mr-font-sans:     'Inter', -apple-system, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  --mr-font-mono:     'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  --mr-content-max:   920px;
+
+  /* DocFX bootstrap-variable bridge */
+  --bs-body-bg:               var(--mr-bg);
+  --bs-body-color:            var(--mr-ink-2);
+  --bs-emphasis-color:        var(--mr-ink-1);
+  --bs-secondary-color:       var(--mr-ink-2);
+  --bs-tertiary-bg:           var(--mr-surface-2);
+  --bs-border-color:          var(--mr-hairline);
+  --bs-link-color:            var(--mr-teal-bright);
+  --bs-link-hover-color:      var(--mr-teal);
+  --bs-link-color-rgb:        94, 234, 212;
+  --bs-link-hover-color-rgb:  45, 212, 191;
+  --bs-code-color:            var(--mr-teal-bright);
+  --bs-body-font-family:      var(--mr-font-sans);
+  --bs-font-monospace:        var(--mr-font-mono);
+  --bs-primary:               var(--mr-teal);
+  --bs-primary-rgb:           45, 212, 191;
+
+  color-scheme: dark;
 }
 
+/* ---------- 3. Base ---------- */
+html, body {
+  background: var(--mr-bg);
+  color: var(--mr-ink-2);
+  font-family: var(--mr-font-sans);
+  letter-spacing: -0.005em;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection { background: hsl(172 66% 50% / 0.3); color: var(--mr-ink-1); }
+
+/* Scrollbars */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: var(--mr-bg); }
+::-webkit-scrollbar-thumb {
+  background: var(--mr-surface-3);
+  border-radius: 8px;
+  border: 2px solid var(--mr-bg);
+}
+::-webkit-scrollbar-thumb:hover { background: hsl(190 28% 16%); }
+
+/* .sidetoc (the fixed-position TOC column) scrolls independently once expanded sections
+   overflow the viewport height — without an explicit rule it falls back to the browser's
+   default light scrollbar, showing as a stray white bar against the dark sidebar. */
+.sidetoc::-webkit-scrollbar { width: 8px !important; }
+.sidetoc::-webkit-scrollbar-track { background: transparent !important; }
+.sidetoc::-webkit-scrollbar-thumb {
+  background: var(--mr-surface-3) !important;
+  border-radius: 8px !important;
+  border: none !important;
+}
+.sidetoc::-webkit-scrollbar-thumb:hover { background: hsl(190 28% 16%) !important; }
+.sidetoc { scrollbar-color: var(--mr-surface-3) transparent; scrollbar-width: thin; }
+
+/* Ambient glow field behind everything */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(52rem 34rem at 82% -10%, hsl(168 90% 45% / 0.10), transparent 62%),
+    radial-gradient(40rem 30rem at 4% 10%,  hsl(187 85% 50% / 0.05), transparent 60%),
+    radial-gradient(46rem 36rem at 96% 92%, hsl(172 80% 42% / 0.06), transparent 62%);
+}
+
+/* Fine blueprint grid, faded to the edges */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    linear-gradient(hsl(174 40% 80% / 0.028) 1px, transparent 1px),
+    linear-gradient(90deg, hsl(174 40% 80% / 0.028) 1px, transparent 1px);
+  background-size: 56px 56px;
+  -webkit-mask-image: radial-gradient(ellipse 90% 70% at 50% 0%, black 20%, transparent 75%);
+  mask-image: radial-gradient(ellipse 90% 70% at 50% 0%, black 20%, transparent 75%);
+}
+
+/* ---------- 4. Top navbar ---------- */
+nav.navbar,
+#navbar,
+header > nav {
+  background: hsl(195 55% 3.5% / 0.86) !important;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--mr-hairline) !important;
+  box-shadow: none !important;
+  min-height: 60px;
+}
+
+.navbar .navbar-brand,
+.navbar-brand {
+  font-family: var(--mr-font-sans);
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: -0.01em;
+  color: var(--mr-ink-1) !important;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Diamond logo mark injected by theme.js */
+.mr-logo { display: inline-flex; align-items: center; }
+
+.navbar .nav-link,
+#navbar .nav-link {
+  color: var(--mr-ink-2) !important;
+  font-size: 13.5px;
+  font-weight: 500;
+  padding: 6px 12px !important;
+  border-radius: 8px;
+  position: relative;
+  transition: color .25s ease;
+}
+
+.navbar .nav-link::after {
+  content: '';
+  position: absolute;
+  left: 12px; right: 12px; bottom: 2px;
+  height: 1px;
+  background: var(--mr-teal-bright);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform .35s cubic-bezier(.22,1,.36,1);
+}
+.navbar .nav-link:hover { color: var(--mr-ink-1) !important; }
+.navbar .nav-link:hover::after { transform: scaleX(1); transform-origin: left; }
+.navbar .nav-link.active { color: var(--mr-teal-bright) !important; }
+.navbar .nav-link.active::after { transform: scaleX(1); }
+
+/* Navbar search box */
+.navbar .form-control,
+#search-query {
+  background: var(--mr-surface-2) !important;
+  border: 1px solid var(--mr-hairline) !important;
+  color: var(--mr-ink-1) !important;
+  border-radius: 8px !important;
+  font-size: 13px !important;
+  font-family: var(--mr-font-sans) !important;
+  height: 36px;
+  padding: 0 14px;
+  transition: border-color .25s ease, box-shadow .25s ease;
+}
+.navbar .form-control::placeholder, #search-query::placeholder { color: var(--mr-ink-3); }
+.navbar .form-control:focus, #search-query:focus {
+  border-color: hsl(172 66% 50% / 0.45) !important;
+  box-shadow: 0 0 0 3px hsl(172 66% 50% / 0.12) !important;
+  outline: none !important;
+}
+
+/* Hamburger on mobile */
+.navbar-toggler {
+  border: 1px solid var(--mr-hairline) !important;
+  border-radius: 8px !important;
+  color: var(--mr-ink-2) !important;
+  padding: 6px 10px;
+}
+.navbar-toggler:focus { box-shadow: 0 0 0 3px hsl(172 66% 50% / 0.15) !important; }
+
+/* Search results dropdown */
+#search-results,
+.search-results {
+  background: var(--mr-surface-1) !important;
+  border: 1px solid var(--mr-hairline) !important;
+  border-radius: var(--mr-radius) !important;
+  box-shadow: 0 24px 60px -12px hsl(190 60% 2% / 0.8) !important;
+  overflow: hidden;
+}
+#search-results a, .search-results a { color: var(--mr-ink-2) !important; }
+#search-results a:hover, .search-results a:hover {
+  background: var(--mr-teal-dim) !important;
+  color: var(--mr-teal-bright) !important;
+}
+
+/* ---------- 5. Page grid ---------- */
+/* The "default" DocFX template uses Bootstrap's plain .container (not .container-xxl),
+   whose built-in breakpoints cap out at max-width:1170px — on wide viewports that leaves
+   a large empty margin on the left while the right "In this article" affix column breaks
+   out of the container and eats into the right margin, throwing the page off balance.
+   Widen the container on large screens so both margins shrink and stay roughly symmetric;
+   Bootstrap's own smaller-viewport breakpoints are left untouched. */
+@media (min-width: 1400px) {
+  /* Bootstrap 3 sets a fixed `width` (not `max-width`) at its 1200px breakpoint,
+     which wins over a plain max-width override — set `width` here to actually beat it. */
+  .container { width: 1780px; }
+}
+
+.subnav.navbar {
+  background: transparent !important;
+  border-bottom: none !important;
+  backdrop-filter: none;
+}
+
+/* ---------- 6. Left sidebar (TOC) ---------- */
+.sidenav, .toc, #sidetoggle + .sidetoggle,
+.sidetoggle .toc,
+.sidetoc, .sidefilter {
+  background: transparent !important;
+  border-right: 1px solid var(--mr-hairline-soft);
+}
+
+/* TOC filter input */
+.toc-filter, .toc-filter > input,
+input.toc-filter-input {
+  background: var(--mr-surface-2) !important;
+  border: 1px solid var(--mr-hairline) !important;
+  border-radius: 8px !important;
+  color: var(--mr-ink-1) !important;
+  font-size: 13px !important;
+  padding: 8px 14px !important;
+  height: auto;
+}
+.toc-filter input::placeholder { color: var(--mr-ink-3); }
+.toc-filter input:focus {
+  border-color: hsl(172 66% 50% / 0.45) !important;
+  box-shadow: 0 0 0 3px hsl(172 66% 50% / 0.12) !important;
+}
+
+.toc .nav > li > a,
+.sidenav a,
+ul.nav.level1 > li > a,
+ul.nav.level2 > li > a,
+ul.nav.level3 > li > a {
+  color: var(--mr-ink-3);
+  font-size: 13.5px;
+  font-weight: 500;
+  padding: 7px 14px;
+  border-radius: 8px;
+  margin: 1px 8px;
+  border-left: none !important;
+  transition: color .2s ease, background .2s ease;
+  display: block;
+}
+
+.toc .nav > li > a:hover,
+.sidenav a:hover {
+  color: var(--mr-ink-1) !important;
+  background: var(--mr-surface-2) !important;
+  text-decoration: none;
+}
+
+.toc .nav > li > a.active,
+.sidenav a.active,
+.toc .active > a {
+  color: var(--mr-teal-bright) !important;
+  background: var(--mr-teal-dim) !important;
+  font-weight: 600;
+  box-shadow: inset 2px 0 0 var(--mr-teal);
+  border-radius: 0 8px 8px 0;
+}
+
+/* expand/collapse arrows */
+.toc .expand-stub,
+.sidenav .expand-stub {
+  color: var(--mr-ink-3) !important;
+}
+
+/* section headers in TOC */
+.toc .nav > li > a:not([href]),
+.sidenav a:not([href]) {
+  color: var(--mr-ink-3);
+  font-family: var(--mr-font-mono);
+  font-size: 10.5px !important;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-weight: 600;
+  margin-top: 14px;
+}
+
+/* ---------- 7. Right affix ("In this article") ---------- */
+.affix, .sideaffix {
+  border-left: 1px solid var(--mr-hairline-soft) !important;
+  background: transparent !important;
+}
+.affix h5, .sideaffix h5,
+.affix .title, .sideaffix .title {
+  font-family: var(--mr-font-mono) !important;
+  font-size: 10.5px !important;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--mr-ink-3) !important;
+  font-weight: 600;
+  border: none !important;
+}
+.affix ul li a, .sideaffix ul li a {
+  color: var(--mr-ink-3) !important;
+  font-size: 12.5px;
+  border-left: 2px solid transparent;
+  padding-left: 12px !important;
+  transition: color .2s ease, border-color .2s ease;
+}
+.affix ul li a:hover { color: var(--mr-ink-1) !important; text-decoration: none; }
+.affix ul li.active > a, .sideaffix ul li.active > a {
+  color: var(--mr-teal-bright) !important;
+  border-left-color: var(--mr-teal) !important;
+  font-weight: 500;
+}
+
+/* contribution / edit links */
+.contribution .nav > li > a,
+.contribution a {
+  color: var(--mr-ink-3) !important;
+  font-size: 12.5px;
+}
+.contribution a:hover { color: var(--mr-teal-bright) !important; }
+
+/* ---------- 8. Footer ---------- */
+footer, .footer {
+  background: hsl(195 55% 2.8%) !important;
+  border-top: 1px solid var(--mr-hairline) !important;
+  color: var(--mr-ink-3);
+  font-size: 13px;
+}
+footer a { color: var(--mr-ink-2) !important; }
+footer a:hover { color: var(--mr-teal-bright) !important; text-decoration: none; }
+
+
+/* ---------- 1. Article typography ---------- */
+article, .article, .markdown, #_content, .content {
+  font-size: 15.5px;
+  line-height: 1.75;
+  color: var(--mr-ink-2);
+}
+
+article h1, .markdown h1, article h1.api {
+  color: var(--mr-ink-1);
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  font-size: 2.35rem;
+  line-height: 1.15;
+  border-bottom: none !important;
+  padding-bottom: 0 !important;
+  margin: 0 0 1rem;
+}
+
+/* Teal gradient tick before the H1 — brand detail */
+article h1::before {
+  content: '//';
+  font-family: var(--mr-font-mono);
+  font-size: 0.55em;
+  font-weight: 500;
+  color: var(--mr-teal);
+  letter-spacing: 0.1em;
+  display: block;
+  margin-bottom: 10px;
+}
+
+article h2, .markdown h2 {
+  color: var(--mr-ink-1);
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  font-size: 1.55rem;
+  margin-top: 2.6rem;
+  padding-top: 1.4rem;
+  border-top: 1px solid var(--mr-hairline-soft) !important;
+  border-bottom: none !important;
+}
+
+article h3, .markdown h3 {
+  color: var(--mr-ink-1);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  font-size: 1.2rem;
+  margin-top: 2rem;
+}
+
+article h4, .markdown h4 {
+  color: var(--mr-ink-1);
+  font-weight: 600;
+  font-size: 1.02rem;
+  margin-top: 1.6rem;
+}
+
+article p, .markdown p { margin: 0.9rem 0; }
+
+article a, .markdown a {
+  color: var(--mr-teal-bright);
+  text-decoration: none;
+  border-bottom: 1px solid hsl(168 76% 64% / 0.25);
+  transition: border-color .2s ease, color .2s ease;
+  word-break: break-word;
+}
+article a:hover, .markdown a:hover {
+  color: var(--mr-teal);
+  border-bottom-color: var(--mr-teal);
+  text-decoration: none;
+}
+
+article strong, .markdown strong { color: var(--mr-ink-1); font-weight: 600; }
+
+article blockquote, .markdown blockquote {
+  border-left: 3px solid var(--mr-teal) !important;
+  background: var(--mr-surface-1);
+  border-radius: 0 var(--mr-radius) var(--mr-radius) 0;
+  padding: 14px 20px !important;
+  color: var(--mr-ink-2) !important;
+  margin: 1.2rem 0;
+}
+article blockquote p { color: var(--mr-ink-2); margin: 0; }
+
+/* header anchor link */
+article h2 > a.anchorjs-link,
+article h3 > a.anchorjs-link,
+a.anchorjs-link {
+  color: var(--mr-teal) !important;
+  font-weight: 400;
+}
+a.anchorjs-link:hover { text-decoration: none !important; }
+
+/* ---------- 2. Inline code ---------- */
+article code, .markdown code, code {
+  font-family: var(--mr-font-mono);
+  font-size: 0.855em;
+  color: var(--mr-teal-bright) !important;
+  background: var(--mr-teal-dim) !important;
+  border: 1px solid hsl(172 66% 50% / 0.18);
+  border-radius: 6px;
+  padding: 0.15em 0.45em;
+  word-break: break-word;
+}
+
+/* ---------- 3. Code blocks ---------- */
+pre, article pre, .markdown pre {
+  background: hsl(195 50% 4.5%) !important;
+  border: 1px solid var(--mr-hairline) !important;
+  border-radius: var(--mr-radius) !important;
+  padding: 18px 20px !important;
+  font-family: var(--mr-font-mono);
+  font-size: 13px !important;
+  line-height: 1.75 !important;
+  overflow-x: auto;
+  box-shadow: 0 12px 40px -16px hsl(190 60% 2% / 0.7);
+  margin: 1.2rem 0;
+}
+
+pre code, article pre code, .markdown pre code {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  color: var(--mr-ink-1) !important;
+  font-size: inherit !important;
+}
+
+/* Highlight (pygments/rouge) palette → teal-friendly */
+pre .k, pre .kd, pre .kn { color: var(--mr-violet); }            /* keywords */
+pre .s, pre .s1, pre .s2, pre .sb { color: var(--mr-teal-bright); } /* strings */
+pre .c, pre .c1, pre .cm { color: var(--mr-ink-3); font-style: normal; } /* comments */
+pre .n, pre .na, pre .nc, pre .nf { color: var(--mr-ink-1); }     /* names */
+pre .nt, pre .nn { color: var(--mr-amber); }                      /* types/tags */
+pre .mi, pre .mf, pre .m { color: hsl(38 92% 62%); }              /* numbers */
+pre .o, pre .ow { color: var(--mr-cyan); }                        /* operators */
+pre .p { color: var(--mr-ink-2); }                                /* punctuation */
+
+/* Copy button injected by theme.js */
+.mr-copy-btn {
+  position: absolute;
+  top: 10px; right: 10px;
+  font-family: var(--mr-font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  color: var(--mr-ink-3);
+  background: var(--mr-surface-2);
+  border: 1px solid var(--mr-hairline);
+  border-radius: 7px;
+  padding: 4px 10px;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity .25s ease, color .2s ease, border-color .2s ease;
+}
+pre:hover .mr-copy-btn { opacity: 1; }
+.mr-copy-btn:hover { color: var(--mr-teal-bright); border-color: hsl(172 66% 50% / 0.4); }
+.mr-copy-btn.copied { color: var(--mr-teal-bright); }
+pre { position: relative; }
+
+/* ---------- 4. Alerts / admonitions (NOTE TIP WARNING IMPORTANT CAUTION) ---------- */
+.alert, .NOTE, .TIP, .WARNING, .IMPORTANT, .CAUTION {
+  border-radius: var(--mr-radius) !important;
+  border: 1px solid var(--mr-hairline) !important;
+  border-left-width: 3px !important;
+  padding: 16px 20px !important;
+  margin: 1.3rem 0 !important;
+  background: var(--mr-surface-1) !important;
+  color: var(--mr-ink-2) !important;
+  box-shadow: none !important;
+}
+.alert h5, .alert .alert-heading {
+  font-family: var(--mr-font-mono);
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-weight: 600;
+  margin: 0 0 6px;
+}
+.alert p { margin: 0.35rem 0; color: var(--mr-ink-2); }
+.alert code { font-size: 0.85em; }
+
+.alert-info, .NOTE {
+  border-left-color: var(--mr-cyan) !important;
+  background: hsl(187 85% 53% / 0.06) !important;
+}
+.alert-info h5, .NOTE h5 { color: var(--mr-cyan); }
+
+.alert-success, .TIP {
+  border-left-color: var(--mr-teal) !important;
+  background: hsl(172 66% 50% / 0.06) !important;
+}
+.alert-success h5, .TIP h5 { color: var(--mr-teal-bright); }
+
+.alert-warning, .WARNING, .IMPORTANT, .CAUTION {
+  border-left-color: var(--mr-amber) !important;
+  background: hsl(38 92% 62% / 0.06) !important;
+}
+.alert-warning h5, .WARNING h5, .IMPORTANT h5, .CAUTION h5 { color: var(--mr-amber); }
+
+.alert-danger {
+  border-left-color: var(--mr-red) !important;
+  background: hsl(0 72% 62% / 0.06) !important;
+}
+.alert-danger h5 { color: var(--mr-red); }
+
+/* ---------- 5. Tables ---------- */
+article table, .markdown table, table.table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid var(--mr-hairline) !important;
+  border-radius: var(--mr-radius);
+  overflow: hidden;
+  font-size: 13.5px;
+  margin: 1.3rem 0;
+  background: var(--mr-surface-1);
+  display: block;
+  overflow-x: auto;
+}
+article table thead, .markdown table thead { display: table-header-group; }
+article table tbody, .markdown table tbody { display: table-row-group; }
+article table tr, .markdown table tr { display: table-row; }
+article table td, article table th,
+.markdown table td, .markdown table th { display: table-cell; }
+
+article table th, .markdown table th,
+table.table > thead > tr > th {
+  background: var(--mr-surface-2) !important;
+  color: var(--mr-ink-1) !important;
+  font-family: var(--mr-font-mono);
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-weight: 600;
+  border: none !important;
+  border-bottom: 1px solid var(--mr-hairline) !important;
+  padding: 10px 16px !important;
+  white-space: nowrap;
+}
+
+article table td, .markdown table td,
+table.table > tbody > tr > td {
+  border: none !important;
+  border-bottom: 1px solid var(--mr-hairline-soft) !important;
+  color: var(--mr-ink-2);
+  padding: 10px 16px !important;
+}
+article table tr:last-child td { border-bottom: none !important; }
+article table tbody tr:hover td { background: hsl(192 36% 8% / 0.6); }
+
+/* ---------- 6. Lists, hr, misc ---------- */
+article ul li, article ol li { margin: 0.35rem 0; }
+article ul li::marker { color: var(--mr-teal); }
+article ol li::marker { color: var(--mr-ink-3); font-family: var(--mr-font-mono); font-size: 0.85em; }
+
+article hr, .markdown hr {
+  border: none;
+  border-top: 1px solid var(--mr-hairline);
+  margin: 2.2rem 0;
+  opacity: 1;
+}
+
+article img, .markdown img {
+  border-radius: var(--mr-radius);
+  border: 1px solid var(--mr-hairline);
+  max-width: 100%;
+}
+
+/* kbd */
+kbd {
+  font-family: var(--mr-font-mono);
+  font-size: 0.8em;
+  background: var(--mr-surface-2);
+  border: 1px solid var(--mr-hairline);
+  border-bottom-width: 2px;
+  border-radius: 6px;
+  color: var(--mr-ink-1);
+  padding: 2px 7px;
+  box-shadow: none;
+}
+
+/* ---------- 7. API reference (metadata pages) ---------- */
+.api .level1, .api .level2 { color: var(--mr-ink-1); }
+.api .inheritance .level0,
+.api .inheritance .level1,
+.api .inheritance .level2 {
+  background: var(--mr-surface-2);
+  border: 1px solid var(--mr-hairline);
+  border-radius: 7px;
+  padding: 4px 10px;
+  color: var(--mr-ink-2);
+}
+.syntax, .codewrapper { background: hsl(195 50% 4.5%) !important; border-radius: var(--mr-radius); }
+.entitylist .entity {
+  border: 1px solid var(--mr-hairline) !important;
+  border-radius: var(--mr-radius);
+  background: var(--mr-surface-1);
+  padding: 14px 18px !important;
+  margin-bottom: 10px !important;
+}
+.entitylist .entity:hover { border-color: hsl(172 66% 50% / 0.3) !important; }
+.entitylist .entity > .name { color: var(--mr-teal-bright) !important; font-weight: 600; }
+
+/* breadcrumb */
+.breadcrumb { background: transparent !important; font-size: 12.5px; }
+.breadcrumb a { color: var(--mr-ink-3) !important; }
+.breadcrumb a:hover { color: var(--mr-teal-bright) !important; text-decoration: none; }
+.breadcrumb .active, .breadcrumb-item.active { color: var(--mr-ink-2) !important; }
+.breadcrumb-item + .breadcrumb-item::before { color: var(--mr-ink-3) !important; }
+
+/* prev/next pager */
+.prev-next a, .pagination > li > a {
+  background: var(--mr-surface-1) !important;
+  border: 1px solid var(--mr-hairline) !important;
+  border-radius: var(--mr-radius) !important;
+  color: var(--mr-ink-2) !important;
+  transition: border-color .25s ease, color .25s ease;
+}
+.prev-next a:hover, .pagination > li > a:hover {
+  border-color: hsl(172 66% 50% / 0.4) !important;
+  color: var(--mr-teal-bright) !important;
+  text-decoration: none;
+}
+
+/* ---------- 8. Buttons ---------- */
+.btn, a.btn {
+  font-family: var(--mr-font-sans);
+  font-weight: 600;
+  font-size: 13.5px;
+  border-radius: 8px !important;
+  padding: 9px 20px;
+  border: 1px solid var(--mr-hairline) !important;
+  background: var(--mr-surface-2) !important;
+  color: var(--mr-ink-1) !important;
+  transition: all .25s ease;
+  text-decoration: none !important;
+}
+.btn:hover { border-color: hsl(172 66% 50% / 0.4) !important; color: var(--mr-teal-bright) !important; }
+
+.btn-primary, a.btn-primary {
+  background: var(--mr-teal) !important;
+  border-color: transparent !important;
+  color: hsl(186 80% 7%) !important;
+  box-shadow: 0 0 0 1px hsl(172 70% 55% / 0.25), 0 8px 30px -8px hsl(172 80% 45% / 0.4);
+}
+.btn-primary:hover { background: var(--mr-teal-bright) !important; color: hsl(186 80% 7%) !important; }
+
+/* ---------- 9. DocFX default homepage (index.md landing) ---------- */
+.home-hero {
+  text-align: center;
+  padding: 5rem 1.5rem 3.5rem;
+}
+.home-hero h1 {
+  font-size: clamp(2.6rem, 6vw, 4.2rem);
+  font-weight: 700;
+  letter-spacing: -0.045em;
+  line-height: 1.04;
+  color: var(--mr-ink-1) !important;
+  border: none !important;
+  margin-bottom: 1.2rem;
+}
+.home-hero h1::before { content: none; } /* no '//' tick on the hero */
+.home-hero h1 em, .home-hero h1 .accent {
+  background: linear-gradient(100deg, hsl(168 76% 68%), hsl(172 80% 52%) 45%, hsl(187 85% 55%));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.home-hero p {
+  max-width: 620px;
+  margin: 0 auto 1.6rem;
+  font-size: 17.5px;
+  line-height: 1.7;
+  color: var(--mr-ink-2);
+}
+.home-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.home-actions .btn { padding: 12px 26px; font-size: 14.5px; }
+
+.home-grid { max-width: 1080px; margin: 0 auto; padding: 1rem 1.5rem 4rem; }
+.home-grid h2 {
+  font-family: var(--mr-font-mono);
+  font-size: 11px !important;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  color: var(--mr-teal) !important;
+  font-weight: 600;
+  border: none !important;
+  margin: 2.6rem 0 1.1rem;
+}
+.home-grid h2::before { content: '// '; color: var(--mr-ink-3); }
+.home-grid .cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 14px;
+}
+.home-grid .card {
+  display: block;
+  background: var(--mr-surface-1);
+  border: 1px solid var(--mr-hairline);
+  border-radius: var(--mr-radius);
+  padding: 20px 22px;
+  text-decoration: none !important;
+  transition: border-color .3s ease, transform .3s cubic-bezier(.22,1,.36,1), box-shadow .3s ease;
+}
+.home-grid .card:hover {
+  border-color: hsl(172 66% 50% / 0.4);
+  transform: translateY(-3px);
+  box-shadow: 0 16px 40px -16px hsl(190 60% 2% / 0.8), 0 0 40px -20px hsl(172 80% 45% / 0.3);
+}
+.home-grid .card h3 {
+  color: var(--mr-ink-1) !important;
+  font-size: 15.5px !important;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 0 0 6px !important;
+  border: none !important;
+  padding: 0 !important;
+}
+.home-grid .card p {
+  color: var(--mr-ink-2);
+  font-size: 13.5px;
+  line-height: 1.65;
+  margin: 0;
+}
+
+/* ---------- 10. Small screens ---------- */
+@media (max-width: 991.98px) {
+  article h1, .markdown h1 { font-size: 1.9rem; }
+  .sidenav, .toc { border-right: none; }
+  .toc .nav > li > a { margin: 1px 0; }
+}

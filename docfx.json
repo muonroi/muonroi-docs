@@ -38,20 +38,14 @@
         ]
       }
     ],
-    "styles": [
-      "styles/extra.css",
-      "styles/theme.css"
-    ],
-    "scripts": [
-      "styles/theme.js"
-    ],
     "resource": [
       {
         "files": [
           "images/**",
           "docs/postman/**",
           "Samples/**",
-          "public/**"
+          "public/**",
+          "styles/**"
         ]
       }
     ],

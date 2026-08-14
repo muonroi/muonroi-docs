@@ -46,6 +46,11 @@ const config: Config = {
   ],
 
   themeConfig: {
+    colorMode: {
+      defaultMode: 'dark',
+      disableSwitch: true,
+      respectPrefersColorScheme: false,
+    },
     navbar: {
       title: 'Muonroi Docs',
       logo: {
@@ -87,7 +92,7 @@ const config: Config = {
       copyright: `Copyright (c) ${new Date().getFullYear()} Muonroi. Built with Docusaurus.`,
     },
     prism: {
-      theme: prismThemes.github,
+      theme: prismThemes.dracula,
       darkTheme: prismThemes.dracula,
       additionalLanguages: ['csharp', 'bash', 'json'],
     },

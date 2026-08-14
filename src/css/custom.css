@@ -1,30 +1,257 @@
-/**
- * Any CSS included here will be global. The classic template
- * bundles Infima by default. Infima is a CSS framework designed to
- * work well for content-centric websites.
- */
+/* ============================================================
+   Muonroi Docs — "Control Plane" theme for Docusaurus
+   Deep-space teal · dark-first · Inter + JetBrains Mono
+   Ported from the DocFX version of this theme (muonroi-docfx-theme) to
+   Infima, the CSS framework Docusaurus's classic preset is built on.
+   Dark-only: colorMode.disableSwitch is set in docusaurus.config.ts, so
+   only the [data-theme='dark'] token block below is ever active — the
+   :root block just keeps the fallback (pre-hydration) paint consistent.
+   ============================================================ */
 
-/* You can override the default Infima variables here. */
+@import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
 :root {
-  --ifm-color-primary: #2e8555;
-  --ifm-color-primary-dark: #29784c;
-  --ifm-color-primary-darker: #277148;
-  --ifm-color-primary-darkest: #205d3b;
-  --ifm-color-primary-light: #33925d;
-  --ifm-color-primary-lighter: #359962;
-  --ifm-color-primary-lightest: #3cad6e;
-  --ifm-code-font-size: 95%;
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+  --mr-bg:            hsl(195 55% 3.5%);
+  --mr-surface-1:     hsl(192 42% 5.5%);
+  --mr-surface-2:     hsl(192 36% 8%);
+  --mr-surface-3:     hsl(190 30% 11%);
+  --mr-ink-1:         hsl(168 28% 94%);
+  --mr-ink-2:         hsl(176 16% 66%);
+  --mr-ink-3:         hsl(178 12% 48%);
+  --mr-hairline:      hsl(174 30% 88% / 0.09);
+  --mr-hairline-soft: hsl(174 30% 88% / 0.055);
+  --mr-teal:          hsl(172 66% 50%);
+  --mr-teal-bright:   hsl(168 76% 64%);
+  --mr-teal-dim:      hsl(172 66% 50% / 0.14);
+  --mr-cyan:          hsl(187 85% 53%);
+  --mr-amber:         hsl(38 92% 62%);
+  --mr-red:           hsl(0 72% 62%);
+  --mr-font-sans:     'Inter', -apple-system, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  --mr-font-mono:     'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+
+  --ifm-font-family-base: var(--mr-font-sans);
+  --ifm-font-family-monospace: var(--mr-font-mono);
+  --ifm-code-font-size: 88%;
 }
 
-/* For readability concerns, you should choose a lighter palette in dark mode. */
 [data-theme='dark'] {
-  --ifm-color-primary: #25c2a0;
-  --ifm-color-primary-dark: #21af90;
-  --ifm-color-primary-darker: #1fa588;
-  --ifm-color-primary-darkest: #1a8870;
-  --ifm-color-primary-light: #29d5b0;
-  --ifm-color-primary-lighter: #32d8b4;
-  --ifm-color-primary-lightest: #4fddbf;
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+  --ifm-background-color: var(--mr-bg);
+  --ifm-background-surface-color: var(--mr-surface-1);
+  --ifm-font-color-base: var(--mr-ink-2);
+  --ifm-heading-color: var(--mr-ink-1);
+  --ifm-color-content-secondary: var(--mr-ink-2);
+  --ifm-color-emphasis-0: var(--mr-surface-1);
+  --ifm-color-emphasis-100: var(--mr-surface-2);
+  --ifm-color-emphasis-200: var(--mr-surface-3);
+  --ifm-color-emphasis-300: hsl(190 25% 20%);
+  --ifm-color-emphasis-700: var(--mr-ink-2);
+  --ifm-color-emphasis-800: var(--mr-ink-1);
+  --ifm-color-emphasis-900: var(--mr-ink-1);
+  --ifm-hr-border-color: var(--mr-hairline);
+  --ifm-toc-border-color: var(--mr-hairline);
+  --ifm-table-border-color: var(--mr-hairline);
+  --ifm-table-stripe-background: hsl(192 36% 8% / 0.5);
+  --ifm-table-head-background: var(--mr-surface-2);
+
+  --ifm-color-primary: var(--mr-teal);
+  --ifm-color-primary-dark: hsl(172 66% 44%);
+  --ifm-color-primary-darker: hsl(172 66% 41%);
+  --ifm-color-primary-darkest: hsl(172 66% 34%);
+  --ifm-color-primary-light: hsl(172 66% 56%);
+  --ifm-color-primary-lighter: hsl(172 66% 59%);
+  --ifm-color-primary-lightest: var(--mr-teal-bright);
+
+  --ifm-color-info: var(--mr-cyan);
+  --ifm-color-info-dark: hsl(187 85% 47%);
+  --ifm-color-info-darkest: hsl(187 85% 30%);
+  --ifm-color-info-contrast-background: hsl(187 85% 53% / 0.08);
+  --ifm-color-info-contrast-foreground: var(--mr-cyan);
+
+  --ifm-color-success: var(--mr-teal);
+  --ifm-color-success-dark: hsl(172 66% 44%);
+  --ifm-color-success-darkest: hsl(172 66% 30%);
+  --ifm-color-success-contrast-background: hsl(172 66% 50% / 0.08);
+  --ifm-color-success-contrast-foreground: var(--mr-teal-bright);
+
+  --ifm-color-warning: var(--mr-amber);
+  --ifm-color-warning-dark: hsl(38 92% 50%);
+  --ifm-color-warning-darkest: hsl(38 92% 34%);
+  --ifm-color-warning-contrast-background: hsl(38 92% 62% / 0.08);
+  --ifm-color-warning-contrast-foreground: var(--mr-amber);
+
+  --ifm-color-danger: var(--mr-red);
+  --ifm-color-danger-dark: hsl(0 72% 52%);
+  --ifm-color-danger-darkest: hsl(0 72% 36%);
+  --ifm-color-danger-contrast-background: hsl(0 72% 62% / 0.08);
+  --ifm-color-danger-contrast-foreground: var(--mr-red);
+
+  --ifm-navbar-background-color: hsl(195 55% 3.5% / 0.86);
+  --ifm-navbar-link-color: var(--mr-ink-2);
+  --ifm-navbar-link-hover-color: var(--mr-ink-1);
+  --ifm-navbar-shadow: none;
+
+  --ifm-menu-color: var(--mr-ink-3);
+  --ifm-menu-color-background-active: var(--mr-teal-dim);
+  --ifm-menu-color-background-hover: var(--mr-surface-2);
+  --ifm-menu-color-active: var(--mr-teal-bright);
+
+  --ifm-footer-background-color: hsl(195 55% 2.8%);
+  --ifm-footer-color: var(--mr-ink-3);
+  --ifm-footer-link-color: var(--mr-ink-2);
+  --ifm-footer-link-hover-color: var(--mr-teal-bright);
+  --ifm-footer-title-color: var(--mr-ink-3);
+
+  --ifm-pre-background: hsl(195 50% 4.5%);
+  --ifm-code-background: hsl(172 66% 50% / 0.1);
+  --ifm-code-color: var(--mr-teal-bright);
+  --ifm-link-color: var(--mr-teal-bright);
+  --ifm-link-hover-color: var(--mr-teal);
+
+  --docusaurus-highlighted-code-line-bg: hsl(172 66% 50% / 0.12);
+  color-scheme: dark;
+}
+
+/* ---------- Base ---------- */
+html, body {
+  letter-spacing: -0.005em;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection { background: hsl(172 66% 50% / 0.3); color: var(--mr-ink-1); }
+
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: var(--mr-bg); }
+::-webkit-scrollbar-thumb {
+  background: var(--mr-surface-3);
+  border-radius: 8px;
+  border: 2px solid var(--mr-bg);
+}
+::-webkit-scrollbar-thumb:hover { background: hsl(190 28% 16%); }
+
+/* Ambient glow field + fine blueprint grid behind everything */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(52rem 34rem at 82% -10%, hsl(168 90% 45% / 0.10), transparent 62%),
+    radial-gradient(40rem 30rem at 4% 10%,  hsl(187 85% 50% / 0.05), transparent 60%),
+    radial-gradient(46rem 36rem at 96% 92%, hsl(172 80% 42% / 0.06), transparent 62%);
+}
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    linear-gradient(hsl(174 40% 80% / 0.028) 1px, transparent 1px),
+    linear-gradient(90deg, hsl(174 40% 80% / 0.028) 1px, transparent 1px);
+  background-size: 56px 56px;
+  -webkit-mask-image: radial-gradient(ellipse 90% 70% at 50% 0%, black 20%, transparent 75%);
+  mask-image: radial-gradient(ellipse 90% 70% at 50% 0%, black 20%, transparent 75%);
+}
+
+/* ---------- Navbar ---------- */
+.navbar {
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--mr-hairline);
+}
+.navbar__brand { font-weight: 600; }
+.navbar__title { letter-spacing: -0.01em; }
+.navbar__search-input {
+  background-color: var(--mr-surface-2);
+  border: 1px solid var(--mr-hairline);
+}
+
+/* ---------- Sidebar menu ---------- */
+.menu__link { font-size: 13.5px; font-weight: 500; border-radius: 8px; }
+.menu__link--active:not(.menu__link--sublist) {
+  font-weight: 600;
+  box-shadow: inset 2px 0 0 var(--mr-teal);
+}
+.menu__list-item-collapsible {
+  font-family: var(--mr-font-mono);
+}
+
+/* ---------- Table of contents (right rail) ---------- */
+.table-of-contents__link {
+  color: var(--mr-ink-3);
+  font-size: 12.5px;
+}
+.table-of-contents__link:hover,
+.table-of-contents__link--active {
+  color: var(--mr-teal-bright);
+}
+
+/* ---------- Article typography ---------- */
+article h1 { letter-spacing: -0.035em; font-weight: 700; }
+article h2, article h3, article h4 { letter-spacing: -0.02em; }
+.markdown a { border-bottom: 1px solid hsl(168 76% 64% / 0.25); text-decoration: none; }
+.markdown a:hover { border-bottom-color: var(--mr-teal); }
+
+/* ---------- Code blocks ---------- */
+/* Docusaurus re-declares --ifm-pre-background locally on each code block to match the
+   Dracula prism theme's own bg (#282A36), so referencing the variable here just repaints
+   with that same overridden value — use a literal color instead to actually win. */
+.theme-code-block {
+  border: 1px solid var(--mr-hairline) !important;
+  box-shadow: 0 12px 40px -16px hsl(190 60% 2% / 0.7) !important;
+}
+.theme-code-block pre,
+.theme-code-block pre > code {
+  background: hsl(195 50% 4.5%) !important;
+}
+code { border: 1px solid hsl(172 66% 50% / 0.18); }
+
+/* ---------- Buttons ---------- */
+.button--secondary {
+  background: var(--mr-teal) !important;
+  border-color: transparent !important;
+  color: hsl(186 80% 7%) !important;
+  box-shadow: 0 0 0 1px hsl(172 70% 55% / 0.25), 0 8px 30px -8px hsl(172 80% 45% / 0.4);
+}
+.button--secondary:hover { background: var(--mr-teal-bright) !important; }
+
+/* ---------- Hero ---------- */
+.hero--primary {
+  --ifm-hero-background-color: transparent;
+  --ifm-hero-text-color: var(--mr-ink-1);
+}
+.hero__subtitle { color: var(--mr-ink-2); }
+
+/* ---------- Homepage feature cards ---------- */
+main .row > .col h3 {
+  font-family: var(--mr-font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--mr-teal);
+  font-weight: 600;
+}
+main .row > .col p { color: var(--mr-ink-2); font-size: 14px; }
+
+/* ---------- Pagination / breadcrumbs ---------- */
+.pagination-nav__link {
+  border-color: var(--mr-hairline);
+  background: var(--mr-surface-1);
+}
+.pagination-nav__link:hover { border-color: hsl(172 66% 50% / 0.4); }
+.breadcrumbs__link { color: var(--mr-ink-3); }
+
+/* ---------- Footer ---------- */
+/* Infima's .footer--dark hardcodes its own background color rather than reading
+   --ifm-footer-background-color, so it needs a direct override. */
+.footer--dark {
+  --ifm-footer-background-color: hsl(195 55% 2.8%);
+  background-color: var(--ifm-footer-background-color);
+  border-top: 1px solid var(--mr-hairline);
+}
+
+/* ---------- Small screens ---------- */
+@media (max-width: 996px) {
+  article h1 { font-size: 1.9rem; }
 }

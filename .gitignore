@@ -6,6 +6,9 @@
 /.docusaurus
 /.cache-loader
 
+# DocFX build output
+/_site
+
 # Temporary files
 /_temp_docs
 
